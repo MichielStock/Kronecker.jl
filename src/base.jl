@@ -106,6 +106,17 @@ function Base.:adjoint(K::T) where T <: KroneckerProduct
     return A' ⊗ B'
 end
 
+# mixed-product property
+function Base.:*(K1::T where T <: KroneckerProduct,
+                    K2::T where T <: KroneckerProduct)
+    A, B = getmatrices(K1)
+    C, D = getmatrices(K2)
+    # check for size
+    size(A, 2) == size(C, 1) || throw(DimensionMismatch("Mismatch between A and C in (A ⊗ B)(C ⊗ D)"))
+    size(B, 2) == size(D, 1) || throw(DimensionMismatch("Mismatch between B and D in (A ⊗ B)(C ⊗ D)"))
+    return (A * C) ⊗ (B * D)
+end
+
 function Base.:getindex(K::T, i1::Int64, i2::Int64) where T <: KroneckerProduct
     A, B = getmatrices(K)
     m, n = size(A)

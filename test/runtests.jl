@@ -29,6 +29,19 @@ for j in 1:12
     end
 end
 
+# test mixed-product property
+
+A = rand(5, 4)
+B = rand(2, 3)
+C = rand(4, 6)
+D = rand(3, 4)
+
+K1 = (A ⊗ B)
+K2 = (C ⊗ D)
+
+@test collect(K1 * K2) ≈ collect(K1) * collect(K2)
+
+
 # testing indexed systems
 
 v = rand(10)

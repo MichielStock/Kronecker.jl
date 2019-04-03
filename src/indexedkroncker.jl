@@ -55,6 +55,8 @@ function genvectrick!(M, N, v, u, p, q, r, t)
     c, d = size(N)
     e = length(v)
     f = length(u)
+    @assert maximum(p) ≤ a && maximum(q) ≤ c
+    @assert maximum(r) ≤ b && maximum(t) ≤ d
     u .= 0  # reset for inplace
     if a * e + d * f < c * e + b *f
         # compute T = VM'
@@ -62,13 +64,13 @@ function genvectrick!(M, N, v, u, p, q, r, t)
         @simd for h in 1:e
             i, j = r[h], t[h]
             @simd for k in 1:a
-                T[j,k] += v[h] * M[k,i]
+                @inbounds T[j,k] += v[h] * M[k,i]
             end
         end
         @simd for h in 1:f
             i, j = p[h], q[h]
             @simd for k in 1:d
-                u[h] += N[j,k] * T[k,i]
+                @inbounds u[h] += N[j,k] * T[k,i]
             end
         end
     else
@@ -77,13 +79,60 @@ function genvectrick!(M, N, v, u, p, q, r, t)
         @simd for h in 1:e
             i, j = r[h], t[h]
             @simd for k in 1:c
-                S[k,j] += v[h] * N[k,j]
+                @inbounds S[k,j] += v[h] * N[k,j]
             end
         end
         @simd for h in 1:f
             i, j = p[h], q[h]
             @simd for k in 1:b
-                u[h] += S[j,k] * M[i,k]
+                @inbounds u[h] += S[j,k] * M[i,k]
+            end
+        end
+    end
+    return u
+end
+
+function genvectrick2!(M, N, v, u, p, q, r, t)
+    # computes N ⊗ M
+    # sizes
+    a, b = size(M)
+    c, d = size(N)
+    e = length(v)
+    f = length(u)
+
+    u .= 0  # reset for inplace
+    if a * e + d * f < c * e + b *f
+        # compute T = VM'
+        T = zeros(eltype(v), d, a)
+
+            @simd for k in 1:a
+                @simd for h in 1:e
+                    i, j = r[h], t[h]
+                @inbounds T[j,k] += v[h] * M[k,i]
+            end
+        end
+
+            @simd for k in 1:d
+                @simd for h in 1:f
+                    i, j = p[h], q[h]
+                @inbounds u[h] += N[j,k] * T[k,i]
+            end
+        end
+    else
+        # compute S = NV
+        S = zeros(eltype(v), d, a)
+
+            @simd for k in 1:c
+                @simd for h in 1:e
+                    i, j = r[h], t[h]
+                @inbounds S[k,j] += v[h] * N[k,j]
+            end
+        end
+
+            @simd for k in 1:b
+                @simd for h in 1:f
+                    i, j = p[h], q[h]
+                @inbounds u[h] += S[j,k] * M[i,k]
             end
         end
     end

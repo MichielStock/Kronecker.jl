@@ -62,7 +62,7 @@ kronprod = N ⊗ M
 ikp = kronprod[p,q,r,t]
 
 subsystem = kron(N, M)[a * (q .- 1) .+ p, b * (t .- 1) .+ r]
-@test all(subsystem .≈ collect(ikp))
+@test subsystem ≈ collect(ikp)
 
 # result shortcut
 #u = genvectrick(M, N, v, p, q, r, t)
@@ -80,5 +80,5 @@ v = rand(300)
 
 rnaive = (kron(A, B) + 2I) \ v
 
-r = (A ⊗ B + 2I) \ v
-@test all(r ≈ rnaive)
+@test rnaive ≈ (A ⊗ B + 2I) \ v
+@test rnaive ≈ v / (A ⊗ B + 2I)

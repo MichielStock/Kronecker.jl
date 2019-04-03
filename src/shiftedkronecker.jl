@@ -17,43 +17,42 @@ end
 
 System of the form
 
-    (A ⊗ B) + D
+    (A ⊗ B) + cI.
 
-with D a diagonal matrix. Automatically computes the eigenvalue decompostion to
+Automatically computes the eigenvalue decompostion to
 speed up some computations.
 """
 struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
     K::EigenKroneckerProduct
-    D::Union{Diagonal, UniformScaling}
+    D::UniformScaling
 end
 
 function Base.:show(io::IO, K::T) where T <: ShiftedKroneckerProduct
     println("Kronecker system of the form A ⊗ B + diagonal matrix")
 end
 
+
+"""
+    eigen(K::KroneckerProductArray)
+
+Compute the eigenvalue decomposition of system of the from (A ⊗ B). Returns
+an instance of the type `EigenKroneckerProduct`.
+"""
 function LinearAlgebra.:eigen(K::KroneckerProductArray)
     A, B = getmatrices(K)
     (typeof(A) <: Symmetric && typeof(B) <:Symmetric) || TypeError("function only implemented and relevant for symmetric matrices")
     return EigenKroneckerProduct(A, B, eigen(A), eigen(B))
 end
 
-#function getmatrices(K::EigenKroneckerProduct)
-#    return getmatrices(K.K)
-#end
-
-#function Base.:inv(kronprod::T) where T <: EigenKroneckerProduct
-#    return inv(kronprod.A) ⊗ inv(kronprod.B)
-#end
-
-function Base.:+(K::EigenKroneckerProduct, D::Union{Diagonal, UniformScaling})
+function Base.:+(K::EigenKroneckerProduct, D::UniformScaling)
     return ShiftedKroneckerProduct(K, D)
 end
 
-function Base.:+(K::KroneckerProductArray, D::Union{Diagonal, UniformScaling})
+function Base.:+(K::KroneckerProductArray, D::UniformScaling)
     return eigen(K) + D
 end
 
-function Base.:+(SK::ShiftedKroneckerProduct, D::Union{Diagonal, UniformScaling})
+function Base.:+(SK::ShiftedKroneckerProduct, D::UniformScaling)
     return SK.K + (SK.D + D)  # just update the weights
 end
 
@@ -69,3 +68,16 @@ function Base.:\(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector)
     # note that this should go fast
     return V ⊗ U * ((D + Diagonal(kron(λ, σ)))^-1 * ((V ⊗ U)' * v))
 end
+
+Base.:/(v::V where V <: AbstractVector, SK::ShiftedKroneckerProduct) = \(SK, v)
+
+"""
+    solve(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector)
+
+Solves a linear system of the form
+
+(A ⊗ B + cI) x = v,
+
+where (A ⊗ B + cI) is given by an instance of `ShiftedKroneckerProduct`.
+"""
+solve(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector) = \(SK, v)

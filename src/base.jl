@@ -27,6 +27,16 @@ function issquare(A::Array{T,2}) where T <: Real
 end
 
 """
+    kronecker(A::T, B::T) where T <: AbstractArray
+
+Construct a Kronecker product object between two arrays. Does not evaluate the
+Kronecker product explictly!
+"""
+function kronecker(A::T, B::T) where T <: AbstractArray
+    return KroneckerProductArray(A, B)
+end
+
+"""
     ⊗(A::T, B::T) where T <: AbstractArray
 
 Construct a Kronecker product object between two arrays. Does not evaluate the

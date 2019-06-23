@@ -1,5 +1,3 @@
-#TODO: document
-
 """
     struct EigenKroneckerProduct <: KroneckerProduct
 
@@ -28,7 +26,7 @@ struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
 end
 
 function Base.:show(io::IO, K::T) where T <: ShiftedKroneckerProduct
-    println("Kronecker system of the form A ⊗ B + diagonal matrix")
+    println("Kronecker system of the form A ⊗ B + cI")
 end
 
 
@@ -66,7 +64,7 @@ function Base.:\(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector)
     σ, U = K.Beigen
     D = SK.D
     # note that this should go fast
-    return V ⊗ U * ((D + Diagonal(kron(λ, σ)))^-1 * ((V ⊗ U)' * v))
+    return V ⊗ U * ((Diagonal(kron(λ, σ))+ D)^-1 * ((V ⊗ U)' * v))
 end
 
 Base.:/(v::V where V <: AbstractVector, SK::ShiftedKroneckerProduct) = \(SK, v)

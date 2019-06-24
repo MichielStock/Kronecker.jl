@@ -1,0 +1,82 @@
+
+% JuliaCon proceedings template
+\documentclass{juliacon}
+\setcounter{page}{1}
+\usepackage{amsmath}
+
+\begin{document}
+
+\input{header}
+
+\maketitle
+
+\begin{abstract}
+Pairwise learning is a machine learning paradigm where the goal is to predict properties of pairs of objects.
+Applications include recommender systems, molecular network inference and ecological interaction prediction.
+Kronecker-based learning systems provide a simple, yet elegant method to learn from such pairs.
+Using tricks from linear algebra, these models can be trained, tuned and validated on large datasets.
+Our Julia package \texttt{Kronecker.jl} aggregates these tricks using a lazily-evaluated Kronecker product $\otimes$, such that it is easy to experiment with learning algorithms using the Kronecker product.
+
+\end{abstract}
+
+\section{Background}
+
+In linear algebra, the Kronecker product, denoted by $\otimes$, between an $(n\times m)$ matrix $A=[A_{ij}]$ and an $(p\times q)$ matrix $B=[B_{kl}]$ is computed as
+\begin{equation}\label{eq:kron}
+  {A} \otimes  {B} ={\begin{bmatrix}A_{11} {B} &\cdots &A_{1m} {B} \\\vdots &\ddots &\vdots \\A_{n1} {B} &\cdots &A_{nm} {B} \end{bmatrix}}\,.
+\end{equation}
+Simply put, the Kronecker product creates a new $(np\times mq)$ matrix containing all element-wise products between the respective elements of the two matrices.
+
+Though conceptually simple, the Kronecker product gives rise to some some elegant mathematics~\cite{Sch2013,VanLoan2000}.
+The Kronecker product has numerous applications in applied mathematics, for example in defining the matrix normal distribution, modelling complex networks~\cite{Leskovec2008} and pairwise learning~\cite{Stock2017tskrr}.
+The reason that it can be used in practice is that (\ref{eq:kron}) often does not have to be computed explicitly, but it can be circumvented using various computational shortcuts.
+
+\section{Basic use}
+
+Our package aims to be a toolkit to easily build Kronecker-based applications, where the focus is on the mathematics and computational efficiency is taken care of under the hood. Essentially, it provides a lazily-evaluated Kronecker product of a \texttt{Kronecker} type.
+
+%\begin{verbatim}
+\begin{lstlisting}[language = Julia]
+(n, m), (p, q) = (20, 20), (30, 30);  # A and B do not have to be square
+A = rand(n, m); B = randn(p, q);
+K = kronecker(A, B)  # lazy Kronecker product
+\end{lstlisting}
+%\end{verbatim}
+
+Alternatively, one can make use of Julia's unicode support: \texttt{K = A $\otimes$ B}.
+The elementary functions of \texttt{LinearAlgebra} are overloaded to work with the \texttt{Kronecker} type and are all fast.
+
+\begin{lstlisting}[language = Julia]
+tr(K)  # computed as tr(A) * tr(B)
+det(K)  # computed as det(A)^n * det(B)^q
+eigen(K)  # kronecker(eigen(A), eigen(B))
+inv(K)  # yields a Kronecker instance
+v = randn(600);
+K * v  # computed using the vec trick
+\end{lstlisting}
+
+For example, the last line is evaluated using the so-called vec-trick with a time complexity of $\mathcal{O}(nm+pq)$ instead of $\mathcal{O}(nmpq)$ naively.
+Similarly, efficiently solving large shifted Kronecker systems can be done directly as \texttt{(A $\otimes$ B +$\lambda$I) $\backslash$ v}.
+
+We provide support for dealing with submatrices of a Kronecker product through the sampled vec trick~\cite{Airola2017genvectric}.
+
+\begin{lstlisting}[language = Julia]
+# subsample a 200 x 100 submatrix of K
+i, j = rand(1:n, 200), rand(1:m, 200);
+k, l = rand(1:p, 100), rand(1:q, 100);
+Ksubset = K[i,j,k,l];
+u = randn(100);
+Ksubset * u  # computed using sampled vec trick
+\end{lstlisting}
+
+\texttt{Kronecker.jl} is a package in development and new features are still being added.
+
+\section{Prospects}
+
+To fully make use the power of Julia, we will explore three directions. Firstly, we will integrate libraries for automatic differentiation, such as \texttt{Zygote.jl}. This will allow for developing pairwise learning methods with complex loss and regularization functions. Secondly, we want to leverage the GPU support to make these methods scalable to large datasets using \texttt{CuArrays}. Finally, we want to harness Julia's inherent flexibility to extend \texttt{Kronecker.jl} towards high-order Kronecker products.
+
+\input{bib.tex}
+
+\end{document}
+
+% Inspired by the International Journal of Computer Applications template

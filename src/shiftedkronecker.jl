@@ -26,7 +26,7 @@ struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
 end
 
 function Base.:show(io::IO, K::T) where T <: ShiftedKroneckerProduct
-    println("Kronecker system of the form A ⊗ B + cI")
+    print(io, "A ⊗ B + cI")
 end
 
 

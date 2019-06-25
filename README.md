@@ -23,22 +23,23 @@ For basic use, see the [Jupyter notebook](notebooks/ImputationConvergence.ipynb)
 using Kronecker
 
 A = randn(100, 100);
-B = reshape(1:24, 4, 6);
-C = rand(50, 50);
+B = rand(50, 50);
 
-v = rand(600);
-u = randn(5000);
+v = rand(5000);
 
 K = A ⊗ B
 
 collect(K)  # equivalent with kron(A, B)
 
+K[78, 43]
+
 tr(K)
 inv(K)  # yields another lazy Kronecker instance
 
-K * v  # equivalent with vec(B' * reshape(v, 6, 100) * A)
-
+K * v  # equivalent with vec(B * reshape(v, 50, 100) * A')
 ```
+
+See the notebook for some more advanced use.
 
 ## Installation
 

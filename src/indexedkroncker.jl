@@ -21,7 +21,7 @@ function getindices(K::IndexedKroneckerProduct)
 end
 
 function Base.:show(io::IO, K::T) where T <: IndexedKroneckerProduct
-    println("Indexed Kronecker system of the form A ⊗ B")
+    print(io, "(A ⊗ B)[p, q, r, t]")
 end
 
 function Base.:size(K::T) where T <: IndexedKroneckerProduct

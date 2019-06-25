@@ -1,6 +1,6 @@
 # Kronecker.jl
 
-This is a Julia package to efficiently work with Kronecker products. It combines lazy evaluation and algebraic tricks such that it can implicitely work with huge matrices. 
+This is a Julia package to efficiently work with Kronecker products. It combines lazy evaluation and algebraic tricks such that it can implicitely work with huge matrices. It allows to work with large Kronecker systems both much faster and using much less memory than the naive implementation of the Kronecker product.
 
 ## Features
 
@@ -11,12 +11,38 @@ Given two two matrices (subtype of `AbstractArray`) `A` and `B`, one can constru
 - multiplying with a vector `v` is efficient using the [vec trick](https://en.wikipedia.org/wiki/Kronecker_product#Matrix_equations): `K * v`
 - solving systems of the form `A ⊗ B + D`, with `D` a diagonal matrix
 - working with incomplete systems using the [sampled vec trick](https://arxiv.org/pdf/1601.01507.pdf)
+- [in progress] compatibility with higher-order Kronecker systems
 - [in progress] GPU compatibility!
 - [in progress] autodiff for machine learning models!
 
+For basic use, see the [Jupyter notebook](notebooks/ImputationConvergence.ipynb) with examples. It mainly compares `Kronecker.jl` with Julia's native `kron` function.
+
+## Example
+
+```julialang
+using Kronecker
+
+A = randn(100, 100);
+B = reshape(1:24, 4, 6);
+C = rand(50, 50);
+
+v = rand(600);
+u = randn(5000);
+
+K = A ⊗ B
+
+collect(K)  # equivalent with kron(A, B)
+
+tr(K)
+inv(K)  # yields another lazy Kronecker instance
+
+K * v  # equivalent with vec(B' * reshape(v, 6, 100) * A)
+
+```
+
 ## Installation
 
-Currently only directly from the repo. In Julia package manager (in REPL start with `]`):
+Directly available via the Julia package manager (in REPL start with `]`):
 
 ```julialang
 add https://github.com/MichielStock/Kronecker.jl

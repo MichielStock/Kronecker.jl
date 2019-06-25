@@ -80,7 +80,7 @@ end
 
 function Base.:show(io::IO, K::T) where T <: KroneckerProductArray
     A, B = getmatrices(K)
-    println("Kronecker system of the form A ⊗ B")
+    print(io, "A ⊗ B")
 end
 
 function Base.:eltype(K::T) where T <: KroneckerProductArray

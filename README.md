@@ -43,10 +43,10 @@ See the notebook for some more advanced use.
 
 ## Installation
 
-Directly available via the Julia package manager (in REPL start with `]`):
+Directly available via the Julia package manager:
 
 ```julialang
-add https://github.com/MichielStock/Kronecker.jl
+] add Kronecker
 ```
 
 ## Issues

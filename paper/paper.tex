@@ -55,7 +55,7 @@ v = randn(600);
 K * v  # computed using the vec trick
 \end{lstlisting}
 
-For example, the last line is evaluated using the so-called vec-trick with a time complexity of $\mathcal{O}(nm+pq)$ instead of $\mathcal{O}(nmpq)$ naively.
+For example, the last line is evaluated using the so-called vec trick with a time complexity of $\mathcal{O}(nm+pq)$ instead of $\mathcal{O}(nmpq)$ naively.
 Similarly, efficiently solving large shifted Kronecker systems can be done directly as \texttt{(A $\otimes$ B +$\lambda$I) $\backslash$ v}.
 
 We provide support for dealing with submatrices of a Kronecker product through the sampled vec trick~\cite{Airola2017genvectric}.
@@ -73,7 +73,7 @@ Ksubset * u  # computed using sampled vec trick
 
 \section{Prospects}
 
-To fully make use the power of Julia, we will explore three directions. Firstly, we will integrate libraries for automatic differentiation, such as \texttt{Zygote.jl}. This will allow for developing pairwise learning methods with complex loss and regularization functions. Secondly, we want to leverage the GPU support to make these methods scalable to large datasets using \texttt{CuArrays}. Finally, we want to harness Julia's inherent flexibility to extend \texttt{Kronecker.jl} towards high-order Kronecker products.
+To fully make use of the power of Julia, we will explore three directions. Firstly, we will integrate libraries for automatic differentiation, such as \texttt{Zygote.jl}. This will allow for developing pairwise learning methods with complex loss and regularization functions. Secondly, we want to leverage the GPU support to make these methods scalable to large datasets using \texttt{CuArrays}. Finally, we want to harness Julia's inherent flexibility to extend \texttt{Kronecker.jl} towards high-order Kronecker products.
 
 \input{bib.tex}
 

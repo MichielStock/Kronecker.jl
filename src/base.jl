@@ -3,13 +3,6 @@ end
 
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexLinear()
 
-# TODO: make diagonal Kronecker system
-# TODO: document functions
-# TODO: indexing in general
-# QUESTION: remove issquare checks?
-
-# QUESTION: allow for different types of matrices?
-
 # general Kronecker product between two matrices
 struct KroneckerProduct <: GeneralizedKroneckerProduct
     A::AbstractMatrix
@@ -42,6 +35,17 @@ end
 issquare(K::SquareKroneckerProduct) = true
 
 KronProd = Union{KroneckerProduct, SquareKroneckerProduct}
+
+"""
+    order(M::AbstractMatrix)
+
+Returns the order of a matrix, i.e. how many matrices are
+involved in the Kronecker product (default to 1 for general
+matrices).
+"""
+order(M::AbstractMatrix) = 1
+
+order(M::KronProd) = order(M.A) + order(M.B)
 
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)

@@ -1,7 +1,7 @@
 module Kronecker
 
 export KroneckerProduct, KroneckerProductArray, EigenKroneckerProduct, ShiftedKroneckerProduct
-export issquare, getmatrices, size, getindices
+export issquare, getmatrices, size, getindices, order
 export ⊗, kronecker
 export tr, det, collect, inv, *, mult!, eigen, \, /, adjoint
 export getindex

@@ -23,6 +23,10 @@ X = kron(A, B)  # true result
 @test collect(inv(kronprod)) ≈ inv(X)
 @test all(kronprod * v .≈ X * v)
 
+@test order(A) == 1
+@test order(kronprod) == 2
+@test order(kronprod ⊗ A) == 3
+
 for j in 1:12
     for i in 1:12
         @test kronprod[i,j] ≈ X[i,j]

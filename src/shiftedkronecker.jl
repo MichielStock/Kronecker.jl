@@ -3,12 +3,14 @@
 
 Eigen value decomposition of a Kronecker product.
 """
-struct EigenKroneckerProduct <: KroneckerProduct
+struct EigenKroneckerProduct <: AbstractKroneckerProduct
     A
     B
     Aeigen::Eigen
     Beigen::Eigen
 end
+
+
 
 """
     struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
@@ -24,21 +26,17 @@ struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
     K::EigenKroneckerProduct
     D::UniformScaling
 end
-
-function Base.:show(io::IO, K::T) where T <: ShiftedKroneckerProduct
-    print(io, "A ⊗ B + cI")
-end
-
+Base.size(SK::ShiftedKroneckerProduct) = size(SK.K)
+Base.:getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int) = i != j ? SK.K[i,j] : SK.K[i,j] + SK.D
 
 """
-    eigen(K::KroneckerProductArray)
+    eigen(K::SquareKroneckerProduct)
 
 Compute the eigenvalue decomposition of system of the from (A ⊗ B). Returns
 an instance of the type `EigenKroneckerProduct`.
 """
-function LinearAlgebra.:eigen(K::KroneckerProductArray)
+function LinearAlgebra.:eigen(K::SquareKroneckerProduct)
     A, B = getmatrices(K)
-    (typeof(A) <: Symmetric && typeof(B) <:Symmetric) || TypeError("function only implemented and relevant for symmetric matrices")
     return EigenKroneckerProduct(A, B, eigen(A), eigen(B))
 end
 
@@ -46,7 +44,7 @@ function Base.:+(K::EigenKroneckerProduct, D::UniformScaling)
     return ShiftedKroneckerProduct(K, D)
 end
 
-function Base.:+(K::KroneckerProductArray, D::UniformScaling)
+function Base.:+(K::AbstractKroneckerProduct, D::UniformScaling)
     return eigen(K) + D
 end
 
@@ -64,7 +62,12 @@ function Base.:\(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector)
     σ, U = K.Beigen
     D = SK.D
     # note that this should go fast
-    return V ⊗ U * ((Diagonal(kron(λ, σ))+ D)^-1 * ((V ⊗ U)' * v))
+    if issymmetric(K)
+        return V ⊗ U * ((Diagonal(kron(λ, σ)) + D)^-1 * ((V ⊗ U)' * v))
+    else
+        @warn "Non-symmetric systems do not seem to give exact result, treat with caution!"
+        return V ⊗ U * ((Diagonal(kron(λ, σ)) + D)^-1 * (inv(V ⊗ U) * v))
+    end
 end
 
 Base.:/(v::V where V <: AbstractVector, SK::ShiftedKroneckerProduct) = \(SK, v)

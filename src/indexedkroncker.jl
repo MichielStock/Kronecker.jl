@@ -2,7 +2,7 @@
 Index = Union{UnitRange{I}, AbstractVector{I}} where I <: Int #TODO: make for general indices
 
 struct IndexedKroneckerProduct <: GeneralizedKroneckerProduct
-    K::KronProd
+    K::AbstractKroneckerProduct
     p::Index
     q::Index
     r::Index
@@ -36,7 +36,7 @@ function Base.:getindex(K::IndexedKroneckerProduct, i::Int, j::Int)
     return B[p[i],r[j]] * A[q[i],t[j]]
 end
 
-function Base.:getindex(K::T, p::Index, q::Index, r::Index, t::Index) where T <: KronProd
+function Base.:getindex(K::T, p::Index, q::Index, r::Index, t::Index) where T <: AbstractKroneckerProduct
     N, M = getmatrices(K)
     a, b = size(M)
     c, d = size(N)

@@ -1,10 +1,13 @@
 abstract type GeneralizedKroneckerProduct <: AbstractMatrix{Real}
 end
 
+abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct
+end
+
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexLinear()
 
 # general Kronecker product between two matrices
-struct KroneckerProduct <: GeneralizedKroneckerProduct
+struct KroneckerProduct <: AbstractKroneckerProduct
     A::AbstractMatrix
     B::AbstractMatrix
 end
@@ -20,7 +23,7 @@ function issquare(A::AbstractMatrix)
 end
 
 # general Kronecker product between two matrices
-struct SquareKroneckerProduct <: GeneralizedKroneckerProduct
+struct SquareKroneckerProduct <: AbstractKroneckerProduct
     A::AbstractMatrix
     B::AbstractMatrix
     function SquareKroneckerProduct(A, B)
@@ -33,8 +36,7 @@ struct SquareKroneckerProduct <: GeneralizedKroneckerProduct
 end
 
 issquare(K::SquareKroneckerProduct) = true
-
-KronProd = Union{KroneckerProduct, SquareKroneckerProduct}
+LinearAlgebra.:issymmetric(K::SquareKroneckerProduct) = issymmetric(K.A) && issymmetric(K.B)
 
 """
     order(M::AbstractMatrix)
@@ -44,8 +46,7 @@ involved in the Kronecker product (default to 1 for general
 matrices).
 """
 order(M::AbstractMatrix) = 1
-
-order(M::KronProd) = order(M.A) + order(M.B)
+order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)
@@ -76,7 +77,7 @@ end
 
 Obtain the two matrices of a `KroneckerPoduct` object.
 """
-function getmatrices(K::T) where T <: KronProd
+function getmatrices(K::T) where T <: AbstractKroneckerProduct
     A = K.A
     B = K.B
     return A, B
@@ -87,14 +88,14 @@ end
 
 Get the size of a `KroneckerPoduct` object.
 """
-function Base.:size(K::T) where T <: KronProd
+function Base.:size(K::T) where T <: AbstractKroneckerProduct
     A, B = getmatrices(K)
     (m, n) = size(A)
     (k, l) = size(B)
     return m * k, n * l
 end
 
-function Base.:getindex(K::KronProd, i1::Int, i2::Int)
+function Base.:getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
     A, B = getmatrices(K)
     m, n = size(A)
     k, l = size(B)
@@ -110,7 +111,7 @@ function Base.:size(K::GeneralizedKroneckerProduct, dim::I where I<:Int)
     return size(K)[dim]
 end
 
-function Base.:eltype(K::T) where T <: KronProd
+function Base.:eltype(K::T) where T <: AbstractKroneckerProduct
     A, B = getmatrices(K)
     return promote_type(eltype(A), eltype(B))
 end
@@ -131,19 +132,19 @@ function Base.:inv(K::SquareKroneckerProduct)
     return SquareKroneckerProduct(inv(A), inv(B))
 end
 
-function Base.:collect(K::T) where T <: KronProd
+function Base.:collect(K::T) where T <: AbstractKroneckerProduct
     A, B = getmatrices(K)
     return kron(A, B)
 end
 
-function Base.:adjoint(K::T) where T <: KronProd
+function Base.:adjoint(K::T) where T <: AbstractKroneckerProduct
     A, B = getmatrices(K)
     return kronecker(A', B')
 end
 
 # mixed-product property
-function Base.:*(K1::KronProd,
-                    K2::KronProd)
+function Base.:*(K1::AbstractKroneckerProduct,
+                    K2::AbstractKroneckerProduct)
     A, B = getmatrices(K1)
     C, D = getmatrices(K2)
     # check for size
@@ -152,8 +153,8 @@ function Base.:*(K1::KronProd,
     return (A * C) ⊗ (B * D)
 end
 
-function mult!(x::V, K::T where T <: KronProd,
-                v::V) where V <: AbstractVector{R} where R <: Real
+function mult!(x::AbstractVector, K::T where T <: AbstractKroneckerProduct,
+                v::AbstractVector)
     M, N = getmatrices(K)
     a, b = size(M)
     c, d = size(N)
@@ -169,9 +170,9 @@ function mult!(x::V, K::T where T <: KronProd,
     return x
 end
 
-function Base.:*(K::T where T <: KronProd,
-                    v::V where V <: AbstractVector{R} where R <: Real)
+function Base.:*(K::T where T <: AbstractKroneckerProduct,
+                    v::V where V <: AbstractVector)
     ac, bd = size(K)
-    x = typeof(v)(undef, ac)
+    x = Vector{promote_type(eltype(v), eltype(K))}(undef, ac)
     return mult!(x, K, v)
 end

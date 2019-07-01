@@ -4,6 +4,13 @@ end
 abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct
 end
 
+"""
+    Matrix(K::GeneralizedKroneckerProduct)
+
+Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
+"""
+Matrix(K::GeneralizedKroneckerProduct) = collect(K)
+
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexLinear()
 
 # general Kronecker product between two matrices
@@ -153,7 +160,7 @@ function Base.:*(K1::AbstractKroneckerProduct,
     return (A * C) ⊗ (B * D)
 end
 
-function mult!(x::AbstractVector, K::T where T <: AbstractKroneckerProduct,
+function mult!(x::AbstractVector{Real}, K::T where T <: AbstractKroneckerProduct,
                 v::AbstractVector)
     M, N = getmatrices(K)
     a, b = size(M)
@@ -163,9 +170,26 @@ function mult!(x::AbstractVector, K::T where T <: AbstractKroneckerProduct,
     f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
     e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
     if (d + a) * b < (b + c) * d
-        x[:] .= vec(N * (reshape(v, d, b) * M'))
+        x .= vec(N * (reshape(v, d, b) * M'))
     else
-        x[:] .= vec((N * reshape(v, d, b)) * M')
+        x .= vec((N * reshape(v, d, b)) * M')
+    end
+    return x
+end
+
+function mult!(x::AbstractVector{Complex}, K::T where T <: AbstractKroneckerProduct,
+                v::AbstractVector)
+    M, N = getmatrices(K)
+    a, b = size(M)
+    c, d = size(N)
+    e = length(v)
+    f = length(x)
+    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
+    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
+    if (d + a) * b < (b + c) * d
+        x .= vec(N * (reshape(v, d, b) * transpose(M)))
+    else
+        x .= vec((N * reshape(v, d, b)) * transpose(M))
     end
     return x
 end

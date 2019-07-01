@@ -91,7 +91,6 @@ rnaive = (kron(A, B) + 2I) \ v
 @test rnaive ≈ (A ⊗ B + 2I) \ v
 @test rnaive ≈ v / (A ⊗ B + 2I)
 
-#=
 # also works with non-symmetric matrices
 
 A = rand(10, 10) + 2I
@@ -106,4 +105,3 @@ rnaive = (kron(A, B) + 5I) \ v
 
 @test rnaive ≈ (A ⊗ B + 5I) \ v
 @test rnaive ≈ v / (A ⊗ B + 5I)
-=#

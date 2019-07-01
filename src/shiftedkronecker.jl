@@ -27,7 +27,7 @@ struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
     D::UniformScaling
 end
 Base.size(SK::ShiftedKroneckerProduct) = size(SK.K)
-Base.:getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int) = i != j ? SK.K[i,j] : SK.K[i,j] + SK.D
+Base.:getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int) = (i != j) ? SK.K[i,j] : SK.K[i,j] + SK.D
 
 """
     eigen(K::SquareKroneckerProduct)
@@ -56,21 +56,20 @@ function Base.:collect(SK::ShiftedKroneckerProduct)
     return collect(SK.K) + SK.D
 end
 
-function Base.:\(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector)
+function Base.:\(SK::ShiftedKroneckerProduct, v::AbstractVector)
     K = SK.K
     λ, V = K.Aeigen
     σ, U = K.Beigen
     D = SK.D
     # note that this should go fast
     if issymmetric(K)
-        return V ⊗ U * ((Diagonal(kron(λ, σ)) + D)^-1 * ((V ⊗ U)' * v))
+        return (V ⊗ U) * ((Diagonal(kron(λ, σ)) + D)^-1 * ((V ⊗ U)' * v))
     else
-        @warn "Non-symmetric systems do not seem to give exact result, treat with caution!"
-        return V ⊗ U * ((Diagonal(kron(λ, σ)) + D)^-1 * (inv(V ⊗ U) * v))
+        return (V ⊗ U) * ((Diagonal(kron(λ, σ)) + D)^-1 * (inv(V ⊗ U) * v))
     end
 end
 
-Base.:/(v::V where V <: AbstractVector, SK::ShiftedKroneckerProduct) = \(SK, v)
+Base.:/(v::AbstractVector, SK::ShiftedKroneckerProduct) = \(SK, v)
 
 """
     solve(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector)
@@ -81,4 +80,4 @@ Solves a linear system of the form
 
 where (A ⊗ B + cI) is given by an instance of `ShiftedKroneckerProduct`.
 """
-solve(SK::ShiftedKroneckerProduct, v::V where V <: AbstractVector) = \(SK, v)
+solve(SK::ShiftedKroneckerProduct, v::AbstractVector) = \(SK, v)

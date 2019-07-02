@@ -16,10 +16,14 @@ v = rand(12)
 
 kronprod = A ⊗ B
 
+@test issquare(kronprod)
+
 X = kron(A, B)  # true result
 
 @test tr(kronprod) ≈ tr(X)
 @test det(kronprod) ≈ det(X)
+@test collect(transpose(kronprod)) ≈ transpose(X)
+@test collect(kronprod') ≈ X'
 @test collect(inv(kronprod)) ≈ inv(X)
 @test all(kronprod * v .≈ X * v)
 

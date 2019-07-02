@@ -149,6 +149,11 @@ function Base.:adjoint(K::T) where T <: AbstractKroneckerProduct
     return kronecker(A', B')
 end
 
+function Base.:transpose(K::T) where T <: AbstractKroneckerProduct
+    A, B = getmatrices(K)
+    return kronecker(transpose(A), transpose(B))
+end
+
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct,
                     K2::AbstractKroneckerProduct)
@@ -160,24 +165,7 @@ function Base.:*(K1::AbstractKroneckerProduct,
     return (A * C) ⊗ (B * D)
 end
 
-function mult!(x::AbstractVector{Real}, K::T where T <: AbstractKroneckerProduct,
-                v::AbstractVector)
-    M, N = getmatrices(K)
-    a, b = size(M)
-    c, d = size(N)
-    e = length(v)
-    f = length(x)
-    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
-    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
-    if (d + a) * b < (b + c) * d
-        x .= vec(N * (reshape(v, d, b) * M'))
-    else
-        x .= vec((N * reshape(v, d, b)) * M')
-    end
-    return x
-end
-
-function mult!(x::AbstractVector{Complex}, K::T where T <: AbstractKroneckerProduct,
+function mult!(x::AbstractVector, K::AbstractKroneckerProduct,
                 v::AbstractVector)
     M, N = getmatrices(K)
     a, b = size(M)
@@ -193,6 +181,25 @@ function mult!(x::AbstractVector{Complex}, K::T where T <: AbstractKroneckerProd
     end
     return x
 end
+
+#=
+function mult!(x::AbstractVector{Complex}, K::AbstractKroneckerProduct,
+                v::AbstractVector)
+    M, N = getmatrices(K)
+    a, b = size(M)
+    c, d = size(N)
+    e = length(v)
+    f = length(x)
+    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
+    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
+    if (d + a) * b < (b + c) * d
+        x .= vec(N * (reshape(v, d, b) * transpose(M)))
+    else
+        x .= vec((N * reshape(v, d, b)) * transpose(M))
+    end
+    return x
+end
+=#
 
 function Base.:*(K::T where T <: AbstractKroneckerProduct,
                     v::V where V <: AbstractVector)

@@ -31,6 +31,16 @@ X = kron(A, B)  # true result
 @test order(kronprod) == 2
 @test order(kronprod ⊗ A) == 3
 
+K3 = kronecker(A, B, C)
+
+@test order(K3) == 3
+@test collect(K3) ≈ kron(X, C)
+
+Kpow = ⊗(A, 5)
+@test order(Kpow) == 5
+@test size(Kpow, 1) == 4^5
+@test Kpow[1,1] ≈ A[1,1]^5
+
 for j in 1:12
     for i in 1:12
         @test kronprod[i,j] ≈ X[i,j]

@@ -70,21 +70,48 @@ function kronecker(A::AbstractMatrix, B::AbstractMatrix)
 end
 
 """
+    kronecker(A::AbstractMatrix, B::AbstractMatrix)
+
+Higher-order Kronecker lazy kronecker product, e.g.
+```
+kronecker(A, B, C, D)
+```
+"""
+kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A, kronecker(B...))
+
+"""
+    kronecker(A::AbstractMatrix, pow::Int)
+
+Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`.
+"""
+function kronecker(A::AbstractMatrix, pow::Int)
+    @assert pow > 0 "Works only with positive powers!"
+    if pow == 1
+        return A
+    else
+        return A ⊗ kronecker(A, pow-1)
+    end
+end
+
+
+"""
     ⊗(A::AbstractMatrix, B::AbstractMatrix)
 
-Construct a Kronecker product object between two arrays. Does not evaluate the
-Kronecker product explictly!
+Binary operator for `kronecker`, computes as Lazy Kronecker
+product. See `kronecker` for documentation.
 """
 function ⊗(A::AbstractMatrix, B::AbstractMatrix)
     return kronecker(A, B)
 end
+
+⊗(A, B) = kronecker(A, B)
 
 """
     getmatrices(K::T) where T <: KroneckerProduct
 
 Obtain the two matrices of a `KroneckerPoduct` object.
 """
-function getmatrices(K::T) where T <: AbstractKroneckerProduct
+function getmatrices(K::AbstractKroneckerProduct)
     A = K.A
     B = K.B
     return A, B
@@ -95,7 +122,7 @@ end
 
 Get the size of a `KroneckerPoduct` object.
 """
-function Base.:size(K::T) where T <: AbstractKroneckerProduct
+function Base.:size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     (m, n) = size(A)
     (k, l) = size(B)
@@ -114,11 +141,11 @@ end
 
 Get the size of a `KroneckerPoduct` object.
 """
-function Base.:size(K::GeneralizedKroneckerProduct, dim::I where I<:Int)
+function Base.:size(K::GeneralizedKroneckerProduct, dim::Int)
     return size(K)[dim]
 end
 
-function Base.:eltype(K::T) where T <: AbstractKroneckerProduct
+function Base.:eltype(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return promote_type(eltype(A), eltype(B))
 end
@@ -139,17 +166,17 @@ function Base.:inv(K::SquareKroneckerProduct)
     return SquareKroneckerProduct(inv(A), inv(B))
 end
 
-function Base.:collect(K::T) where T <: AbstractKroneckerProduct
+function Base.:collect(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kron(A, B)
 end
 
-function Base.:adjoint(K::T) where T <: AbstractKroneckerProduct
+function Base.:adjoint(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(A', B')
 end
 
-function Base.:transpose(K::T) where T <: AbstractKroneckerProduct
+function Base.:transpose(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(transpose(A), transpose(B))
 end

@@ -17,7 +17,7 @@ Given two two matrices (subtype of `AbstractArray`) `A` and `B`, one can constru
 - [in progress] GPU compatibility!
 - [in progress] autodiff for machine learning models!
 
-For basic use, see the [Jupyter notebook](notebooks/ImputationConvergence.ipynb) with examples. It mainly compares `Kronecker.jl` with Julia's native `kron` function.
+For basic use, see the [Jupyter notebook](notebooks/Benchmark.ipynb) with examples. It mainly compares `Kronecker.jl` with Julia's native `kron` function.
 
 ## Benchmarks
 
@@ -51,10 +51,10 @@ See the notebook for some more advanced use.
 
 ## Installation
 
-Directly available via the Julia package manager (in REPL start with `]`):
+Directly available via the Julia package manager:
 
 ```julialang
-add Kronecker
+] add Kronecker
 ```
 
 ## Issues

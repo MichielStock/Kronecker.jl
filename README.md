@@ -13,11 +13,17 @@ Given two two matrices (subtype of `AbstractArray`) `A` and `B`, one can constru
 - multiplying with a vector `v` is efficient using the [vec trick](https://en.wikipedia.org/wiki/Kronecker_product#Matrix_equations): `K * v`
 - solving systems of the form `A ⊗ B + cI`
 - working with incomplete systems using the [sampled vec trick](https://arxiv.org/pdf/1601.01507.pdf)
-- compatibility with higher-order Kronecker systems, e.g. `A ⊗ B ⊗ C` or `kronecker(A, 4)` which is equivalent with `A ⊗ A ⊗`A ⊗ A`
+- basic compatibility with higher-order Kronecker systems, e.g. `A ⊗ B ⊗ C` or `kronecker(A, 4)` which is equivalent with `A ⊗ A ⊗`A ⊗ A`
 - [in progress] GPU compatibility!
 - [in progress] autodiff for machine learning models!
 
 For basic use, see the [Jupyter notebook](notebooks/ImputationConvergence.ipynb) with examples. It mainly compares `Kronecker.jl` with Julia's native `kron` function.
+
+## Benchmarks
+
+Below is a [comparision](scrips/benchmarks.jl) between the native `kron` function and `Kronecker.jl` for several operations.
+
+![](benchmark.png)
 
 ## Example
 

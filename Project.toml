@@ -1,7 +1,7 @@
 name = "Kronecker"
 uuid = "2c470bb0-bcc8-11e8-3dad-c9649493f05e"
 authors = ["MichielStock <michielfmstock@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

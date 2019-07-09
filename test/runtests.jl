@@ -16,12 +16,30 @@ v = rand(12)
 
 kronprod = A ⊗ B
 
+@test issquare(kronprod)
+
 X = kron(A, B)  # true result
 
 @test tr(kronprod) ≈ tr(X)
 @test det(kronprod) ≈ det(X)
+@test collect(transpose(kronprod)) ≈ transpose(X)
+@test collect(kronprod') ≈ X'
 @test collect(inv(kronprod)) ≈ inv(X)
 @test all(kronprod * v .≈ X * v)
+
+@test order(A) == 1
+@test order(kronprod) == 2
+@test order(kronprod ⊗ A) == 3
+
+K3 = kronecker(A, B, C)
+
+@test order(K3) == 3
+@test collect(K3) ≈ kron(X, C)
+
+Kpow = ⊗(A, 5)
+@test order(Kpow) == 5
+@test size(Kpow, 1) == 4^5
+@test Kpow[1,1] ≈ A[1,1]^5
 
 for j in 1:12
     for i in 1:12
@@ -78,7 +96,26 @@ A = Symmetric(rand(10, 10))
 B = Symmetric(rand(30, 30))
 v = rand(300)
 
+K = A ⊗ B
+
+@test issymmetric(K)
+
 rnaive = (kron(A, B) + 2I) \ v
 
 @test rnaive ≈ (A ⊗ B + 2I) \ v
 @test rnaive ≈ v / (A ⊗ B + 2I)
+
+# also works with non-symmetric matrices
+
+A = rand(10, 10) + 2I
+B = rand(30, 30) + 2I
+v = rand(300)
+
+K = A ⊗ B
+
+@test !issymmetric(K)
+
+rnaive = (kron(A, B) + 5I) \ v
+
+@test rnaive ≈ (A ⊗ B + 5I) \ v
+@test rnaive ≈ v / (A ⊗ B + 5I)

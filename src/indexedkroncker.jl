@@ -1,33 +1,46 @@
 #Index = Union{UnitRange{I}, Array{I,1}} where I <: Int
-Index = Union{UnitRange{I}, Array{I,1}} where I <: Int #TODO: make for general indices
+Index = Union{UnitRange{I}, AbstractVector{I}} where I <: Int #TODO: make for general indices
 
 struct IndexedKroneckerProduct <: GeneralizedKroneckerProduct
-    K::KroneckerProduct
+    K::AbstractKroneckerProduct
     p::Index
     q::Index
     r::Index
     t::Index
-end
-
-function Base.:getindex(K::T, p::Index, q::Index, r::Index, t::Index) where T <: KroneckerProduct
-    N, M = getmatrices(K)
-    a, b = size(M)
-    c, d = size(N)
-    return IndexedKroneckerProduct(K, p, q, r, t)
+    function IndexedKroneckerProduct(K, p, q, r, t)
+        order(K) == 2 || throw(DimensionMismatch("Indexed Kronecker only implemented for second order Kronecker systems"))
+        length(p) == length(q) && length(r) == length(t) || throw(DimensionMismatch("Indices should have matching lengths"))
+        minimum((minimum.((p, q, r, t)))) > 0 || throw(BoundsError("Negative indices not allowed"))
+        A, B = getmatrices(K)
+        (m, n) = size(B)
+        (k, l) = size(A)
+        maximum(p) ≤ m && maximum(q) ≤ k || throw(BoundsError("Indices exeed matrix bounds"))
+        maximum(r) ≤ n && maximum(t) ≤ l || throw(BoundsError("Indices exeed matrix bounds"))
+        new(K, p, q, r, t)
+    end
 end
 
 function getindices(K::IndexedKroneckerProduct)
     return K.p, K.q, K.r, K.t
 end
 
-function Base.:show(io::IO, K::T) where T <: IndexedKroneckerProduct
-    print(io, "(A ⊗ B)[p, q, r, t]")
+getmatrices(K::IndexedKroneckerProduct) = getmatrices(K.K)
+
+function Base.:size(K::IndexedKroneckerProduct)
+    return (length(K.p), length(K.t))
 end
 
-function Base.:size(K::T) where T <: IndexedKroneckerProduct
-    p = K.p
-    t = K.t
-    return (length(p), length(t))
+function Base.:getindex(K::IndexedKroneckerProduct, i::Int, j::Int)
+    A, B = getmatrices(K)
+    p, q, r, t = getindices(K)
+    return B[p[i],r[j]] * A[q[i],t[j]]
+end
+
+function Base.:getindex(K::T, p::Index, q::Index, r::Index, t::Index) where T <: AbstractKroneckerProduct
+    N, M = getmatrices(K)
+    a, b = size(M)
+    c, d = size(N)
+    return IndexedKroneckerProduct(K, p, q, r, t)
 end
 
 function Base.:eltype(K::T) where T <: IndexedKroneckerProduct

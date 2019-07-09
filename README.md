@@ -1,25 +1,33 @@
 # Kronecker.jl
 
+![](logo.png)
+
 This is a Julia package to efficiently work with Kronecker products. It combines lazy evaluation and algebraic tricks such that it can implicitely work with huge matrices. It allows to work with large Kronecker systems both much faster and using much less memory than the naive implementation of the Kronecker product.
 
 ## Features
 
-Given two two matrices (subtype of `AbstractArray`) `A` and `B`, one can construct an instance of the `KroneckerProduct` type as `K = A ⊗ B` (typed using `\otimes TAB`). Several functions are implemented.
+Given two two matrices (subtype of `AbstractArray`) `A` and `B`, one can construct an instance of the `KroneckerProduct` type as `K = A ⊗ B` (typed using `\otimes TAB`). Equivalently, the function `kronecker` function can be used as well. Several functions are implemented.
 
 - `collect(K)` computes the Kronecker product (**not** recommended!)
-- `tr`, `det`, `size`, `eltype`, `inv` ... are efficient functions to work with Kronecker products
+- `tr`, `det`, `size`, `eltype`, `inv`, ... are efficient functions to work with Kronecker products. Either the result is a numeric value or a new `KroneckerProduct` type is returned
 - multiplying with a vector `v` is efficient using the [vec trick](https://en.wikipedia.org/wiki/Kronecker_product#Matrix_equations): `K * v`
-- solving systems of the form `A ⊗ B + D`, with `D` a diagonal matrix
+- solving systems of the form `A ⊗ B + cI`
 - working with incomplete systems using the [sampled vec trick](https://arxiv.org/pdf/1601.01507.pdf)
-- [in progress] compatibility with higher-order Kronecker systems
+- basic compatibility with higher-order Kronecker systems, e.g. `A ⊗ B ⊗ C` or `kronecker(A, 4)` which is equivalent with `A ⊗ A ⊗`A ⊗ A`
 - [in progress] GPU compatibility!
 - [in progress] autodiff for machine learning models!
 
 For basic use, see the [Jupyter notebook](notebooks/Benchmark.ipynb) with examples. It mainly compares `Kronecker.jl` with Julia's native `kron` function.
 
+## Benchmarks
+
+Below is a [comparision](scrips/benchmarks.jl) between the native `kron` function and `Kronecker.jl` for several operations.
+
+![](benchmark.png)
+
 ## Example
 
-```julialang
+```julia
 using Kronecker
 
 A = randn(100, 100);

@@ -181,7 +181,7 @@ function Base.:transpose(K::AbstractKroneckerProduct)
     return kronecker(transpose(A), transpose(B))
 end
 
-function Base.:conj(K::AbstractKroneckerProduct)
+function Base.conj(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(conj(A), conj(B))
 end

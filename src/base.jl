@@ -160,6 +160,11 @@ function Base.transpose(K::AbstractKroneckerProduct)
     return kronecker(transpose(A), transpose(B))
 end
 
+function Base.conj(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return kronecker(conj(A), conj(B))
+end
+
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
     A, B = getmatrices(K1)

@@ -10,6 +10,7 @@ export getindex
 export genvectrick, genvectrick!
 
 using LinearAlgebra
+import LinearAlgebra: mul!
 
 include("base.jl")
 include("indexedkroncker.jl")

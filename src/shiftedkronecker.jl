@@ -10,8 +10,6 @@ struct EigenKroneckerProduct <: AbstractKroneckerProduct
     Beigen::Eigen
 end
 
-
-
 """
     struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
 
@@ -27,7 +25,9 @@ struct ShiftedKroneckerProduct <: GeneralizedKroneckerProduct
     D::UniformScaling
 end
 Base.size(SK::ShiftedKroneckerProduct) = size(SK.K)
-Base.:getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int) = (i != j) ? SK.K[i,j] : SK.K[i,j] + SK.D
+function Base.getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int)
+    return (i != j) ? SK.K[i,j] : SK.K[i,j] + SK.D
+end
 
 """
     eigen(K::SquareKroneckerProduct)
@@ -35,26 +35,20 @@ Base.:getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int) = (i != j) ? SK.K[i,
 Compute the eigenvalue decomposition of system of the from (A ⊗ B). Returns
 an instance of the type `EigenKroneckerProduct`.
 """
-function LinearAlgebra.:eigen(K::SquareKroneckerProduct)
+function LinearAlgebra.eigen(K::SquareKroneckerProduct)
     A, B = getmatrices(K)
     return EigenKroneckerProduct(A, B, eigen(A), eigen(B))
 end
 
-function Base.:+(K::EigenKroneckerProduct, D::UniformScaling)
-    return ShiftedKroneckerProduct(K, D)
-end
+Base.:+(K::EigenKroneckerProduct, D::UniformScaling) = ShiftedKroneckerProduct(K, D)
 
-function Base.:+(K::AbstractKroneckerProduct, D::UniformScaling)
-    return eigen(K) + D
-end
+Base.:+(K::AbstractKroneckerProduct, D::UniformScaling) = eigen(K) + D
 
 function Base.:+(SK::ShiftedKroneckerProduct, D::UniformScaling)
     return SK.K + (SK.D + D)  # just update the weights
 end
 
-function Base.:collect(SK::ShiftedKroneckerProduct)
-    return collect(SK.K) + SK.D
-end
+Base.collect(SK::ShiftedKroneckerProduct) = collect(SK.K) + SK.D
 
 function Base.:\(SK::ShiftedKroneckerProduct, v::AbstractVector)
     K = SK.K

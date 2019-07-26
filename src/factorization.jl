@@ -21,16 +21,31 @@ struct CholeskyKronecker{T<:Union{Cholesky,FactorizedKronecker},S<:Union{Cholesk
     B::S
 end
 
-_getuls(C::Cholesky) = C.UL
-_getuls(C::CholeskyKronecker) = (_getuls(C.A), _getuls(C.B))
+function Base.getproperty(C::CholeskyKronecker, d::Symbol)
+    if d in [:U, :L, :UL]
+        return kronecker(getproperty(C.A, d), getproperty(C.B, d))
+    elseif d in [:A, :B]
+        return getfield(C, d)
+    else
+        throw(ArgumentError("Attribute :$d not supported (only :A, :B, :UL, :U or :L)"))
+    end
+end
+
 
 function Base.show(io::IO, mime::MIME{Symbol("text/plain")}, C::CholeskyKronecker)
     summary(io, C); println(io)
     println(io, "U factor:")
-    show(io, mime, kronecker(_getuls(C)...))
+    show(io, mime, getproperty(C, :U))
 end
 
-# TODO: complete docstring!
+"""
+    cholesky(K::SquareKroneckerProduct; check = true)
+
+Wrapper around `cholesky` from the `LinearAlgebra` package. Performs Cholesky
+on the matrices of a `SquareKroneckerProduct` instances and returns a
+`CholeskyKronecker` type. Similar to `Cholesky`, `size`, `\`, `inv`, `det`,
+and `logdet` are overloaded to efficiently work with this type.
+"""
 function cholesky(K::SquareKroneckerProduct; check = true)
     A, B = getmatrices(K)
     return CholeskyKronecker(cholesky(A, check=check),

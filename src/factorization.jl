@@ -8,9 +8,8 @@ michielfmstock@gmail.com
 Standard matrix factorization algorithms applied on Kronecker systems.
 =#
 
-import Base.show
 
-abstract type FactorizedKronecker <: AbstractKroneckerProduct end
+abstract type FactorizedKronecker <: AbstractSquareKronecker end
 
 # CHOLESKY DECOMPOSITION
 # ----------------------
@@ -25,7 +24,7 @@ end
 _getuls(C::Cholesky) = C.UL
 _getuls(C::CholeskyKronecker) = (_getuls(C.A), _getuls(C.B))
 
-function show(io::IO, mime::MIME{Symbol("text/plain")}, C::CholeskyKronecker)
+function Base.show(io::IO, mime::MIME{Symbol("text/plain")}, C::CholeskyKronecker)
     summary(io, C); println(io)
     println(io, "U factor:")
     show(io, mime, kronecker(_getuls(C)...))

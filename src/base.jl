@@ -27,8 +27,10 @@ function issquare(A::AbstractMatrix)
     return m == n
 end
 
+abstract type AbstractSquareKronecker <: AbstractKroneckerProduct end
+
 # general Kronecker product between two matrices
-struct SquareKroneckerProduct <: AbstractKroneckerProduct
+struct SquareKroneckerProduct <: AbstractSquareKronecker
     A::AbstractMatrix
     B::AbstractMatrix
     function SquareKroneckerProduct(A, B)
@@ -42,7 +44,7 @@ struct SquareKroneckerProduct <: AbstractKroneckerProduct
     end
 end
 
-issquare(K::SquareKroneckerProduct) = true
+issquare(K::AbstractSquareKronecker) = true
 LinearAlgebra.:issymmetric(K::SquareKroneckerProduct) = issymmetric(K.A) && issymmetric(K.B)
 
 """
@@ -140,21 +142,21 @@ end
 
 LinearAlgebra.tr(K::SquareKroneckerProduct) = tr(K.A) * tr(K.B)
 
-function LinearAlgebra.det(K::SquareKroneckerProduct)
+function LinearAlgebra.det(K::AbstractSquareKronecker)
     A, B = getmatrices(K)
     m = size(A)[1]
     n = size(B)[1]
     return det(K.A)^n * det(K.B)^m
 end
 
-function LinearAlgebra.logdet(K::SquareKroneckerProduct)
+function LinearAlgebra.logdet(K::AbstractSquareKronecker)
     A, B = getmatrices(K)
     m = size(A)[1]
     n = size(B)[1]
     return n * logdet(A) + m * logdet(B)
 end
 
-function Base.inv(K::SquareKroneckerProduct)
+function Base.inv(K::AbstractSquareKronecker)
     A, B = getmatrices(K)
     return SquareKroneckerProduct(inv(A), inv(B))
 end

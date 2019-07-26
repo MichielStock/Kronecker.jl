@@ -1,7 +1,8 @@
 module Kronecker
 
-# TODO types!
-export GeneralizedKroneckerProduct, AbstractKroneckerProduct, SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
+# abstract types
+export GeneralizedKroneckerProduct, AbstractKroneckerProduct, AbstractSquareKronecker
+export SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
 export issquare, getmatrices, size, getindices, order, issymmetric
 export ⊗, kronecker, Matrix
 export tr, det, logdet, collect, inv, *, mult!, eigen, \, /, adjoint, transpose, conj, solve

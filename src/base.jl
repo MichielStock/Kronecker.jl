@@ -12,9 +12,9 @@ Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexLinear()
 
 # general Kronecker product between two matrices
-struct KroneckerProduct <: AbstractKroneckerProduct
-    A::AbstractMatrix
-    B::AbstractMatrix
+struct KroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct
+    A::T
+    B::S
 end
 
 """
@@ -28,18 +28,18 @@ function issquare(A::AbstractMatrix)
 end
 
 # general Kronecker product between two matrices
-struct SquareKroneckerProduct <: AbstractKroneckerProduct
-    A::AbstractMatrix
-    B::AbstractMatrix
-    function SquareKroneckerProduct(A, B)
+struct SquareKroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct
+    A::T
+    B::S
+    #=function SquareKroneckerProduct{T, S}(A::T, B::S) where {T<:AbstractMatrix, S<:AbstractMatrix}
         if issquare(A) && issquare(B)
-            return new(A, B)
+            return new{T,S}(A, B)
         else
             throw(DimensionMismatch(
                 "SquareKroneckerProduct is only for when all matrices are square",
             ))
         end
-    end
+    end=#
 end
 
 issquare(K::SquareKroneckerProduct) = true

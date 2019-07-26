@@ -17,6 +17,7 @@ X = kron(A, B)  # true result
 
 @test tr(kronprod) ≈ tr(X)
 @test det(kronprod) ≈ det(X)
+@test !isposdef(kronprod)
 @test collect(transpose(kronprod)) ≈ transpose(X)
 @test collect(conj(kronprod)) ≈ conj(X)
 @test collect(kronprod') ≈ X'

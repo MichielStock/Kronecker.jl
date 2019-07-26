@@ -181,6 +181,14 @@ function Base.conj(K::AbstractKroneckerProduct)
     return kronecker(conj(A), conj(B))
 end
 
+"""
+    isposdef(K::AbstractSquareKronecker)
+
+Test whether a Kronecker product is positive definite (and Hermitian) by trying to
+perform a Cholesky factorization of K.
+"""
+LinearAlgebra.isposdef(K::AbstractSquareKronecker) = isposdef(K.A) && isposdef(K.B)
+
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
     A, B = getmatrices(K1)

@@ -28,6 +28,13 @@ X = kron(A, B)  # true result
 @test collect(inv(kronprod)) ≈ inv(X)
 @test all(kronprod * v .≈ X * v)
 
+# test on pos def functions
+As = A' * A
+Bs = B * B'
+
+@test logdet(As ⊗ Bs) ≈ logdet(kron(As, Bs))
+
+
 @test order(A) == 1
 @test order(kronprod) == 2
 @test order(kronprod ⊗ A) == 3

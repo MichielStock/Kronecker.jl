@@ -140,6 +140,13 @@ function LinearAlgebra.det(K::SquareKroneckerProduct)
     return det(K.A)^n * det(K.B)^m
 end
 
+function LinearAlgebra.logdet(K::SquareKroneckerProduct)
+    A, B = getmatrices(K)
+    m = size(A)[1]
+    n = size(B)[1]
+    return n * logdet(A) + m * logdet(B)
+end
+
 function Base.inv(K::SquareKroneckerProduct)
     A, B = getmatrices(K)
     return SquareKroneckerProduct(inv(A), inv(B))
@@ -194,25 +201,6 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     end
     return x
 end
-
-#=
-function mult!(x::AbstractVector{Complex}, K::AbstractKroneckerProduct,
-                v::AbstractVector)
-    M, N = getmatrices(K)
-    a, b = size(M)
-    c, d = size(N)
-    e = length(v)
-    f = length(x)
-    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
-    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
-    if (d + a) * b < (b + c) * d
-        x .= vec(N * (reshape(v, d, b) * transpose(M)))
-    else
-        x .= vec((N * reshape(v, d, b)) * transpose(M))
-    end
-    return x
-end
-=#
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)

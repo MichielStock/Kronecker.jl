@@ -104,11 +104,18 @@ documentation.
 ⊗(A, B) = kronecker(A, B)
 
 """
-    getmatrices(K::T) where T <: KroneckerProduct
+    getmatrices(K::AbstractKroneckerProduct)
 
-Obtain the two matrices of a `KroneckerPoduct` object.
+Obtain the two matrices of an `AbstractKroneckerPoduct` object.
 """
 getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
+
+"""
+    getmatrices(A::AbstractArray)
+
+Returns a matrix itself. Needed for recursion.
+"""
+getmatrices(A::AbstractArray) = A
 
 function Base.size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)

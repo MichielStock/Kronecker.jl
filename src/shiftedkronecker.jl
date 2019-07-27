@@ -29,16 +29,16 @@ function Base.getindex(SK::ShiftedKroneckerProduct, i::Int, j::Int)
     return (i != j) ? SK.K[i,j] : SK.K[i,j] + SK.D
 end
 
-"""
-    eigen(K::SquareKroneckerProduct)
+# """
+#     eigen(K::SquareKroneckerProduct)
 
-Compute the eigenvalue decomposition of system of the from (A ⊗ B). Returns
-an instance of the type `EigenKroneckerProduct`.
-"""
-function LinearAlgebra.eigen(K::SquareKroneckerProduct)
-    A, B = getmatrices(K)
-    return EigenKroneckerProduct(A, B, eigen(A), eigen(B))
-end
+# Compute the eigenvalue decomposition of system of the from (A ⊗ B). Returns
+# an instance of the type `EigenKroneckerProduct`.
+# """
+# function LinearAlgebra.eigen(K::SquareKroneckerProduct)
+#     A, B = getmatrices(K)
+#     return EigenKroneckerProduct(A, B, eigen(A), eigen(B))
+# end
 
 Base.:+(K::EigenKroneckerProduct, D::UniformScaling) = ShiftedKroneckerProduct(K, D)
 

@@ -7,9 +7,9 @@ abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
 
 Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 """
-Matrix(K::GeneralizedKroneckerProduct) = collect(K)
+Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
-Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexLinear()
+Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 # general Kronecker product between two matrices
 struct KroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct

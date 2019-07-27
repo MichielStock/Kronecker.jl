@@ -7,9 +7,9 @@ abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
 
 Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 """
-Matrix(K::GeneralizedKroneckerProduct) = collect(K)
+Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
-Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexLinear()
+Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 # general Kronecker product between two matrices
 struct KroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct
@@ -28,12 +28,12 @@ function issquare(A::AbstractMatrix)
 end
 
 # general Kronecker product between two matrices
-struct SquareKroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct
-    A::T
-    B::S
-    function SquareKroneckerProduct{T,S}(A::T, B::S) where {T<:AbstractMatrix, S<:AbstractMatrix}
+struct SquareKroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+    A::TA
+    B::TB
+    function SquareKroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
         if issquare(A) && issquare(B)
-            return new(A, B)
+            return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
         else
             throw(DimensionMismatch(
                 "SquareKroneckerProduct is only for when all matrices are square",
@@ -41,8 +41,6 @@ struct SquareKroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractK
         end
     end
 end
-
-SquareKroneckerProduct(A::T, B::S) where {T<:AbstractMatrix, S<:AbstractMatrix} = SquareKroneckerProduct{T,S}(A,B);
 
 issquare(K::SquareKroneckerProduct) = true
 LinearAlgebra.:issymmetric(K::SquareKroneckerProduct) = issymmetric(K.A) && issymmetric(K.B)

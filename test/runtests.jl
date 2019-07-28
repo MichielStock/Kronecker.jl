@@ -122,3 +122,4 @@ rnaive = (kron(A, B) + 5I) \ v
 # @test rnaive ≈ v / (A ⊗ B + 5I)
 
 include("eigen.jl")
+include("kroneckersum_tests.jl")

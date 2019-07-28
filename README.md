@@ -23,7 +23,7 @@ For basic use, see the [Jupyter notebook](notebooks/Benchmark.ipynb) with exampl
 
 Below is a [comparision](scrips/benchmarks.jl) between the native `kron` function and `Kronecker.jl` for several operations.
 
-![](benchmark.png)
+![](benchmark.svg)
 
 ## Example
 
@@ -39,7 +39,7 @@ K = A ⊗ B
 
 collect(K)  # equivalent with kron(A, B)
 
-K[78, 43]
+K[78, 43]Â
 
 tr(K)
 inv(K)  # yields another lazy Kronecker instance

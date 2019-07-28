@@ -1,4 +1,6 @@
-struct KroneckerSum{T<:SquareKroneckerProduct, S<:SquareKroneckerProduct}
+abstract type AbstractKroneckerSum <: GeneralizedKroneckerProduct end
+
+struct KroneckerSum{T<:SquareKroneckerProduct, S<:SquareKroneckerProduct} <: AbstractKroneckerSum
     # Fields
     A::T # (A ⊗ I_B)
     B::S # (I_A ⊗ B)
@@ -13,8 +15,8 @@ struct KroneckerSum{T<:SquareKroneckerProduct, S<:SquareKroneckerProduct}
 end
 
 
-
-order(M::KroneckerSum) = order(M.A) + order(M.B)
+# All products are of same order
+order(M::AbstractKroneckerSum) = order(M.A)
 
 """
     kroneckersum(A::AbstractMatrix, B::AbstractMatrix)
@@ -59,3 +61,10 @@ documentation.
 ⊕(A::AbstractMatrix, B::AbstractMatrix) = kroneckersum(A, B)
 
 ⊕(A, B) = kroneckersum(A, B)
+
+"""
+    getmatrices(K::T) where T <: KroneckerSum
+
+Obtain the two Kronecker products of a `KroneckerSum` object.
+"""
+Kronecker.getmatrices(K::AbstractKroneckerSum) = (Kronecker.getmatrices(K.A)[1], Kronecker.getmatrices(K.B)[2])

@@ -18,9 +18,7 @@ function eigen_tests(rng, C::SquareKroneckerProduct)
     @test eigen(C) \ v ≈ Float64.(Matrix(C)) \ v
 
     # Test various linear algebra operations with decomposition
-    println("1")
     C_dense = Float64.(Matrix(C))
-    println("2")
     @test det(eigen(C)) ≈ det(C_dense)
     @test logdet(eigen(C)) ≈ logdet(C_dense)
     @test Matrix(inv(eigen(C))) ≈ inv(C_dense)
@@ -32,10 +30,8 @@ end
     # Generate some positive definite matrices so that logdet can be tested.
     A_, B_, C_ = randn(rng, P, P), randn(rng, Q, Q), randn(rng, R, R)
     A, B, C = Symmetric(A_ * A_' + I), Symmetric(B_ * B_' + I), Symmetric(C_ * C_' + I)
-    
+
     D = kronecker(A, B)
-    @show size(D), size(kronecker(D, C)), size(kronecker(kronecker(A, B), kronecker(B, A)))
-    @show typeof(eigen(D))
     eigen_tests(rng, D)
     eigen_tests(rng, kronecker(D, C))
     eigen_tests(rng, kronecker(C, D))

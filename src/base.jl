@@ -12,9 +12,12 @@ Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 # general Kronecker product between two matrices
-struct KroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct
-    A::T
-    B::S
+struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+    A::TA
+    B::TB
+    function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
+        return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
+    end
 end
 
 """

@@ -60,3 +60,7 @@ Directly available via the Julia package manager:
 ## Issues
 
 This is very much a work in progress! Please start an issue for bugs or requests to improve functionality. Any feedback is appreciated!
+
+## Status `master` branch
+
+[![Build Status](https://travis-ci.com/MichielStock/Kronecker.jl.svg?branch=master)](https://travis-ci.com/MichielStock/Kronecker.jl) [![Coverage Status](https://coveralls.io/repos/github/MichielStock/Kronecker.jl/badge.svg?branch=master)](https://coveralls.io/github/MichielStock/Kronecker.jl?branch=master)

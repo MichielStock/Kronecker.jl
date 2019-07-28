@@ -39,7 +39,7 @@ K = A ⊗ B
 
 collect(K)  # equivalent with kron(A, B)
 
-K[78, 43]Â
+K[78, 43]
 
 tr(K)
 inv(K)  # yields another lazy Kronecker instance

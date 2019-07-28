@@ -2,13 +2,6 @@ abstract type GeneralizedKroneckerProduct <: AbstractMatrix{Real} end
 
 abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
 
-"""
-    Matrix(K::GeneralizedKroneckerProduct)
-
-Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
-"""
-Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
-
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 # general Kronecker product between two matrices
@@ -164,10 +157,23 @@ function Base.inv(K::AbstractSquareKronecker)
     return SquareKroneckerProduct(inv(A), inv(B))
 end
 
-function Base.collect(K::AbstractKroneckerProduct)
+"""
+    collect(K::AbstractKroneckerProduct)
+
+Collects a lazy instance of the `AbstractKroneckerProduct` type into a full,
+native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
+"""
+function collect(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kron(A, B)
 end
+
+"""
+    Matrix(K::GeneralizedKroneckerProduct)
+
+Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
+"""
+Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
 function Base.adjoint(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)

@@ -11,6 +11,17 @@ end
 +(E::Eigen, B::UniformScaling) = Eigen(E.values .+ B.λ, A.vectors)
 +(A::UniformScaling, E::Eigen) = E + A
 
+"""
+    function collect(E::Eigen{<:Number, <:Number, <:SquareKroneckerProduct})
+
+Collects eigenvalue decomposition of a `AbstractKroneckerProduct` type into a
+matrix.
+"""
+function collect(E::Eigen{<:Number, <:Number, <:SquareKroneckerProduct})
+    λ, Γ = E
+    return Γ * Diagonal(λ) * Γ'
+end
+
 function \(E::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}, v::AbstractVector{<:Real})
     λ, Γ = E
     return Γ * (Diagonal(λ) \ (Γ' * v))

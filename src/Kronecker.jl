@@ -12,6 +12,7 @@ export genvectrick, genvectrick!
 
 using LinearAlgebra
 import LinearAlgebra: mul!
+import Base: collect
 
 include("base.jl")
 include("indexedkroncker.jl")

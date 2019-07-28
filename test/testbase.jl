@@ -22,7 +22,7 @@ X = kron(A, B)  # true result
 @test collect(conj(kronprod)) ≈ conj(X)
 @test collect(kronprod') ≈ X'
 @test collect(inv(kronprod)) ≈ inv(X)
-@test all(kronprod * v .≈ X * v)
+@test kronprod * v ≈ X * v
 
 # test on pos def functions
 As = A' * A

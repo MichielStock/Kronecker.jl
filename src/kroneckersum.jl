@@ -33,3 +33,29 @@ kroneckersum(A,B,C,D)
 ```
 """
 kroneckersum(A::AbstractMatrix, B::AbstractMatrix...) = kroneckersum(A,kroneckersum(B...))
+
+"""
+    kroneckersum(A::AbstractMatrix, pow::Int)
+
+Kronecker-sum power, computes
+`A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)'.
+"""
+function kroneckersum(A::AbstractMatrix, pow::Int)
+    @assert pow > 0 "Works only with positive powers!"
+    if pow == 1
+        return A
+    else
+        return A ⊕ kroneckersum(A, pow-1)
+    end
+end
+
+
+"""
+    ⊕(A::AbstractMatrix, B::AbstractMatrix)
+
+Binary operator for `kroneckersum`, computes as Lazy Kronecker sum. See `kroneckersum` for
+documentation.
+"""
+⊕(A::AbstractMatrix, B::AbstractMatrix) = kroneckersum(A, B)
+
+⊕(A, B) = kroneckersum(A, B)

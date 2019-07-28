@@ -68,3 +68,23 @@ documentation.
 Obtain the two Kronecker products of a `KroneckerSum` object.
 """
 Kronecker.getmatrices(K::AbstractKroneckerSum) = (Kronecker.getmatrices(K.A)[1], Kronecker.getmatrices(K.B)[2])
+
+function Base.size(K::AbstractKroneckerSum)
+    # All products in sum are the same size
+    size(K.A)
+end
+
+function Base.getindex(K::AbstractKroneckerSum, i1::Int, i2::Int)
+    A, B = (K.A, K.B)
+    m, n = size(A)
+    k, l = size(B)
+    return getindex(A,i1,i2) + getindex(B,i1,i2)
+end
+
+
+Base.size(K::AbstractKroneckerSum, dim::Int) = size(K)[dim]
+
+function Base.eltype(K::AbstractKroneckerSum)
+    A, B = getmatrices(K)
+    return promote_type(eltype(A), eltype(B))
+end

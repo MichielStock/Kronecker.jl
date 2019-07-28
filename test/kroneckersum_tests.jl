@@ -44,4 +44,10 @@
     @test eltype(A ⊕ B) == Float64
     @test eltype(C ⊕ D) == ComplexF64
 
+
+    @test tr(KS) ≈ tr(kronsum)
+
+    @test KS' == kronsum'
+    @test transpose(KS) == transpose(kronsum)
+    @test conj(KS) == conj(kronsum)
 end

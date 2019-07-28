@@ -88,3 +88,27 @@ function Base.eltype(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return promote_type(eltype(A), eltype(B))
 end
+
+# NOTE that K.A and K.B are both SquareKroneckerProducts, not the factor matrices
+LinearAlgebra.tr(K::AbstractKroneckerSum) = tr(K.A) + tr(K.B)
+
+
+function Base.collect(K::AbstractKroneckerSum)
+    return K.A + K.B
+end
+
+
+function Base.adjoint(K::AbstractKroneckerSum)
+    A, B = getmatrices(K)
+    return kroneckersum(A', B')
+end
+
+function Base.transpose(K::AbstractKroneckerSum)
+    A, B = getmatrices(K)
+    return kroneckersum(transpose(A),transpose(B))
+end
+
+function Base.conj(K::AbstractKroneckerSum)
+    A, B = getmatrices(K)
+    return kroneckersum(conj(A), conj(B))
+end

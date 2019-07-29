@@ -7,33 +7,21 @@
     KS = A ⊕ B
     kronsum = kron(A,IB) + kron(IA,B)
 
-    @testset "A ⊕ B factors" begin
-        @test KS.A isa SquareKroneckerProduct && KS.B isa SquareKroneckerProduct
-        @test KS.A == kronecker(A,IB) && KS.B == kronecker(IA,B)
-    end
     @test collect(KS) == kronsum
 
+    @test issquare(KS)
 
 
     C = rand(5,5); IC = oneunit(C)
     KS3 = A ⊕ B ⊕ C
     kronsum3 = kron(A,IB,IC) + kron(IA,B,IC) + kron(IA,IB,C)
 
-    @testset "A ⊕ B ⊕ C factors" begin
-        @test KS3.A.A.A.A == A
-        @test KS3.A.A.B.B == B
-        @test KS3.B.B == C
-    end
-
-    # Can't collect higher order sums
-    @test_broken collect(KS3) = kronsum
-
+    @test collect(KS3) ≈ kronsum3
 
     @test order(KS) == 2
     @test order(KS3) == 3
 
     @test getmatrices(KS) == (A,B)
-    @test_broken getmatrices(KS3) == (A,B,C)
 
     @test getindex(KS,2,3) == kronsum[2,3]
     @test getindex(KS3,2,3) == kronsum3[2,3]
@@ -54,16 +42,16 @@
         @test conj(KS) == conj(kronsum)
     end
 
-
-
-    C = rand(4,4); IC = oneunit(C)
-    D = rand(3,3); ID = oneunit(D)
-    @testset "Mixed-product of sums" begin
-        @test (A ⊕ B)*(C ⊕ D) ≈ (kron(A,IB) + kron(IA,B)) * (kron(C,ID) + kron(IC,D))
-    end
-
     A = rand(10,10); B = rand(10,10); V = Diagonal(rand(10))
     @testset "Vec trick for sums" begin
         @test (A ⊕ B) * vec(V) == vec(B*V + V*transpose(A))
+    end
+
+    A = rand(3, 3); IA = oneunit(A)
+    B = rand(4, 4); IB = oneunit(B)
+    @testset "exp for Kronecker sum" begin
+        EKS = exp(A ⊕ B)
+        @test EKS isa SquareKroneckerProduct
+        @test EKS ≈ exp(kron(A, IB) + kron(IA, B))
     end
 end

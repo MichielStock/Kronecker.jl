@@ -8,7 +8,7 @@ function eigen(K::SquareKroneckerProduct)
     return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
 end
 
-+(E::Eigen, B::UniformScaling) = Eigen(E.values .+ B.λ, A.vectors)
++(E::Eigen, B::UniformScaling) = Eigen(E.values .+ B.λ, E.vectors)
 +(A::UniformScaling, E::Eigen) = E + A
 
 """

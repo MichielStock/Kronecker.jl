@@ -99,7 +99,8 @@ documentation.
 """
 ⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
 
-⊗(A, B) = kronecker(A, B)
+⊗(A::AbstractMatrix...) = kronecker(A...)
+⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
 
 """
     getmatrices(K::AbstractKroneckerProduct)
@@ -122,14 +123,14 @@ function Base.size(K::AbstractKroneckerProduct)
     return m * k, n * l
 end
 
+Base.size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
+
 function Base.getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
     A, B = getmatrices(K)
     m, n = size(A)
     k, l = size(B)
     return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
 end
-
-Base.size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
 
 function Base.eltype(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)

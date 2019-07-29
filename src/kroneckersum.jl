@@ -1,28 +1,22 @@
 abstract type AbstractKroneckerSum <: GeneralizedKroneckerProduct end
 
-struct KroneckerSum{T<:SquareKroneckerProduct, S<:SquareKroneckerProduct} <: AbstractKroneckerSum
-    # Fields
-    A::T # (A ⊗ I_B)
-    B::S # (I_A ⊗ B)
-
+struct KroneckerSum{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerSum
+    A::TA
+    B::TB
     function KroneckerSum(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
         (issquare(A) && issquare(B)) || throw(DimensionMismatch("KroneckerSum only applies to square matrices"))
-        AI = A ⊗ Diagonal(oneunit(B))
-        IB = Diagonal(oneunit(A)) ⊗ B
-
-        return new{typeof(AI),typeof(IB)}(AI, IB)
+        return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
     end
 end
 
-
-# All products are of same order
-order(M::AbstractKroneckerSum) = order(M.A)
+order(M::AbstractKroneckerSum) = order(M.A) + order(M.B)
+issquare(M::AbstractKroneckerSum) = true
 
 """
     kroneckersum(A::AbstractMatrix, B::AbstractMatrix)
 
-Construct a sum of Kronecker products between two square matrices and their respective identity matrices.
-Does not evaluate the Kronecker products explicitly.
+Construct a sum of Kronecker products between two square matrices and their
+respective identity matrices. Does not evaluate the Kronecker products explicitly.
 """
 kroneckersum(A::AbstractMatrix, B::AbstractMatrix) = KroneckerSum(A,B)
 
@@ -60,41 +54,65 @@ documentation.
 """
 ⊕(A::AbstractMatrix, B::AbstractMatrix) = kroneckersum(A, B)
 
-⊕(A, B) = kroneckersum(A, B)
+⊕(A::AbstractMatrix...) = kroneckersum(A...)
+⊕(A::AbstractMatrix, pow::Int) = kroneckersum(A, pow)
 
 """
     getmatrices(K::T) where T <: KroneckerSum
 
 Obtain the two Kronecker products of a `KroneckerSum` object.
 """
-Kronecker.getmatrices(K::AbstractKroneckerSum) = (Kronecker.getmatrices(K.A)[1], Kronecker.getmatrices(K.B)[2])
+Kronecker.getmatrices(K::AbstractKroneckerSum) = (K.A, K.B)
 
 function Base.size(K::AbstractKroneckerSum)
-    # All products in sum are the same size
-    size(K.A)
+    A, B = getmatrices(K)
+    (m, n) = size(A)
+    (k, l) = size(B)
+    return m * k, n * l
 end
-
-function Base.getindex(K::AbstractKroneckerSum, i1::Int, i2::Int)
-    A, B = (K.A, K.B)
-    m, n = size(A)
-    k, l = size(B)
-    return getindex(A,i1,i2) + getindex(B,i1,i2)
-end
-
 
 Base.size(K::AbstractKroneckerSum, dim::Int) = size(K)[dim]
+
+function Base.getindex(K::AbstractKroneckerSum, i1::Int, i2::Int)
+    A, B = getmatrices(K)
+    m, n = size(A)
+    k, l = size(B)
+    i₁, j₁ = cld(i1, k), cld(i2, l)
+    i₂, j₂ = (i1 - 1) % k + 1, (i2 - 1) % l + 1
+    v = zero(eltype(K))
+    if i₁ == j₁
+        v += B[i₂,j₂]
+    end
+    if i₂ == j₂
+        v += A[i₁,j₁]
+    end
+    return v
+end
 
 function Base.eltype(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return promote_type(eltype(A), eltype(B))
 end
 
-# NOTE that K.A and K.B are both SquareKroneckerProducts, not the factor matrices
-LinearAlgebra.tr(K::AbstractKroneckerSum) = tr(K.A) + tr(K.B)
+function LinearAlgebra.tr(K::AbstractKroneckerSum)
+    A, B = getmatrices(K)
+    n, m = size(A, 1), size(B, 1)
+    return m * tr(A) + n * tr(B)
+end
 
 
+"""
+    collect(K::AbstractKroneckerProduct)
+
+Collects a lazy instance of the `AbstractKroneckerProduct` type into a full,
+native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
+"""
 function Base.collect(K::AbstractKroneckerSum)
-    return K.A + K.B
+    A = Array{eltype(K)}(undef, size(K))
+    for (ind, k) in enumerate(K)
+        @inbounds A[ind] = k
+    end
+    return A
 end
 
 
@@ -113,6 +131,12 @@ function Base.conj(K::AbstractKroneckerSum)
     return kroneckersum(conj(A), conj(B))
 end
 
+function Base.exp(K::AbstractKroneckerSum)
+    A, B = getmatrices(K)
+    return kronecker(exp(A), exp(B))
+end
+
+#=
 function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
 
     # Collect products (not matrices)
@@ -125,7 +149,7 @@ function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
     # Dimensions are also checked in src/base.jl
     return A*C + A*D + B*C + B*D
 end
-
+=#
 
 function LinearAlgebra.mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
     A, B = getmatrices(K)

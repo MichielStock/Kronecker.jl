@@ -1,20 +1,23 @@
 module Kronecker
 
-# TODO types!
-export GeneralizedKroneckerProduct, AbstractKroneckerProduct, KroneckerProduct, SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
-export issquare, getmatrices, size, getindices, order, issymmetric
+export GeneralizedKroneckerProduct, AbstractKroneckerProduct, AbstractSquareKronecker
+export SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
+export issquare, getmatrices, size, getindices, order, issymmetric, isposdef
 export ⊗, kronecker, Matrix
-export tr, det, collect, inv, *, mult!, eigen, \, /, adjoint, transpose, conj, solve
+export tr, det, logdet, collect, inv, +, *, mult!, eigen, \, /, adjoint, transpose, conj, solve
 export getindex
+export cholesky, CholeskyKronecker
 
 export genvectrick, genvectrick!
 
 using LinearAlgebra
 import LinearAlgebra: mul!
+import Base: collect
 
 include("base.jl")
 include("indexedkroncker.jl")
 include("shiftedkronecker.jl")
 include("eigen.jl")
+include("factorization.jl")
 
 end # module

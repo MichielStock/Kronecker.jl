@@ -1,6 +1,6 @@
 #=
 Created on Tuesday 2 July 2019
-Last update: -
+Last update: Saturday 27 July 2019
 
 @author: Michiel Stock
 michielfmstock@gmail.com
@@ -9,17 +9,14 @@ Benchmarking Kroncker.jl compated to native functions.
 =#
 
 using Kronecker, Plots, LinearAlgebra
+using BenchmarkTools
 
 
 sizes = [5, 10, 25, 50, 100, 250, 500, 1000, 5000]
-Kwarmup = rand(10, 10) ⊗ rand(10, 10)
 
 tmax = 10
 
 # inverse
-
-
-@elapsed inv(Kwarmup)
 
 times_kron = []
 times_naive = []
@@ -28,12 +25,12 @@ for s in sizes
     A = randn(s, s) / s^2
     B = rand(s, s) / s^2
     v = rand(s^2)
-    K = A ⊗ B
-    t = @elapsed inv(K)
+    global K = A ⊗ B
+    t = @belapsed inv(K)
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @elapsed inv(K)
+        t = @belapsed inv(K)
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -48,18 +45,18 @@ plot!(sizes[1:length(times_naive)].^2, times_naive, color=:blue, ls=:dash, label
 times_kron = []
 times_naive = []
 
-@elapsed det(Kwarmup)
+@belapsed det(Kwarmup)
 
 for s in sizes
     A = randn(s, s)
     B = rand(s, s)
     v = rand(s^2)
-    K = A ⊗ B
-    t = @elapsed det(K)
+    global K = A ⊗ B
+    t = @belapsed det(K)
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @elapsed det(K)
+        t = @belapsed det(K)
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -75,18 +72,18 @@ times_naive = []
 
 v = rand(100)
 
-@elapsed Kwarmup * Kwarmup
+@belapsed Kwarmup * Kwarmup
 
 for s in sizes
     A = randn(s, s)
     B = rand(s, s)
     v = rand(s^2)
-    K = A ⊗ B
-    t = @elapsed K * K
+    global K = A ⊗ B
+    t = @belapsed K * K
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @elapsed K * K
+        t = @belapsed K * K
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -100,21 +97,16 @@ plot!(sizes[1:length(times_naive)].^2, times_naive, color=:red, ls=:dash, label=
 times_kron = []
 times_naive = []
 
-v = rand(100)
-
-@elapsed Kwarmup * v
-@elapsed collect(Kwarmup) * v
-
 for s in sizes
     A = randn(s, s)
     B = rand(s, s)
-    v = rand(s^2)
-    K = A ⊗ B
-    t = @elapsed K * v
+    global v = rand(s^2)
+    global K = A ⊗ B
+    t = @belapsed K * v
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @elapsed K * v
+        t = @belapsed K * v
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -128,6 +120,6 @@ yaxis!(:log10)
 ylabel!("CPU time (s)")
 xaxis!(:log10)
 xlabel!("Kronecker product size")
-title!("Performance Kronecker.jl v.s. native code (--)")
+title!("Performance Kronecker.jl (-) v.s. native code (--)")
 
-savefig("benchmark.png")
+savefig("benchmark.svg")

@@ -2,19 +2,15 @@ abstract type GeneralizedKroneckerProduct <: AbstractMatrix{Real} end
 
 abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
 
-"""
-    Matrix(K::GeneralizedKroneckerProduct)
-
-Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
-"""
-Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
-
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 # general Kronecker product between two matrices
-struct KroneckerProduct{T<:AbstractMatrix, S<:AbstractMatrix} <: AbstractKroneckerProduct
-    A::T
-    B::S
+struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+    A::TA
+    B::TB
+    function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
+        return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
+    end
 end
 
 """
@@ -27,8 +23,10 @@ function issquare(A::AbstractMatrix)
     return m == n
 end
 
-# general Kronecker product between two matrices
-struct SquareKroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+abstract type AbstractSquareKronecker <: AbstractKroneckerProduct end
+
+# general Kronecker product between two square matrices
+struct SquareKroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractSquareKronecker
     A::TA
     B::TB
     function SquareKroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
@@ -42,7 +40,7 @@ struct SquareKroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: Abst
     end
 end
 
-issquare(K::SquareKroneckerProduct) = true
+issquare(K::AbstractSquareKronecker) = true
 LinearAlgebra.:issymmetric(K::SquareKroneckerProduct) = issymmetric(K.A) && issymmetric(K.B)
 
 """
@@ -104,11 +102,18 @@ documentation.
 ⊗(A, B) = kronecker(A, B)
 
 """
-    getmatrices(K::T) where T <: KroneckerProduct
+    getmatrices(K::AbstractKroneckerProduct)
 
-Obtain the two matrices of a `KroneckerPoduct` object.
+Obtain the two matrices of an `AbstractKroneckerPoduct` object.
 """
 getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
+
+"""
+    getmatrices(A::AbstractArray)
+
+Returns a matrix itself. Needed for recursion.
+"""
+getmatrices(A::AbstractArray) = A
 
 function Base.size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
@@ -133,22 +138,42 @@ end
 
 LinearAlgebra.tr(K::SquareKroneckerProduct) = tr(K.A) * tr(K.B)
 
-function LinearAlgebra.det(K::SquareKroneckerProduct)
+function LinearAlgebra.det(K::AbstractSquareKronecker)
     A, B = getmatrices(K)
     m = size(A)[1]
     n = size(B)[1]
     return det(K.A)^n * det(K.B)^m
 end
 
-function Base.inv(K::SquareKroneckerProduct)
+function LinearAlgebra.logdet(K::AbstractSquareKronecker)
+    A, B = getmatrices(K)
+    m = size(A)[1]
+    n = size(B)[1]
+    return n * logdet(A) + m * logdet(B)
+end
+
+function Base.inv(K::AbstractSquareKronecker)
     A, B = getmatrices(K)
     return SquareKroneckerProduct(inv(A), inv(B))
 end
 
-function Base.collect(K::AbstractKroneckerProduct)
+"""
+    collect(K::AbstractKroneckerProduct)
+
+Collects a lazy instance of the `AbstractKroneckerProduct` type into a full,
+native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
+"""
+function collect(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kron(A, B)
 end
+
+"""
+    Matrix(K::GeneralizedKroneckerProduct)
+
+Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
+"""
+Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
 function Base.adjoint(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
@@ -164,6 +189,14 @@ function Base.conj(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(conj(A), conj(B))
 end
+
+"""
+    isposdef(K::AbstractSquareKronecker)
+
+Test whether a Kronecker product is positive definite (and Hermitian) by trying to
+perform a Cholesky factorization of K.
+"""
+LinearAlgebra.isposdef(K::AbstractSquareKronecker) = isposdef(K.A) && isposdef(K.B)
 
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
@@ -194,25 +227,6 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     end
     return x
 end
-
-#=
-function mult!(x::AbstractVector{Complex}, K::AbstractKroneckerProduct,
-                v::AbstractVector)
-    M, N = getmatrices(K)
-    a, b = size(M)
-    c, d = size(N)
-    e = length(v)
-    f = length(x)
-    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
-    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
-    if (d + a) * b < (b + c) * d
-        x .= vec(N * (reshape(v, d, b) * transpose(M)))
-    else
-        x .= vec((N * reshape(v, d, b)) * transpose(M))
-    end
-    return x
-end
-=#
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)

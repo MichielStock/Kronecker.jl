@@ -2,20 +2,31 @@ using LinearAlgebra: Eigen
 import LinearAlgebra: eigen, \, det, logdet, inv
 import Base: +
 
-function eigen(A::SquareKroneckerProduct)
-    A_λ, A_Γ = eigen(A.A)
-    B_λ, B_Γ = eigen(A.B)
+function eigen(K::SquareKroneckerProduct)
+    A_λ, A_Γ = eigen(K.A)
+    B_λ, B_Γ = eigen(K.B)
     return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
 end
 
-+(A::Eigen, B::UniformScaling) = Eigen(A.values .+ B.λ, A.vectors)
-+(A::UniformScaling, B::Eigen) = B + A
++(E::Eigen, B::UniformScaling) = Eigen(E.values .+ B.λ, A.vectors)
++(A::UniformScaling, E::Eigen) = E + A
 
-function \(A::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}, v::AbstractVector{<:Real})
-    λ, Γ = A
+"""
+    function collect(E::Eigen{<:Number, <:Number, <:SquareKroneckerProduct})
+
+Collects eigenvalue decomposition of a `AbstractKroneckerProduct` type into a
+matrix.
+"""
+function collect(E::Eigen{<:Number, <:Number, <:SquareKroneckerProduct})
+    λ, Γ = E
+    return Γ * Diagonal(λ) * Γ'
+end
+
+function \(E::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}, v::AbstractVector{<:Real})
+    λ, Γ = E
     return Γ * (Diagonal(λ) \ (Γ' * v))
 end
 
-det(A::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}) = prod(A.values)
-logdet(A::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}) = sum(log, A.values)
-inv(A::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}) = Eigen(inv.(A.values), A.vectors)
+det(E::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}) = prod(E.values)
+logdet(E::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}) = sum(log, E.values)
+inv(E::Eigen{<:Real, <:Real, <:SquareKroneckerProduct}) = Eigen(inv.(E.values), E.vectors)

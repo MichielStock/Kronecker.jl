@@ -14,7 +14,6 @@ import LinearAlgebra: mul!
 
 include("base.jl")
 include("indexedkroncker.jl")
-include("shiftedkronecker.jl")
 include("eigen.jl")
 
 end # module

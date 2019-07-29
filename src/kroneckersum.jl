@@ -112,3 +112,35 @@ function Base.conj(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return kroneckersum(conj(A), conj(B))
 end
+
+function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
+
+    # Collect products (not matrices)
+    A, B = (K1.A, K1.B)
+    C, D = (K2.A, K2.B)
+
+    size.(getmatrices(A)) == size.(getmatrices(C)) || throw(DimensionMismatch("Mismatch between A and C in (A ⊗ B)(C ⊗ D)"))
+    size.(getmatrices(B)) == size.(getmatrices(D)) || throw(DimensionMismatch("Mismatch between B and D in (A ⊗ B)(C ⊗ D)"))
+
+    # Dimensions are also checked in src/base.jl
+    return A*C + A*D + B*C + B*D
+end
+
+
+function LinearAlgebra.mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+    A, B = getmatrices(K)
+    a, b = size(A)
+    c, d = size(B)
+    e = length(v)
+    f = length(x)
+    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
+    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
+
+    V = reshape(v, d, b)
+    x .= vec(V * transpose(A)) .+ vec(B * V)
+    return x
+end
+
+function Base.:*(K::AbstractKroneckerSum, v::AbstractVector)
+    return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
+end

@@ -113,18 +113,6 @@ function Base.conj(K::AbstractKroneckerSum)
     return kroneckersum(conj(A), conj(B))
 end
 
-function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
-
-    # Collect products (not matrices)
-    A, B = (K1.A, K1.B)
-    C, D = (K2.A, K2.B)
-
-    size.(getmatrices(A)) == size.(getmatrices(C)) || throw(DimensionMismatch("Mismatch between A and C in (A ⊗ B)(C ⊗ D)"))
-    size.(getmatrices(B)) == size.(getmatrices(D)) || throw(DimensionMismatch("Mismatch between B and D in (A ⊗ B)(C ⊗ D)"))
-
-    # Dimensions are also checked in src/base.jl
-    return A*C + A*D + B*C + B*D
-end
 
 
 function LinearAlgebra.mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)

@@ -54,14 +54,6 @@
         @test conj(KS) == conj(kronsum)
     end
 
-
-
-    C = rand(4,4); IC = oneunit(C)
-    D = rand(3,3); ID = oneunit(D)
-    @testset "Mixed-product of sums" begin
-        @test (A ⊕ B)*(C ⊕ D) ≈ (kron(A,IB) + kron(IA,B)) * (kron(C,ID) + kron(IC,D))
-    end
-
     A = rand(10,10); B = rand(10,10); V = Diagonal(rand(10))
     @testset "Vec trick for sums" begin
         @test (A ⊕ B) * vec(V) == vec(B*V + V*transpose(A))

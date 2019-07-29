@@ -34,6 +34,6 @@ end
     D = kronecker(A, B)
     eigen_tests(rng, D)
     eigen_tests(rng, kronecker(D, C))
-    # eigen_tests(rng, kronecker(C, D))
-    # eigen_tests(rng, kronecker(kronecker(A, B), kronecker(B, A)))
+    eigen_tests(rng, kronecker(C, D))
+    eigen_tests(rng, kronecker(kronecker(A, B), kronecker(B, A)))
 end

@@ -38,16 +38,32 @@
     @test getindex(KS,2,3) == kronsum[2,3]
     @test getindex(KS3,2,3) == kronsum3[2,3]
 
-    D = rand(ComplexF64,6,6)
-    @test size(A ⊕ D) == size(A) .* size(D,1)
-    @test size(B ⊕ C ⊕ D) == size(B) .* size(C) .* size(D)
-    @test eltype(A ⊕ B) == Float64
-    @test eltype(C ⊕ D) == ComplexF64
+    D = rand(ComplexF64,6,6); ID = oneunit(D)
+
+    @testset "Structure of sums" begin
+        @test size(A ⊕ D) == size(A) .* size(D,1)
+        @test size(B ⊕ C ⊕ D) == size(B) .* size(C) .* size(D)
+        @test eltype(A ⊕ B) == Float64
+        @test eltype(C ⊕ D) == ComplexF64
+    end
+
+    @testset "Basic linear algebra for sums" begin
+        @test tr(KS) ≈ tr(kronsum)
+        @test KS' == kronsum'
+        @test transpose(KS) == transpose(kronsum)
+        @test conj(KS) == conj(kronsum)
+    end
 
 
-    @test tr(KS) ≈ tr(kronsum)
 
-    @test KS' == kronsum'
-    @test transpose(KS) == transpose(kronsum)
-    @test conj(KS) == conj(kronsum)
+    C = rand(4,4); IC = oneunit(C)
+    D = rand(3,3); ID = oneunit(D)
+    @testset "Mixed-product of sums" begin
+        @test (A ⊕ B)*(C ⊕ D) ≈ (kron(A,IB) + kron(IA,B)) * (kron(C,ID) + kron(IC,D))
+    end
+
+    A = rand(10,10); B = rand(10,10); V = Diagonal(rand(10))
+    @testset "Vec trick for sums" begin
+        @test (A ⊕ B) * vec(V) == vec(B*V + V*transpose(A))
+    end
 end

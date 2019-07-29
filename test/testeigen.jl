@@ -18,9 +18,7 @@ function eigen_tests(rng, C::SquareKroneckerProduct)
     @test eigen(C) \ v ≈ Float64.(Matrix(C)) \ v
 
     # Test various linear algebra operations with decomposition
-    println("1")
     C_dense = Float64.(Matrix(C))
-    println("2")
     @test det(eigen(C)) ≈ det(C_dense)
     @test logdet(eigen(C)) ≈ logdet(C_dense)
     @test Matrix(inv(eigen(C))) ≈ inv(C_dense)
@@ -34,11 +32,8 @@ end
     A, B, C = Symmetric(A_ * A_' + I), Symmetric(B_ * B_' + I), Symmetric(C_ * C_' + I)
     
     D = kronecker(A, B)
-    @show size(D), size(kronecker(D, C)), size(kronecker(kronecker(A, B), kronecker(B, A)))
-    @show typeof(eigen(D))
     eigen_tests(rng, D)
     eigen_tests(rng, kronecker(D, C))
     eigen_tests(rng, kronecker(C, D))
     eigen_tests(rng, kronecker(kronecker(A, B), kronecker(B, A)))
-    # eigen_tests(rng, kronecker(kronecker(D, C), kronecker(C, D)))
 end

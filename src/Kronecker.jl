@@ -16,7 +16,6 @@ import Base: collect
 
 include("base.jl")
 include("indexedkroncker.jl")
-include("shiftedkronecker.jl")
 include("eigen.jl")
 include("factorization.jl")
 

@@ -1,4 +1,5 @@
 using Kronecker, Test, LinearAlgebra
+using SparseArrays: SparseMatrixCSC
 
 @testset "Kronecker" begin
     include("testbase.jl")

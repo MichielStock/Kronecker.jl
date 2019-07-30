@@ -7,7 +7,8 @@
     KS = A ⊕ B
     kronsum = kron(A,IB) + kron(IA,B)
 
-    @test collect(KS) == kronsum
+    @test collect(KS) ≈ kronsum
+    @test collect(KS) isa SparseMatrixCSC
 
     @test issquare(KS)
 
@@ -16,6 +17,7 @@
     kronsum3 = kron(A,IB,IC) + kron(IA,B,IC) + kron(IA,IB,C)
 
     @test collect(KS3) ≈ kronsum3
+    @test collect(KS3) isa SparseMatrixCSC
 
     @test order(KS) == 2
     @test order(KS3) == 3

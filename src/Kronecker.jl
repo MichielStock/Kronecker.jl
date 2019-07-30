@@ -14,6 +14,7 @@ export genvectrick, genvectrick!
 using LinearAlgebra
 import LinearAlgebra: mul!
 import Base: collect
+using SparseArrays: sparse
 
 include("base.jl")
 include("indexedkroncker.jl")

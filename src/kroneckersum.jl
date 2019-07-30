@@ -99,7 +99,6 @@ function LinearAlgebra.tr(K::AbstractKroneckerSum)
     return m * tr(A) + n * tr(B)
 end
 
-
 """
     collect(K::AbstractKroneckerProduct)
 
@@ -109,7 +108,7 @@ native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
 function Base.collect(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     IA, IB = oneunit(A), oneunit(B)
-    return kron(collect(A), IB) + kron(IA, collect(B))
+    return kron(A, IB) + kron(IA, B)
 end
 
 function Base.adjoint(K::AbstractKroneckerSum)

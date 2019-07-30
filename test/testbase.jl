@@ -5,6 +5,7 @@
          4 5 6;
          7 -2 9])
     C = rand(5, 6)
+    D = rand(4, 4)
 
     v = rand(12)
 
@@ -66,6 +67,12 @@
         @test order(Kpow) == 5
         @test size(Kpow, 1) == 4^5
         @test Kpow[1,1] ≈ A[1,1]^5
+    end
+
+    @testset "kron" begin
+        @test kron(A ⊗ B, C) ≈ kron(A, B, C)
+        @test kron(A, B ⊗ C) ≈ kron(A, B, C)
+        @test kron(A ⊗ B, C ⊗ D) ≈ kron(A, B, C, D)
     end
 
     @testset "Mixed product" begin

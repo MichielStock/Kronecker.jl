@@ -112,7 +112,7 @@ getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
 
 Returns a matrix itself. Needed for recursion.
 """
-getmatrices(A::AbstractArray) = A
+getmatrices(A::AbstractArray) = (A,)
 
 function Base.size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
@@ -210,6 +210,23 @@ function LinearAlgebra.isposdef(K::AbstractKroneckerProduct)
     squarecheck(K)
     return isposdef(K.A) && isposdef(K.B)
 end
+
+function Base.kron(K::AbstractKroneckerProduct, C::AbstractMatrix)
+    A, B = getmatrices(K)
+    return kron(kron(A, B), C)
+end
+
+function Base.kron(A::AbstractMatrix, K::AbstractKroneckerProduct)
+    B, C = getmatrices(K)
+    return kron(A, kron(B, C))
+end
+
+function Base.kron(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
+    A, B = getmatrices(K1)
+    C, D = getmatrices(K2)
+    return kron(kron(A, B), kron(C, D))
+end
+
 
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)

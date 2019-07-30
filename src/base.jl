@@ -28,20 +28,17 @@ end
 
 Checks if all matrices of a Kronecker product are square.
 """
-function issquare(K::AbstractKroneckerProduct)
-    return issquare(K.A) && issquare(K.B)
-end
+issquare(K::AbstractKroneckerProduct) = issquare(K.A) && issquare(K.B)
 
-function squarecheck(K::AbstractKroneckerProduct)
-    issquare(K) || throw(DimensionMismatch("kronecker system is not composed of two square matrices: $size(K.A) and $size(K.B)"))
-end
+issquare(K) || throw(DimensionMismatch(
+    "kronecker system is not composed of two square matrices: $size(K.A) and $size(K.B)"))
 
 """
     issymmetric(K::AbstractKroneckerProduct)
 
 Checks if a Kronecker product is symmetric.
 """
-function LinearAlgebra.:issymmetric(K::AbstractKroneckerProduct)
+function LinearAlgebra.issymmetric(K::AbstractKroneckerProduct)
     squarecheck(K)
     return issymmetric(K.A) && issymmetric(K.B)
 end
@@ -61,9 +58,7 @@ order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 Construct a Kronecker product object between two arrays. Does not evaluate the Kronecker
 product explictly.
 """
-function kronecker(A::AbstractMatrix, B::AbstractMatrix)
-    return KroneckerProduct(A, B)
-end
+kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
 
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)

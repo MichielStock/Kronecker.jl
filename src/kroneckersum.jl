@@ -57,9 +57,9 @@ documentation.
 ⊕(A::AbstractMatrix, pow::Int) = kroneckersum(A, pow)
 
 """
-    getmatrices(K::T) where T <: KroneckerSum
+    getmatrices(K::T) where T <: AbstractKroneckerSum
 
-Obtain the two Kronecker products of a `KroneckerSum` object.
+Obtain the two matrices of an `AbstractKroneckerSum` object.
 """
 Kronecker.getmatrices(K::AbstractKroneckerSum) = (K.A, K.B)
 

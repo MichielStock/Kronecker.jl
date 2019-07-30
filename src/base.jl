@@ -30,9 +30,10 @@ Checks if all matrices of a Kronecker product are square.
 """
 issquare(K::AbstractKroneckerProduct) = issquare(K.A) && issquare(K.B)
 
-issquare(K) || throw(DimensionMismatch(
-    "kronecker system is not composed of two square matrices: $size(K.A) and $size(K.B)"))
-
+function squarecheck(K::AbstractKroneckerProduct)
+    issquare(K) || throw(DimensionMismatch(
+        "kronecker system is not composed of two square matrices: $size(K.A) and $size(K.B)"))
+end
 """
     issymmetric(K::AbstractKroneckerProduct)
 

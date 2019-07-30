@@ -218,9 +218,7 @@ function Base.kron(A::AbstractMatrix, K::AbstractKroneckerProduct)
 end
 
 function Base.kron(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
-    A, B = getmatrices(K1)
-    C, D = getmatrices(K2)
-    return kron(kron(A, B), kron(C, D))
+     return kron(collect(K1), collect(K2))
 end
 
 # mixed-product property

@@ -73,6 +73,7 @@
         @test kron(A ⊗ B, C) ≈ kron(A, B, C)
         @test kron(A, B ⊗ C) ≈ kron(A, B, C)
         @test kron(A ⊗ B, C ⊗ D) ≈ kron(A, B, C, D)
+        @test (A⊗B) ⊗ (C⊗D) ≈ kron(A, B, C, D))
     end
 
     @testset "Mixed product" begin

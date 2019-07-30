@@ -3,11 +3,9 @@ module Kronecker
 export GeneralizedKroneckerProduct, AbstractKroneckerProduct, AbstractSquareKronecker
 export AbstractKroneckerSum, KroneckerSum
 export SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
-export issquare, getmatrices, size, getindices, order, issymmetric, isposdef
-export ⊗, kronecker, Matrix, ⊕, kroneckersum
-export tr, det, logdet, collect, inv, +, *, mul!, eigen, /, adjoint, transpose, conj, solve, exp, kron
-export getindex
-export cholesky, CholeskyKronecker
+export issquare, order, issymmetric, isposdef, getmatrices
+export ⊗, kronecker, ⊕, kroneckersum
+export CholeskyKronecker
 
 export genvectrick, genvectrick!
 

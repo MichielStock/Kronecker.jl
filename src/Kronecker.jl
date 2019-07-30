@@ -5,7 +5,7 @@ export AbstractKroneckerSum, KroneckerSum
 export SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
 export issquare, getmatrices, size, getindices, order, issymmetric, isposdef
 export ⊗, kronecker, Matrix, ⊕, kroneckersum
-export tr, det, logdet, collect, inv, +, *, mult!, eigen, /, adjoint, transpose, conj, solve, exp, kron
+export tr, det, logdet, collect, inv, +, *, mul!, eigen, /, adjoint, transpose, conj, solve, exp, kron
 export getindex
 export cholesky, CholeskyKronecker
 

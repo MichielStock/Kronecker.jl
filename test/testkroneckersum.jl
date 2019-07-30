@@ -11,7 +11,6 @@
 
     @test issquare(KS)
 
-
     C = rand(5,5); IC = oneunit(C)
     KS3 = A ⊕ B ⊕ C
     kronsum3 = kron(A,IB,IC) + kron(IA,B,IC) + kron(IA,IB,C)

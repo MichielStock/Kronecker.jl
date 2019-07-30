@@ -61,9 +61,7 @@ order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 Construct a Kronecker product object between two arrays. Does not evaluate the Kronecker
 product explictly.
 """
-function kronecker(A::AbstractMatrix, B::AbstractMatrix)
-    return KroneckerProduct(A, B)
-end
+kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
 
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)

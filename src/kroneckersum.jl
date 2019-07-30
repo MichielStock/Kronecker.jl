@@ -53,7 +53,6 @@ Binary operator for `kroneckersum`, computes as Lazy Kronecker sum. See `kroneck
 documentation.
 """
 ⊕(A::AbstractMatrix, B::AbstractMatrix) = kroneckersum(A, B)
-
 ⊕(A::AbstractMatrix...) = kroneckersum(A...)
 ⊕(A::AbstractMatrix, pow::Int) = kroneckersum(A, pow)
 
@@ -108,13 +107,10 @@ Collects a lazy instance of the `AbstractKroneckerProduct` type into a full,
 native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
 """
 function Base.collect(K::AbstractKroneckerSum)
-    A = Array{eltype(K)}(undef, size(K))
-    for (ind, k) in enumerate(K)
-        @inbounds A[ind] = k
-    end
-    return A
+    A, B = getmatrices(K)
+    IA, IB = oneunit(A), oneunit(B)
+    return kron(A, IB) + kron(IA, B)
 end
-
 
 function Base.adjoint(K::AbstractKroneckerSum)
     A, B = getmatrices(K)

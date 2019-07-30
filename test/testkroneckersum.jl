@@ -51,7 +51,7 @@
     B = rand(4, 4); IB = oneunit(B)
     @testset "exp for Kronecker sum" begin
         EKS = exp(A ⊕ B)
-        @test EKS isa SquareKroneckerProduct
+        @test EKS isa AbstractKroneckerProduct
         @test EKS ≈ exp(kron(A, IB) + kron(IA, B))
     end
 end

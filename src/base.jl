@@ -23,25 +23,28 @@ function issquare(A::AbstractMatrix)
     return m == n
 end
 
-abstract type AbstractSquareKronecker <: AbstractKroneckerProduct end
+"""
+    issquare(K::AbstractKroneckerProduct)
 
-# general Kronecker product between two square matrices
-struct SquareKroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractSquareKronecker
-    A::TA
-    B::TB
-    function SquareKroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
-        if issquare(A) && issquare(B)
-            return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
-        else
-            throw(DimensionMismatch(
-                "SquareKroneckerProduct is only for when all matrices are square",
-            ))
-        end
-    end
+Checks if all matrices of a Kronecker product are square.
+"""
+function issquare(K::AbstractKroneckerProduct)
+    return issquare(K.A) && issquare(K.B)
 end
 
-issquare(K::AbstractSquareKronecker) = true
-LinearAlgebra.:issymmetric(K::SquareKroneckerProduct) = issymmetric(K.A) && issymmetric(K.B)
+function squarecheck(K::AbstractKroneckerProduct)
+    issquare(K) || throw(DimensionMismatch("kronecker system is not composed of two square matrices: $size(K.A) and $size(K.B)"))
+end
+
+"""
+    issymmetric(K::AbstractKroneckerProduct)
+
+Checks if a Kronecker product is symmetric.
+"""
+function LinearAlgebra.:issymmetric(K::AbstractKroneckerProduct)
+    squarecheck(K)
+    return issymmetric(K.A) && issymmetric(K.B)
+end
 
 """
     order(M::AbstractMatrix)
@@ -59,11 +62,7 @@ Construct a Kronecker product object between two arrays. Does not evaluate the K
 product explictly.
 """
 function kronecker(A::AbstractMatrix, B::AbstractMatrix)
-    if issquare(A) && issquare(B)
-        return SquareKroneckerProduct(A, B)
-    else
-        return KroneckerProduct(A, B)
-    end
+    return KroneckerProduct(A, B)
 end
 
 """
@@ -98,14 +97,13 @@ Binary operator for `kronecker`, computes as Lazy Kronecker product. See `kronec
 documentation.
 """
 ⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
-
 ⊗(A::AbstractMatrix...) = kronecker(A...)
 ⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
 
 """
     getmatrices(K::AbstractKroneckerProduct)
 
-Obtain the two matrices of an `AbstractKroneckerPoduct` object.
+Obtain the two matrices of an `AbstractKroneckerProduct` object.
 """
 getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
 
@@ -137,25 +135,36 @@ function Base.eltype(K::AbstractKroneckerProduct)
     return promote_type(eltype(A), eltype(B))
 end
 
-LinearAlgebra.tr(K::SquareKroneckerProduct) = tr(K.A) * tr(K.B)
+"""
+    tr(K::AbstractKroneckerProduct)
 
-function LinearAlgebra.det(K::AbstractSquareKronecker)
+Compute the trace of a Kronecker product.
+"""
+function LinearAlgebra.tr(K::AbstractKroneckerProduct)
+    squarecheck(K)
+    return tr(K.A) * tr(K.B)
+end
+
+function LinearAlgebra.det(K::AbstractKroneckerProduct)
+    squarecheck(K)
     A, B = getmatrices(K)
     m = size(A)[1]
     n = size(B)[1]
     return det(K.A)^n * det(K.B)^m
 end
 
-function LinearAlgebra.logdet(K::AbstractSquareKronecker)
+function LinearAlgebra.logdet(K::AbstractKroneckerProduct)
+    squarecheck(K)
     A, B = getmatrices(K)
     m = size(A)[1]
     n = size(B)[1]
     return n * logdet(A) + m * logdet(B)
 end
 
-function Base.inv(K::AbstractSquareKronecker)
+function Base.inv(K::AbstractKroneckerProduct)
+    squarecheck(K)
     A, B = getmatrices(K)
-    return SquareKroneckerProduct(inv(A), inv(B))
+    return KroneckerProduct(inv(A), inv(B))
 end
 
 """
@@ -192,12 +201,15 @@ function Base.conj(K::AbstractKroneckerProduct)
 end
 
 """
-    isposdef(K::AbstractSquareKronecker)
+    isposdef(K::AbstractKroneckerProduct)
 
 Test whether a Kronecker product is positive definite (and Hermitian) by trying to
 perform a Cholesky factorization of K.
 """
-LinearAlgebra.isposdef(K::AbstractSquareKronecker) = isposdef(K.A) && isposdef(K.B)
+function LinearAlgebra.isposdef(K::AbstractKroneckerProduct)
+    squarecheck(K)
+    return isposdef(K.A) && isposdef(K.B)
+end
 
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)

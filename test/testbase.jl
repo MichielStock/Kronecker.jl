@@ -10,6 +10,9 @@
     v = rand(12)
 
     K = A ⊗ B
+    KAsymB = (A * A') ⊗ B
+    KABsym = A ⊗ (B * B')
+    Ksym = (A * A') ⊗ (B * B')
 
     X = kron(A, B)  # true result
 
@@ -29,6 +32,10 @@
                 @test K[i,j] ≈ X[i,j]
             end
         end
+
+        @test !issymmetric(KAsymB)
+        @test !issymmetric(KABsym)
+        @test issymmetric(Ksym)
     end
 
     @testset "Linear algebra" begin
@@ -73,7 +80,7 @@
         @test kron(A ⊗ B, C) ≈ kron(A, B, C)
         @test kron(A, B ⊗ C) ≈ kron(A, B, C)
         @test kron(A ⊗ B, C ⊗ D) ≈ kron(A, B, C, D)
-        @test (A⊗B) ⊗ (C⊗D) ≈ kron(A, B, C, D))
+        @test (A⊗B) ⊗ (C⊗D) ≈ kron(A, B, C, D)
     end
 
     @testset "Mixed product" begin

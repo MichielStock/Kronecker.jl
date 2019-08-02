@@ -1,10 +1,13 @@
 abstract type AbstractKroneckerSum <: GeneralizedKroneckerProduct end
 
-struct KroneckerSum{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerSum
+struct KroneckerSum{T, TA<:AbstractMatrix,
+                        TB<:AbstractMatrix} <: AbstractKroneckerSum
     A::TA
     B::TB
-    function KroneckerSum(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
-        (issquare(A) && issquare(B)) || throw(DimensionMismatch("KroneckerSum only applies to square matrices"))
+    function KroneckerSum(A::AbstractMatrix{T},
+                            B::AbstractMatrix{V}) where {T, V}
+        (issquare(A) && issquare(B)) || throw(DimensionMismatch(
+                                "KroneckerSum only applies to square matrices"))
         return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
     end
 end
@@ -16,7 +19,8 @@ issquare(M::AbstractKroneckerSum) = true
     kroneckersum(A::AbstractMatrix, B::AbstractMatrix)
 
 Construct a sum of Kronecker products between two square matrices and their
-respective identity matrices. Does not evaluate the Kronecker products explicitly.
+respective identity matrices. Does not evaluate the Kronecker products
+explicitly.
 """
 kroneckersum(A::AbstractMatrix, B::AbstractMatrix) = KroneckerSum(A,B)
 

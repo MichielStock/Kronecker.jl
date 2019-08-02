@@ -30,21 +30,24 @@ Checks if all matrices of a Kronecker product are square.
 """
 issquare(K::AbstractKroneckerProduct) = issquare(K.A) && issquare(K.B)
 
-squarecheck(K::AbstractKroneckerProduct) = issquare(K) || throw(DimensionMismatch(
-           "kronecker system is not composed of two square matrices: $size(K.A) and $size(K.B)"))
+squarecheck(K::AbstractKroneckerProduct) = issquare(K) || throw(
+            DimensionMismatch(
+                "kronecker system is not composed of two square matrices: " *
+                                        "$size(K.A) and $size(K.B)"))
 
 """
     issymmetric(K::AbstractKroneckerProduct)
 
 Checks if a Kronecker product is symmetric.
 """
-LinearAlgebra.:issymmetric(K::AbstractKroneckerProduct) = squarecheck(K) && issymmetric(K.A) && issymmetric(K.B)
+LinearAlgebra.issymmetric(K::AbstractKroneckerProduct) = squarecheck(K) &&
+                                        issymmetric(K.A) && issymmetric(K.B)
 
 """
     order(M::AbstractMatrix)
 
-Returns the order of a matrix, i.e. how many matrices are involved in the Kronecker product
-(default to 1 for general matrices).
+Returns the order of a matrix, i.e. how many matrices are involved in the
+Kronecker product (default to 1 for general matrices).
 """
 order(M::AbstractMatrix) = 1
 order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
@@ -52,8 +55,8 @@ order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)
 
-Construct a Kronecker product object between two arrays. Does not evaluate the Kronecker
-product explictly.
+Construct a Kronecker product object between two arrays. Does not evaluate the
+Kronecker product explictly.
 """
 kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
 
@@ -65,7 +68,8 @@ Higher-order Kronecker lazy kronecker product, e.g.
 kronecker(A, B, C, D)
 ```
 """
-kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A, kronecker(B...))
+kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A,
+                                                            kronecker(B...))
 
 """
     kronecker(A::AbstractMatrix, pow::Int)
@@ -84,8 +88,8 @@ end
 """
     ⊗(A::AbstractMatrix, B::AbstractMatrix)
 
-Binary operator for `kronecker`, computes as Lazy Kronecker product. See `kronecker` for
-documentation.
+Binary operator for `kronecker`, computes as Lazy Kronecker product. See
+`kronecker` for documentation.
 """
 ⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
 ⊗(A::AbstractMatrix...) = kronecker(A...)
@@ -194,8 +198,8 @@ end
 """
     isposdef(K::AbstractKroneckerProduct)
 
-Test whether a Kronecker product is positive definite (and Hermitian) by trying to
-perform a Cholesky factorization of K.
+Test whether a Kronecker product is positive definite (and Hermitian) by trying
+to perform a Cholesky factorization of K.
 """
 function LinearAlgebra.isposdef(K::AbstractKroneckerProduct)
     squarecheck(K)
@@ -241,8 +245,10 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     c, d = size(N)
     e = length(v)
     f = length(x)
-    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
-    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
+    f == a * c || throw(DimensionMismatch(
+        "Dimension missmatch between kronecker system and result placeholder"))
+    e == b * d || throw(DimensionMismatch(
+        "Dimension missmatch between kronecker system and vector"))
     if (d + a) * b < (b + c) * d
         x .= vec(N * (reshape(v, d, b) * transpose(M)))
     else
@@ -252,5 +258,6 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
 end
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
-    return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
+    return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef,
+                                                        first(size(K))), K, v)
 end

@@ -1,13 +1,11 @@
 module Kronecker
 
-export GeneralizedKroneckerProduct, AbstractKroneckerProduct, AbstractSquareKronecker
+export GeneralizedKroneckerProduct, AbstractKroneckerProduct
 export AbstractKroneckerSum, KroneckerSum
-export SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
+export EigenKroneckerProduct
 export issquare, order, issymmetric, isposdef, getmatrices
 export ⊗, kronecker, ⊕, kroneckersum
 export CholeskyKronecker
-
-export genvectrick, genvectrick!
 
 using LinearAlgebra
 import LinearAlgebra: mul!

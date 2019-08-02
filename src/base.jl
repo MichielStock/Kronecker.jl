@@ -40,8 +40,9 @@ squarecheck(K::AbstractKroneckerProduct) = issquare(K) || throw(
 
 Checks if a Kronecker product is symmetric.
 """
-LinearAlgebra.issymmetric(K::AbstractKroneckerProduct) = squarecheck(K) &&
-                                        issymmetric(K.A) && issymmetric(K.B)
+function LinearAlgebra.issymmetric(K::AbstractKroneckerProduct)
+    return squarecheck(K) && issymmetric(K.A) && issymmetric(K.B)
+end
 
 """
     order(M::AbstractMatrix)

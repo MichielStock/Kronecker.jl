@@ -46,6 +46,14 @@
         @test logdet(As ⊗ Bs) ≈ log(det(As ⊗ Bs)) ≈ log(det(kron(As, Bs)))
     end
 
+    @testset "Mismatch errors" begin
+        P, Q = rand(10, 4), rand(4, 5)
+        Kns = P ⊗ Q
+        @test_throws DimensionMismatch inv(Kns)
+        @test_throws DimensionMismatch det(Kns)
+        @test_throws DimensionMismatch Kns * [1, 2, 3]
+    end
+
     @testset "Vec trick" begin
         @test K * v ≈ X * v
         K3 = A ⊗ B ⊗ C

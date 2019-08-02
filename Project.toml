@@ -5,6 +5,7 @@ version = "0.1.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Recommendation = "d27d45ae-66f1-5d53-80d2-11744f5c9556"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]

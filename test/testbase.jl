@@ -51,6 +51,8 @@
         K3 = A ⊗ B ⊗ C
         v3 = randn(size(K3, 2))
         @test K3 * v3 ≈ collect(K3) * v3
+        u = zeros(12)
+        @test mul!(u, K, v) ≈ X * v
     end
 
     @testset "Higher order" begin

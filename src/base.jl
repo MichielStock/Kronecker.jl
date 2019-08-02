@@ -212,11 +212,8 @@ function Base.kron(A::AbstractMatrix, K::AbstractKroneckerProduct)
     return kron(A, kron(B, C))
 end
 
-function Base.kron(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
-    A, B = getmatrices(K1)
-    C, D = getmatrices(K2)
-    return kron(kron(A, B), kron(C, D))
-end
+Base.kron(K1::AbstractKroneckerProduct,
+            K2::AbstractKroneckerProduct) = kron(collect(K1), collect(K2))
 
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
@@ -232,6 +229,12 @@ function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
     return (A * C) ⊗ (B * D)
 end
 
+"""
+    mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
+
+Calculates the vector-matrix multiplication `K * v` and stores the result in
+`x`, overwriting its existing value.
+"""
 function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     M, N = getmatrices(K)
     a, b = size(M)

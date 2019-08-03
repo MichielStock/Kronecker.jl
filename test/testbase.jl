@@ -54,19 +54,6 @@
         @test_throws DimensionMismatch Kns * [1, 2, 3]
     end
 
-    @testset "Vec trick" begin
-        @test K * v ≈ X * v
-        V = rand(4, 3)
-        @test K * vec(V) ≈ collect(K) * vec(V)
-        @test_throws DimensionMismatch K * V
-        @test_throws DimensionMismatch K * reshape(V, 2, 6)
-        K3 = A ⊗ B ⊗ C
-        v3 = randn(size(K3, 2))
-        @test K3 * v3 ≈ collect(K3) * v3
-        u = zeros(12)
-        @test mul!(u, K, v) ≈ X * v
-    end
-
     @testset "Higher order" begin
         @test order(K ⊗ A) == 3
         K3 = kronecker(A, B, C)

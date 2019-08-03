@@ -13,6 +13,7 @@ import Base: collect
 using SparseArrays: sparse
 
 include("base.jl")
+include("vectrick.jl")
 include("indexedkroncker.jl")
 include("eigen.jl")
 include("factorization.jl")

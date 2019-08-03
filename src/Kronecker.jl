@@ -1,21 +1,19 @@
 module Kronecker
 
-export GeneralizedKroneckerProduct, AbstractKroneckerProduct, AbstractSquareKronecker
+export GeneralizedKroneckerProduct, AbstractKroneckerProduct
 export AbstractKroneckerSum, KroneckerSum
-export SquareKroneckerProduct, EigenKroneckerProduct, ShiftedKroneckerProduct
-export issquare, getmatrices, size, getindices, order, issymmetric, isposdef
-export ⊗, kronecker, Matrix, ⊕, kroneckersum
-export tr, det, logdet, collect, inv, +, *, mult!, eigen, /, adjoint, transpose, conj, solve, exp
-export getindex
-export cholesky, CholeskyKronecker
-
-export genvectrick, genvectrick!
+export EigenKroneckerProduct
+export issquare, order, issymmetric, isposdef, getmatrices
+export ⊗, kronecker, ⊕, kroneckersum
+export CholeskyKronecker
 
 using LinearAlgebra
 import LinearAlgebra: mul!
 import Base: collect
+using SparseArrays: sparse
 
 include("base.jl")
+include("vectrick.jl")
 include("indexedkroncker.jl")
 include("eigen.jl")
 include("factorization.jl")

@@ -5,6 +5,7 @@
          4 5 6;
          7 -2 9])
     C = rand(5, 6)
+    D = rand(4, 4)
 
     v = rand(12)
 
@@ -45,11 +46,12 @@
         @test logdet(As ⊗ Bs) ≈ log(det(As ⊗ Bs)) ≈ log(det(kron(As, Bs)))
     end
 
-    @testset "Vec trick" begin
-        @test K * v ≈ X * v
-        K3 = A ⊗ B ⊗ C
-        v3 = randn(size(K3, 2))
-        @test K3 * v3 ≈ collect(K3) * v3
+    @testset "Mismatch errors" begin
+        P, Q = rand(10, 4), rand(4, 5)
+        Kns = P ⊗ Q
+        @test_throws DimensionMismatch inv(Kns)
+        @test_throws DimensionMismatch det(Kns)
+        @test_throws DimensionMismatch Kns * [1, 2, 3]
     end
 
     @testset "Higher order" begin
@@ -66,6 +68,13 @@
         @test order(Kpow) == 5
         @test size(Kpow, 1) == 4^5
         @test Kpow[1,1] ≈ A[1,1]^5
+    end
+
+    @testset "kron" begin
+        @test kron(A ⊗ B, C) ≈ kron(A, B, C)
+        @test kron(A, B ⊗ C) ≈ kron(A, B, C)
+        @test kron(A ⊗ B, C ⊗ D) ≈ kron(A, B, C, D)
+        @test collect((A⊗B) ⊗ (C⊗D)) ≈ kron(A, B, C, D)
     end
 
     @testset "Mixed product" begin

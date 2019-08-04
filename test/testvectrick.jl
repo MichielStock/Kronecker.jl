@@ -33,4 +33,10 @@ end
     @test K * vec(V) ≈ X * vec(V)
     @test_throws DimensionMismatch K * V
     @test_throws DimensionMismatch K * reshape(V, 2, 6)
+    K3 = A ⊗ B ⊗ C
+    v3 = sprand(size(K3, 2),1.0)
+    @test K3 * vec(v3) ≈ collect(K3) * v3
+    u = similar(v)
+    @test mul!(u, K, v) ≈ X * v
+
 end

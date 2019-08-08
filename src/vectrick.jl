@@ -82,3 +82,7 @@ function Base.sum(K::AbstractKroneckerProduct)
     sumB = sum(B)
     return sum(sum(B) * A)
 end
+
+function Base.sum(K::AbstractKroneckerProduct, dims::Int)
+    return kronecker(sum(K.A, dims=dims), sum(K.B, dims=dims))
+end

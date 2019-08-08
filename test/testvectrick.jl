@@ -5,6 +5,8 @@ K = A ⊗ B
 X = collect(K)
 v = rand(12)
 
+K3 = A ⊗ B ⊗ C
+
 @testset "Vec trick" begin
 
     @test K * v ≈ X * v
@@ -13,7 +15,7 @@ v = rand(12)
     @test K * vec(V) ≈ X * vec(V)
     @test_throws DimensionMismatch K * V
     @test_throws DimensionMismatch K * reshape(V, 2, 6)
-    K3 = A ⊗ B ⊗ C
+
     v3 = randn(size(K3, 2))
     @test K3 * v3 ≈ collect(K3) * v3
     u = similar(v)
@@ -40,5 +42,7 @@ end
 @testset "sum" begin
     @test sum(K) ≈ sum(X)
     @test sum(K3) ≈ sum(collect(K3))
-    
+
+    @test sum(K, dims=1) ≈ sum(X, dims=1)
+    @test sum(K3, dims=2) ≈ sum(collect(K3), dims=2)
 end

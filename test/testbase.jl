@@ -10,6 +10,7 @@
     v = rand(12)
 
     K = A ⊗ B
+    K3 = kronecker(A, B, C)
 
     X = kron(A, B)  # true result
 
@@ -56,7 +57,7 @@
 
     @testset "Higher order" begin
         @test order(K ⊗ A) == 3
-        K3 = kronecker(A, B, C)
+
 
         @test order(K3) == 3
         @test collect(K3) ≈ kron(X, C)
@@ -89,4 +90,9 @@
         @test K1 * K2 ≈ collect(K1) * collect(K2)
     end
 
+    @testset "Scalar multiplication" begin
+        @test 3.0K ≈ 3.0X
+        @test K * 2 ≈ 2X
+        @test π * K3 ≈ π * collect(K3)
+    end
 end

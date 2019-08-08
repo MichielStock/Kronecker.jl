@@ -234,3 +234,5 @@ function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
     return (A * C) ⊗ (B * D)
 end
 
+Base.:*(a::Number, K::AbstractKroneckerProduct) = kronecker(a * K.A, K.B)
+Base.:*(K::AbstractKroneckerProduct, a::Number) = a * K

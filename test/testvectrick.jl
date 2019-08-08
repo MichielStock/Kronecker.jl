@@ -1,10 +1,11 @@
+A = rand(3, 3)
+B = ones(4, 4)
+C = randn(5, 6)
+K = A ⊗ B
+X = collect(K)
+v = rand(12)
+
 @testset "Vec trick" begin
-    A = rand(3, 3)
-    B = ones(4, 4)
-    C = randn(5, 6)
-    K = A ⊗ B
-    X = collect(K)
-    v = rand(12)
 
     @test K * v ≈ X * v
 
@@ -20,12 +21,7 @@
 end
 
 @testset "Reshaped vec trick" begin
-    A = rand(3, 3)
-    B = ones(4, 4)
-    C = randn(5, 6)
-    K = A ⊗ B
-    X = collect(K)
-    v = rand(12)
+
 
     @test K * v ≈ X * v
 
@@ -39,4 +35,10 @@ end
     u = similar(v)
     @test mul!(u, K, v) ≈ X * v
 
+end
+
+@testset "sum" begin
+    @test sum(K) ≈ sum(X)
+    @test sum(K3) ≈ sum(collect(K3))
+    
 end

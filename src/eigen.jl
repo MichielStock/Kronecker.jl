@@ -23,11 +23,11 @@ function collect(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
     return Γ * Diagonal(λ) * Γ'
 end
 
-function \(E::Eigen{<:Real, <:Real, <:AbstractKroneckerProduct}, v::AbstractVector{<:Real})
+function \(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}, v::AbstractVector{<:Number})
     λ, Γ = E
     return Γ * (Diagonal(λ) \ (Γ' * v))
 end
 
-det(E::Eigen{<:Real, <:Real, <:AbstractKroneckerProduct}) = prod(E.values)
-logdet(E::Eigen{<:Real, <:Real, <:AbstractKroneckerProduct}) = sum(log, E.values)
-inv(E::Eigen{<:Real, <:Real, <:AbstractKroneckerProduct}) = Eigen(inv.(E.values), E.vectors)
+det(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = prod(E.values)
+logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = sum(log, E.values)
+inv(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = Eigen(inv.(E.values), E.vectors)

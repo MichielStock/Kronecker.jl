@@ -234,5 +234,21 @@ function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
     return (A * C) ⊗ (B * D)
 end
 
+```
+    lmul!(a::Number, K::AbstractKroneckerProduct)
+
+Scale an `AbstractKroneckerProduct` `K` inplace by a factor `a` by rescaling the
+**left** matrix.
+```
+LinearAlgebra.lmul!(a::Number, K::AbstractKroneckerProduct) = lmul!(a, K.A)
+
+```
+    rmul!(K::AbstractKroneckerProduct, a::Number)
+
+Scale an `AbstractKroneckerProduct` `K` inplace by a factor `a` by rescaling the
+**right** matrix.
+```
+LinearAlgebra.rmul!(K::AbstractKroneckerProduct, a::Number) = rmul!(K.B, a)
+
 Base.:*(a::Number, K::AbstractKroneckerProduct) = kronecker(a * K.A, K.B)
-Base.:*(K::AbstractKroneckerProduct, a::Number) = a * K
+Base.:*(K::AbstractKroneckerProduct, a::Number) = kronecker(K.A, K.B * a)

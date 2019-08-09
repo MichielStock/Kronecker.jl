@@ -94,5 +94,8 @@
         @test 3.0K ≈ 3.0X
         @test K * 2 ≈ 2X
         @test π * K3 ≈ π * collect(K3)
+        @test 3.0K isa AbstractKroneckerProduct
+        @test K * 2 isa AbstractKroneckerProduct
+        @test 2(K ⊗ K) isa AbstractKroneckerProduct
     end
 end

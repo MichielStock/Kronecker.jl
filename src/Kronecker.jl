@@ -7,7 +7,7 @@ export issquare, order, issymmetric, isposdef, getmatrices
 export ⊗, kronecker, ⊕, kroneckersum
 export CholeskyKronecker
 
-export isprob, naivesample
+export isprob, naivesample, fastsample, sampleindices
 
 using LinearAlgebra
 import LinearAlgebra: mul!

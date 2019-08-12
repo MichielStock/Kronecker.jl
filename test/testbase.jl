@@ -18,18 +18,17 @@
         @test issquare(A)
         @test !issquare(C)
 
+        @test getmatrices(A)[1] === A
+
+        @test !issymmetric(A)
+
         @test issquare(K)
+        @test !issymmetric(K)
 
         @test K ≈ X
 
         @test order(A) == 1
         @test order(K) == 2
-
-        for j in 1:12
-            for i in 1:12
-                @test K[i,j] ≈ X[i,j]
-            end
-        end
     end
 
     @testset "Linear algebra" begin
@@ -88,6 +87,9 @@
         K2 = (C ⊗ D)
 
         @test K1 * K2 ≈ collect(K1) * collect(K2)
+
+        @test_throws DimensionMismatch (A ⊗ C) * (B ⊗ D)
+        @test_throws DimensionMismatch (A ⊗ D) * (C ⊗ B)
     end
 
     @testset "Scalar multiplication" begin

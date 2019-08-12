@@ -100,4 +100,16 @@
         @test K * 2 isa AbstractKroneckerProduct
         @test 2(K ⊗ K) isa AbstractKroneckerProduct
     end
+
+    @testset "Inplace scalar multiplication" begin
+        A = rand(2, 2)
+        B = rand(3, 4)
+
+        K = copy(A) ⊗ copy(B)
+        lmul!(3, K)
+        rmul!(K, 2)
+        @test K.A ≈ 3A
+        @test K.B ≈ 2B
+        @test K ≈ 6kron(A, B)
+    end
 end

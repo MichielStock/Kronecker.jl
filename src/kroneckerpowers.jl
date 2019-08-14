@@ -39,20 +39,19 @@ getmatrices(K::KroneckerPower{T, 1}) where {T} = (K.A, )
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow
 Base.eltype(K::KroneckerPower) = eltype(K.A)
-issquare(K::KroneckerPower) = squarecheck(K.A)
-squarecheck(K::KroneckerPower) = squarecheck(K.A)
+issquare(K::KroneckerPower) = issquare(K.A)
 
 # SCALAR EQUIVALENTS FOR AbstractKroneckerProduct
 
 """
-    tr(K::KroneckerPower)
+    det(K::KroneckerPower)
 
 Compute the determinant of a Kronecker power.
 """
 function LinearAlgebra.det(K::KroneckerPower)
+    squarecheck(K)
     A, pow = K.A, K.pow
-    squarecheck(A)
-    n = size(A)
+    n = size(A, 1)
     return det(K.A)^(n * pow)
 end
 
@@ -62,9 +61,9 @@ end
 Compute the logarithm of the determinant of a Kronecker power.
 """
 function LinearAlgebra.logdet(K::KroneckerPower)
+    squarecheck(K)
     A, pow = K.A, K.pow
-    squarecheck(A)
-    n = size(A)
+    n = size(A, 1)
     return n * pow * logdet(K.A)
 end
 
@@ -75,8 +74,10 @@ Compute the trace of a Kronecker power.
 """
 function LinearAlgebra.tr(K::KroneckerPower)
     squarecheck(K)
-    return KroneckerPower(K.A, K.pow)
+    return tr(K.A)^K.pow
 end
+
+# Matrix operations
 
 """
     inv(K::KroneckerPower)
@@ -110,7 +111,6 @@ end
 function Base.conj(K::KroneckerPower)
     return KroneckerPower(conj(K.A), K.pow)
 end
-
 
 # mixed-product property
 function Base.:*(K1::KroneckerPower{T1, N},

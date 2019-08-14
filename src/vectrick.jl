@@ -75,3 +75,14 @@ function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef,
                                                         first(size(K))), K, v)
 end
+
+function Base.sum(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    s = zero(eltype(K))
+    sumB = sum(B)
+    return sum(sum(B) * A)
+end
+
+function Base.sum(K::AbstractKroneckerProduct, dims::Int)
+    return kronecker(sum(K.A, dims=dims), sum(K.B, dims=dims))
+end

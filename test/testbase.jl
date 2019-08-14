@@ -10,6 +10,7 @@
     v = rand(12)
 
     K = A ⊗ B
+    K3 = kronecker(A, B, C)
 
     X = kron(A, B)  # true result
 
@@ -17,18 +18,17 @@
         @test issquare(A)
         @test !issquare(C)
 
+        @test getmatrices(A)[1] === A
+
+        @test !issymmetric(A)
+
         @test issquare(K)
+        @test !issymmetric(K)
 
         @test K ≈ X
 
         @test order(A) == 1
         @test order(K) == 2
-
-        for j in 1:12
-            for i in 1:12
-                @test K[i,j] ≈ X[i,j]
-            end
-        end
     end
 
     @testset "Linear algebra" begin
@@ -56,7 +56,7 @@
 
     @testset "Higher order" begin
         @test order(K ⊗ A) == 3
-        K3 = kronecker(A, B, C)
+
 
         @test order(K3) == 3
         @test collect(K3) ≈ kron(X, C)
@@ -87,6 +87,29 @@
         K2 = (C ⊗ D)
 
         @test K1 * K2 ≈ collect(K1) * collect(K2)
+
+        @test_throws DimensionMismatch (A ⊗ C) * (B ⊗ D)
+        @test_throws DimensionMismatch (A ⊗ D) * (C ⊗ B)
     end
 
+    @testset "Scalar multiplication" begin
+        @test 3.0K ≈ 3.0X
+        @test K * 2 ≈ 2X
+        @test π * K3 ≈ π * collect(K3)
+        @test 3.0K isa AbstractKroneckerProduct
+        @test K * 2 isa AbstractKroneckerProduct
+        @test 2(K ⊗ K) isa AbstractKroneckerProduct
+    end
+
+    @testset "Inplace scalar multiplication" begin
+        A = rand(2, 2)
+        B = rand(3, 4)
+
+        K = copy(A) ⊗ copy(B)
+        lmul!(3, K)
+        rmul!(K, 2)
+        @test K.A ≈ 3A
+        @test K.B ≈ 2B
+        @test K ≈ 6kron(A, B)
+    end
 end

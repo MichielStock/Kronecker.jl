@@ -22,9 +22,101 @@ struct KroneckerPower{TA<:AbstractMatrix, N} <: AbstractKroneckerProduct
     end
 end
 
+"""
+    kronecker(A::AbstractMatrix, pow::Int)
+
+Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`. Returns a lazy `KroneckerPower`
+type.
+"""
+kronecker(A::AbstractMatrix, pow::Int) = KroneckerPower(A, pow)
+
+⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
+
 getmatrices(K::KroneckerPower{T, N}) where {T, N} = (K.A, KroneckerPower(K.A, K.pow-1))
 getmatrices(K::KroneckerPower{T, 2}) where {T} = (K.A, K.A)
 getmatrices(K::KroneckerPower{T, 1}) where {T} = (K.A, )
 
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow
+Base.eltype(K::KroneckerPower) = eltype(K.A)
+issquare(K::KroneckerPower) = squarecheck(K.A)
+squarecheck(K::KroneckerPower) = squarecheck(K.A)
+
+# SCALAR EQUIVALENTS FOR AbstractKroneckerProduct
+
+"""
+    tr(K::KroneckerPower)
+
+Compute the determinant of a Kronecker power.
+"""
+function LinearAlgebra.det(K::KroneckerPower)
+    A, pow = K.A, K.pow
+    squarecheck(A)
+    n = size(A)
+    return det(K.A)^(n * pow)
+end
+
+"""
+    logdet(K::KroneckerPower)
+
+Compute the logarithm of the determinant of a Kronecker power.
+"""
+function LinearAlgebra.logdet(K::KroneckerPower)
+    A, pow = K.A, K.pow
+    squarecheck(A)
+    n = size(A)
+    return n * pow * logdet(K.A)
+end
+
+"""
+    tr(K::KroneckerPower)
+
+Compute the trace of a Kronecker power.
+"""
+function LinearAlgebra.tr(K::KroneckerPower)
+    squarecheck(K)
+    return KroneckerPower(K.A, K.pow)
+end
+
+"""
+    inv(K::KroneckerPower)
+
+Compute the inverse of a Kronecker power.
+"""
+function Base.inv(K::KroneckerPower)
+    squarecheck(K)
+    return KroneckerPower(inv(K.A), K.pow)
+end
+
+"""
+    adjoint(K::KroneckerPower)
+
+Compute the adjoint of a Kronecker power.
+"""
+function Base.adjoint(K::KroneckerPower)
+    return KroneckerPower(K.A', K.pow)
+end
+
+"""
+    transpose(K::KroneckerPower)
+
+Compute the transpose of a Kronecker power.
+"""
+function Base.transpose(K::KroneckerPower)
+    A, B = getmatrices(K)
+    return KroneckerPower(transpose(K.A), K.pow)
+end
+
+function Base.conj(K::KroneckerPower)
+    return KroneckerPower(conj(K.A), K.pow)
+end
+
+
+# mixed-product property
+function Base.:*(K1::KroneckerPower{T1, N},
+                        K2::KroneckerPower{T2, N}) where {T1, T2, N}
+    if size(K1, 2) != size(K2, 1)
+        throw(DimensionMismatch("Mismatch between K1 and K2"))
+    end
+    return KroneckerPower(K1.A * K2.A, N)
+end

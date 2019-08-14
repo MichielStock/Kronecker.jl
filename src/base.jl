@@ -31,19 +31,6 @@ kronecker(A, B, C, D)
 """
 kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A,
                                                             kronecker(B...))
-"""
-    kronecker(A::AbstractMatrix, pow::Int)
-
-Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`.
-"""
-function kronecker(A::AbstractMatrix, pow::Int)
-    @assert pow > 0 "Works only with positive powers!"
-    if pow == 1
-        return A
-    else
-        return A ⊗ kronecker(A, pow-1)
-    end
-end
 
 """
     ⊗(A::AbstractMatrix, B::AbstractMatrix)
@@ -53,7 +40,7 @@ Binary operator for `kronecker`, computes as Lazy Kronecker product. See
 """
 ⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
 ⊗(A::AbstractMatrix...) = kronecker(A...)
-⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
+
 
 function Base.getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
     A, B = getmatrices(K)

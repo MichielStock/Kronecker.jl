@@ -14,6 +14,72 @@ struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKro
 end
 
 """
+    kronecker(A::AbstractMatrix, B::AbstractMatrix)
+
+Construct a Kronecker product object between two arrays. Does not evaluate the
+Kronecker product explictly.
+"""
+kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
+
+"""
+    kronecker(A::AbstractMatrix, B::AbstractMatrix)
+
+Higher-order Kronecker lazy kronecker product, e.g.
+```
+kronecker(A, B, C, D)
+```
+"""
+kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A,
+                                                            kronecker(B...))
+
+"""
+    ⊗(A::AbstractMatrix, B::AbstractMatrix)
+
+Binary operator for `kronecker`, computes as Lazy Kronecker product. See
+`kronecker` for documentation.
+"""
+⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
+⊗(A::AbstractMatrix...) = kronecker(A...)
+
+
+function Base.getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+    A, B = getmatrices(K)
+    m, n = size(A)
+    k, l = size(B)
+    return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
+end
+
+"""
+    getmatrices(K::AbstractKroneckerProduct)
+
+Obtain the two matrices of an `AbstractKroneckerProduct` object.
+"""
+getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
+
+"""
+    getmatrices(A::AbstractArray)
+
+Returns a matrix itself. Needed for recursion.
+"""
+getmatrices(A::AbstractArray) = (A,)
+
+function Base.eltype(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return promote_type(eltype(A), eltype(B))
+end
+
+function Base.size(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    (m, n) = size(A)
+    (k, l) = size(B)
+    return m * k, n * l
+end
+
+Base.size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
+
+# CHECKS
+
+"""
     issquare(A::AbstractMatrix)
 
 Checks if an array is a square matrix.
@@ -45,6 +111,19 @@ function LinearAlgebra.issymmetric(K::AbstractKroneckerProduct)
 end
 
 """
+    isposdef(K::AbstractKroneckerProduct)
+
+Test whether a Kronecker product is positive definite (and Hermitian) by trying
+to perform a Cholesky factorization of K.
+"""
+function LinearAlgebra.isposdef(K::AbstractKroneckerProduct)
+    squarecheck(K)
+    return isposdef(K.A) && isposdef(K.B)
+end
+
+# SCALAR PROPERTIES
+
+"""
     order(M::AbstractMatrix)
 
 Returns the order of a matrix, i.e. how many matrices are involved in the
@@ -54,81 +133,29 @@ order(M::AbstractMatrix) = 1
 order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 
 """
-    kronecker(A::AbstractMatrix, B::AbstractMatrix)
+    tr(K::AbstractKroneckerProduct)
 
-Construct a Kronecker product object between two arrays. Does not evaluate the
-Kronecker product explictly.
+Compute the determinant of a Kronecker product.
 """
-kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
-
-"""
-    kronecker(A::AbstractMatrix, B::AbstractMatrix)
-
-Higher-order Kronecker lazy kronecker product, e.g.
-```
-kronecker(A, B, C, D)
-```
-"""
-kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A,
-                                                            kronecker(B...))
-
-"""
-    kronecker(A::AbstractMatrix, pow::Int)
-
-Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`.
-"""
-function kronecker(A::AbstractMatrix, pow::Int)
-    @assert pow > 0 "Works only with positive powers!"
-    if pow == 1
-        return A
-    else
-        return A ⊗ kronecker(A, pow-1)
-    end
+function LinearAlgebra.det(K::AbstractKroneckerProduct)
+    squarecheck(K)
+    A, B = getmatrices(K)
+    m = size(A)[1]
+    n = size(B)[1]
+    return det(K.A)^n * det(K.B)^m
 end
 
 """
-    ⊗(A::AbstractMatrix, B::AbstractMatrix)
+    logdet(K::AbstractKroneckerProduct)
 
-Binary operator for `kronecker`, computes as Lazy Kronecker product. See
-`kronecker` for documentation.
+Compute the logarithm of the determinant of a Kronecker product.
 """
-⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
-⊗(A::AbstractMatrix...) = kronecker(A...)
-⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
-
-"""
-    getmatrices(K::AbstractKroneckerProduct)
-
-Obtain the two matrices of an `AbstractKroneckerProduct` object.
-"""
-getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
-
-"""
-    getmatrices(A::AbstractArray)
-
-Returns a matrix itself. Needed for recursion.
-"""
-getmatrices(A::AbstractArray) = (A,)
-
-function Base.size(K::AbstractKroneckerProduct)
+function LinearAlgebra.logdet(K::AbstractKroneckerProduct)
+    squarecheck(K)
     A, B = getmatrices(K)
-    (m, n) = size(A)
-    (k, l) = size(B)
-    return m * k, n * l
-end
-
-Base.size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
-
-function Base.getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
-    A, B = getmatrices(K)
-    m, n = size(A)
-    k, l = size(B)
-    return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
-end
-
-function Base.eltype(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return promote_type(eltype(A), eltype(B))
+    m = size(A)[1]
+    n = size(B)[1]
+    return n * logdet(A) + m * logdet(B)
 end
 
 """
@@ -141,27 +168,43 @@ function LinearAlgebra.tr(K::AbstractKroneckerProduct)
     return tr(K.A) * tr(K.B)
 end
 
-function LinearAlgebra.det(K::AbstractKroneckerProduct)
-    squarecheck(K)
-    A, B = getmatrices(K)
-    m = size(A)[1]
-    n = size(B)[1]
-    return det(K.A)^n * det(K.B)^m
-end
+"""
+    inv(K::AbstractKroneckerProduct)
 
-function LinearAlgebra.logdet(K::AbstractKroneckerProduct)
-    squarecheck(K)
-    A, B = getmatrices(K)
-    m = size(A)[1]
-    n = size(B)[1]
-    return n * logdet(A) + m * logdet(B)
-end
-
+Compute the inverse of a Kronecker product.
+"""
 function Base.inv(K::AbstractKroneckerProduct)
     squarecheck(K)
     A, B = getmatrices(K)
     return KroneckerProduct(inv(A), inv(B))
 end
+
+"""
+    adjoint(K::AbstractKroneckerProduct)
+
+Compute the adjoint of a Kronecker product.
+"""
+function Base.adjoint(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return kronecker(A', B')
+end
+
+"""
+    transpose(K::AbstractKroneckerProduct)
+
+Compute the transpose of a Kronecker product.
+"""
+function Base.transpose(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return kronecker(transpose(A), transpose(B))
+end
+
+function Base.conj(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return kronecker(conj(A), conj(B))
+end
+
+# COLLECTING
 
 """
     collect(K::AbstractKroneckerProduct)
@@ -180,32 +223,6 @@ end
 Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 """
 Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
-
-function Base.adjoint(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return kronecker(A', B')
-end
-
-function Base.transpose(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return kronecker(transpose(A), transpose(B))
-end
-
-function Base.conj(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return kronecker(conj(A), conj(B))
-end
-
-"""
-    isposdef(K::AbstractKroneckerProduct)
-
-Test whether a Kronecker product is positive definite (and Hermitian) by trying
-to perform a Cholesky factorization of K.
-"""
-function LinearAlgebra.isposdef(K::AbstractKroneckerProduct)
-    squarecheck(K)
-    return isposdef(K.A) && isposdef(K.B)
-end
 
 function Base.kron(K::AbstractKroneckerProduct, C::AbstractMatrix)
     A, B = getmatrices(K)

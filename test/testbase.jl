@@ -56,8 +56,6 @@
 
     @testset "Higher order" begin
         @test order(K ⊗ A) == 3
-
-
         @test order(K3) == 3
         @test collect(K3) ≈ kron(X, C)
 

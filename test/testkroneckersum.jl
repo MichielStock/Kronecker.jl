@@ -7,16 +7,17 @@
     KS = A ⊕ B
     kronsum = kron(A,IB) + kron(IA,B)
 
-    @test collect(KS) == kronsum
+    @test collect(KS) ≈ kronsum
+    @test collect(KS) isa SparseMatrixCSC
 
     @test issquare(KS)
-
 
     C = rand(5,5); IC = oneunit(C)
     KS3 = A ⊕ B ⊕ C
     kronsum3 = kron(A,IB,IC) + kron(IA,B,IC) + kron(IA,IB,C)
 
     @test collect(KS3) ≈ kronsum3
+    @test collect(KS3) isa SparseMatrixCSC
 
     @test order(KS) == 2
     @test order(KS3) == 3
@@ -51,7 +52,7 @@
     B = rand(4, 4); IB = oneunit(B)
     @testset "exp for Kronecker sum" begin
         EKS = exp(A ⊕ B)
-        @test EKS isa SquareKroneckerProduct
+        @test EKS isa AbstractKroneckerProduct
         @test EKS ≈ exp(kron(A, IB) + kron(IA, B))
     end
 end

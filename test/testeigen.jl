@@ -1,7 +1,7 @@
 using Random, LinearAlgebra
 
 # Standardised tests for the eigen decomposition of a square kronecker product
-function eigen_tests(rng, C::SquareKroneckerProduct)
+function eigen_tests(rng, C::AbstractKroneckerProduct)
 
     # Check approximate correctness of decomposition
     λ, Γ = eigen(C)
@@ -30,7 +30,7 @@ end
     # Generate some positive definite matrices so that logdet can be tested.
     A_, B_, C_ = randn(rng, P, P), randn(rng, Q, Q), randn(rng, R, R)
     A, B, C = Symmetric(A_ * A_' + I), Symmetric(B_ * B_' + I), Symmetric(C_ * C_' + I)
-    
+
     D = kronecker(A, B)
     eigen_tests(rng, D)
     eigen_tests(rng, kronecker(D, C))

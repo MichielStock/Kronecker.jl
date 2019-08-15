@@ -1,10 +1,13 @@
 abstract type AbstractKroneckerSum <: GeneralizedKroneckerProduct end
 
-struct KroneckerSum{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerSum
+struct KroneckerSum{T, TA<:AbstractMatrix,
+                        TB<:AbstractMatrix} <: AbstractKroneckerSum
     A::TA
     B::TB
-    function KroneckerSum(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
-        (issquare(A) && issquare(B)) || throw(DimensionMismatch("KroneckerSum only applies to square matrices"))
+    function KroneckerSum(A::AbstractMatrix{T},
+                            B::AbstractMatrix{V}) where {T, V}
+        (issquare(A) && issquare(B)) || throw(DimensionMismatch(
+                                "KroneckerSum only applies to square matrices"))
         return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
     end
 end
@@ -16,7 +19,8 @@ issquare(M::AbstractKroneckerSum) = true
     kroneckersum(A::AbstractMatrix, B::AbstractMatrix)
 
 Construct a sum of Kronecker products between two square matrices and their
-respective identity matrices. Does not evaluate the Kronecker products explicitly.
+respective identity matrices. Does not evaluate the Kronecker products
+explicitly.
 """
 kroneckersum(A::AbstractMatrix, B::AbstractMatrix) = KroneckerSum(A,B)
 
@@ -53,14 +57,13 @@ Binary operator for `kroneckersum`, computes as Lazy Kronecker sum. See `kroneck
 documentation.
 """
 ⊕(A::AbstractMatrix, B::AbstractMatrix) = kroneckersum(A, B)
-
 ⊕(A::AbstractMatrix...) = kroneckersum(A...)
 ⊕(A::AbstractMatrix, pow::Int) = kroneckersum(A, pow)
 
 """
-    getmatrices(K::T) where T <: KroneckerSum
+    getmatrices(K::T) where T <: AbstractKroneckerSum
 
-Obtain the two Kronecker products of a `KroneckerSum` object.
+Obtain the two matrices of an `AbstractKroneckerSum` object.
 """
 Kronecker.getmatrices(K::AbstractKroneckerSum) = (K.A, K.B)
 
@@ -100,21 +103,18 @@ function LinearAlgebra.tr(K::AbstractKroneckerSum)
     return m * tr(A) + n * tr(B)
 end
 
-
 """
-    collect(K::AbstractKroneckerProduct)
+    collect(K::AbstractKroneckerSum)
 
-Collects a lazy instance of the `AbstractKroneckerProduct` type into a full,
-native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
+Collects a lazy instance of the `AbstractKroneckerSum` type into a full,
+native matrix. Returns the result as a sparse matrix.
 """
 function Base.collect(K::AbstractKroneckerSum)
-    A = Array{eltype(K)}(undef, size(K))
-    for (ind, k) in enumerate(K)
-        @inbounds A[ind] = k
-    end
-    return A
+    A, B = getmatrices(K)
+    A, B = sparse(A), sparse(B)
+    IA, IB = oneunit(A), oneunit(B)
+    return kron(A, IB) + kron(IA, B)
 end
-
 
 function Base.adjoint(K::AbstractKroneckerSum)
     A, B = getmatrices(K)

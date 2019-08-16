@@ -30,7 +30,10 @@ isprob(A::AbstractArray) = all(0 .<= A .<= 1)
 Test if a Kronecker product can be interpeted as a probability matrix,
 i.e., all elements are between 0 and 1.
 """
-isprob(K::AbstractKroneckerProduct) = isprob(K.A) && isprob(K.B)
+function isprob(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return isprob(A) && isprob(B)
+end
 
 """
     naivesample(P::AbstractKroneckerProduct)

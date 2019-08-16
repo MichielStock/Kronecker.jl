@@ -84,5 +84,6 @@ function Base.sum(K::AbstractKroneckerProduct)
 end
 
 function Base.sum(K::AbstractKroneckerProduct, dims::Int)
-    return kronecker(sum(K.A, dims=dims), sum(K.B, dims=dims))
+    A, B = getmatrices(K)
+    return kronecker(sum(A, dims=dims), sum(B, dims=dims))
 end

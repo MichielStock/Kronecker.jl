@@ -36,4 +36,5 @@ end
     eigen_tests(rng, kronecker(D, C))
     eigen_tests(rng, kronecker(C, D))
     eigen_tests(rng, kronecker(kronecker(A, B), kronecker(B, A)))
+    eigen_tests(rng, kronecker(A, 4))
 end

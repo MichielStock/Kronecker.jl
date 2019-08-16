@@ -4,8 +4,9 @@ import Base: +
 
 function eigen(K::AbstractKroneckerProduct)
     squarecheck(K)
-    A_λ, A_Γ = eigen(K.A)
-    B_λ, B_Γ = eigen(K.B)
+    A, B = getmatrices(K)
+    A_λ, A_Γ = eigen(A)
+    B_λ, B_Γ = eigen(B)
     return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
 end
 

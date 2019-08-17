@@ -45,6 +45,7 @@ end
 
     @test sum(K, dims=1) ≈ sum(X, dims=1)
     @test sum(K3, dims=2) ≈ sum(collect(K3), dims=2)
+    @test sum(K3, dims=2) isa AbstractKroneckerProduct
 
     @test sum(kronecker(A, 3)) ≈ sum(kron(A, A, A))
 end

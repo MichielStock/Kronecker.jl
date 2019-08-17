@@ -76,14 +76,13 @@ function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
                                                         first(size(K))), K, v)
 end
 
-function Base.sum(K::AbstractKroneckerProduct)
+function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int}=nothing)
     A, B = getmatrices(K)
-    s = zero(eltype(K))
-    sumB = sum(B)
-    return sum(sum(B) * A)
-end
-
-function Base.sum(K::AbstractKroneckerProduct, dims::Int)
-    A, B = getmatrices(K)
-    return kronecker(sum(A, dims=dims), sum(B, dims=dims))
+    if dims == nothing
+        s = zero(eltype(K))
+        sumB = sum(B)
+        return sum(sum(B) * A)
+    else
+        return kronecker(sum(A, dims=dims), sum(B, dims=dims))
+    end
 end

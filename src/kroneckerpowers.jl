@@ -108,6 +108,11 @@ function Base.transpose(K::KroneckerPower)
     return KroneckerPower(transpose(K.A), K.pow)
 end
 
+"""
+    conj(K::KroneckerPower)
+
+Compute the conjugate of a Kronecker power.
+"""
 function Base.conj(K::KroneckerPower)
     return KroneckerPower(conj(K.A), K.pow)
 end

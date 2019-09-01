@@ -15,6 +15,12 @@ vecmulR!(X,N,V,M) = X .= N * (V * transpose(M))
 vecmulL!(X,N,V,M) = X .= (N * V) * transpose(M)
 vecmul!(X,N,V,M) = X .= N * V * transpose(M)
 
+vectrick_reshape(v::AbstractVector, d::Int, b::Int) = reshape(v, d, b)
+function vectrick_reshape(v::ReshapedArray{<:Any, 1}, d::Int, b::Int)
+    return size(v.parent) == (d, b) ? v.parent : reshape(v, d, b)
+end
+
+
 """
     mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
 
@@ -31,7 +37,7 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
         "Dimension missmatch between kronecker system and result placeholder"))
     e == b * d || throw(DimensionMismatch(
         "Dimension missmatch between kronecker system and vector"))
-    V = reshape(v, d, b)
+    V = vectrick_reshape(v, d, b)
     if (d + a) * b < (b + c) * d
         x .= vec(N * (V * transpose(M)))
     else
@@ -40,36 +46,36 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     return x
 end
 
-"""
-    mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::ReshapedArray)
+# """
+#     mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::ReshapedArray)
 
-Calculates the vector-matrix multiplication `K * v` and stores the result in
-`x`, overwriting its existing value. Retains any special structure in the case
-that `v` is a reshaped matrix.
-"""
-function mul!(x::AbstractVector, K::AbstractKroneckerProduct,
-                                                    v::ReshapedArray)
-    M, N = getmatrices(K)
-    a, b = size(M)
-    c, d = size(N)
-    e = length(v)
-    f = length(x)
-    f == a * c || throw(DimensionMismatch(
-        "Dimension missmatch between kronecker system and result placeholder"))
-    e == b * d || throw(DimensionMismatch(
-        "Dimension missmatch between kronecker system and vector"))
-    if size(v.parent) == (d, b)
-        V = v.parent
-    else
-        V = reshape(v, d, b)
-    end
-    if (d + a) * b < (b + c) * d
-        x .= vec(N * (V * transpose(M)))
-    else
-        x .= vec((N * V) * transpose(M))
-    end
-    return x
-end
+# Calculates the vector-matrix multiplication `K * v` and stores the result in
+# `x`, overwriting its existing value. Retains any special structure in the case
+# that `v` is a reshaped matrix.
+# """
+# function mul!(x::AbstractVector, K::AbstractKroneckerProduct,
+#                                                     v::ReshapedArray)
+#     M, N = getmatrices(K)
+#     a, b = size(M)
+#     c, d = size(N)
+#     e = length(v)
+#     f = length(x)
+#     f == a * c || throw(DimensionMismatch(
+#         "Dimension missmatch between kronecker system and result placeholder"))
+#     e == b * d || throw(DimensionMismatch(
+#         "Dimension missmatch between kronecker system and vector"))
+#     if size(v.parent) == (d, b)
+#         V = v.parent
+#     else
+#         V = reshape(v, d, b)
+#     end
+#     if (d + a) * b < (b + c) * d
+#         x .= vec(N * (V * transpose(M)))
+#     else
+#         x .= vec((N * V) * transpose(M))
+#     end
+#     return x
+# end
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef,

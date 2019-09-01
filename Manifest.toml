@@ -18,6 +18,12 @@ version = "0.17.0"
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
+[[FillArrays]]
+deps = ["LinearAlgebra", "Random", "SparseArrays"]
+git-tree-sha1 = "4c707c87ddd3199fc5624d5c98b2c706e4d00675"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "0.7.0"
+
 [[InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"

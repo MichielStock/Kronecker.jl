@@ -224,6 +224,9 @@ Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 """
 Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
+Base.:+(A::AbstractKroneckerProduct, B::StridedMatrix) = Matrix(A) + B
+Base.:+(A::StridedMatrix, B::AbstractKroneckerProduct) = A + Matrix(B)
+
 function Base.kron(K::AbstractKroneckerProduct, C::AbstractMatrix)
     A, B = getmatrices(K)
     return kron(kron(A, B), C)

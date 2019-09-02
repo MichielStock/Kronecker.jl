@@ -1,4 +1,4 @@
-using Kronecker, Test, LinearAlgebra
+using Kronecker, Test, LinearAlgebra, Random, FillArrays
 using SparseArrays: SparseMatrixCSC, sprand, AbstractSparseMatrix
 
 @testset "Kronecker" begin

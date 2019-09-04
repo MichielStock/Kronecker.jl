@@ -1,0 +1,46 @@
+\begin{thebibliography}{1}
+
+\bibitem{Airola2017genvectric}
+Antti Airola and Tapio Pahikkala.
+{Fast Kronecker product kernel methods via generalized vec trick}.
+{\em IEEE Transactions on Neural Networks and Learning Systems},
+  29(8):3374--3387, 2018.
+
+\bibitem{Besard2019}
+Tim Besard, Christophe Foket, and Bjorn {De Sutter}.
+{Effective extensible programming: unleashing Julia on GPUs}.
+{\em IEEE Transactions on Parallel and Distributed Systems}, 30(4):827--841,
+  2019.
+
+\bibitem{Innes2019}
+Mike Innes, Alan Edelman, Keno Fischer, Chris Rackauckas, Elliot Saba, Viral~B
+  Shah, and Will Tebbutt.
+{A differentiable programming system to bridge machine learning and scientific
+  computing}.
+{\em Innes, M Edelman, A Fischer, K Rackauckas, C Saba, E Shah, Viral Tebbutt,
+  W}, 2019.
+
+\bibitem{Leskovec2008}
+Jure Leskovec, Deepayan Chakrabarti, Jon Kleinberg, Christos Faloutsos, and
+  Zoubin Ghahramani.
+{Kronecker graphs: an approach to modeling networks}.
+{\em Journal of Machine Learning Research}, 11:985--1042, 2008.
+
+\bibitem{Sch2013}
+Kathrin Sch{\"{a}}cke.
+{On the Kronecker Product}.
+Technical report, 2013.
+
+\bibitem{Stock2017tskrr}
+Michiel Stock, Tapio Pahikkala, Antti Airola, Bernard {De Baets}, and Willem
+  Waegeman.
+{A comparative study of pairwise learning methods based on kernel ridge
+  regression}.
+{\em Neural Computation}, 30(8):2245--2283, 2018.
+
+\bibitem{VanLoan2000}
+Charles~F. {Van Loan}.
+{The ubiquitous Kronecker product}.
+{\em Journal of Computational and Applied Mathematics}, 123(1-2):85--100, 2000.
+
+\end{thebibliography}

@@ -1,3 +1,3 @@
 using Documenter, Kronecker, LinearAlgebra
 
-makedocs(sitename="Kronecker.jl")
+makedocs(sitename="Kronecker.jl", modules = [Kronecker])

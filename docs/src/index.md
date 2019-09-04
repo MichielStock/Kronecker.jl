@@ -5,6 +5,7 @@ Pages = [
     "man/basic.md",
     "man/types.md",
     "man/linalgebra.md",
+    "man/multiplication.md"
     "man/factorization.md",
     "man/kroneckersums.md",
     "man/kroneckerpowers.md"
@@ -13,7 +14,7 @@ Pages = [
 
 *A general-purpose toolbox for efficient Kronecker-based algebra.*
 
-`Kronecker.jl` is a Julia package for working with large-scale Kronecker systems. The main feature of `Kronecker.jl` is providing a function `kronecker(A, B)` used to obtain an instance of the lazy `GeneralizedKroneckerProduct` type. In contrast to the native Julai function `kron(A, B)`, this does not compute the Kronecker product but instead stores the matrices in a specialized structure. Commonly-used mathematical functions are overloaded to provide the most efficient methods to work with Kronecker products. We also provide an equivalent binary operator `⊗` which can be used directly as a Kronecker product in statements, i.e., A ⊗ B`.
+`Kronecker.jl` is a Julia package for working with large-scale Kronecker systems. The main feature of `Kronecker.jl` is providing a function `kronecker(A, B)` used to obtain an instance of the lazy `GeneralizedKroneckerProduct` type. In contrast to the native Julia function `kron(A, B)`, this does not compute the Kronecker product but instead stores the matrices in a specialized structure. Commonly-used mathematical functions are overloaded to provide the most efficient methods to work with Kronecker products. We also provide an equivalent binary operator `⊗` which can be used directly as a Kronecker product in statements, i.e., A ⊗ B`.
 
 ## Package features
 

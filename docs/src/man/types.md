@@ -2,7 +2,9 @@
 
 The abstract type at the top of the hierarchy of `Kronecker.jl`'s type system is `GeneralizedKroneckerProduct` a subtype `AbstractMatrix`. `GeneralizedKroneckerProduct` contains all subtypes which contain a Kronecker product.
 
-Pure Kronecker products, i.e., all expressions that can be written as `A ⊗ B`, with `A` and `B` `AbstractMatix` types are part of the abstract type `AbstractKroneckerProduct <: GeneralizedKroneckerProduct`. Concrete instantiations are stored in the structure `KroneckerProduct <: AbstractKroneckerProduct`, a container for `A` and `B`. For Kronecker powers, iterative multiplications of the same matrix, i.e.,
+Pure Kronecker products, i.e., all expressions that can be written as `A ⊗ B`, with `A` and `B` `AbstractMatix` types are part of the abstract type `AbstractKroneckerProduct <: GeneralizedKroneckerProduct`. Concrete instantiations are stored in the structure `KroneckerProduct <: AbstractKroneckerProduct`, a container for `A` and `B`. Instances of `KroneckerProduct` structs are annotated with the element type of the Kronecker product (promoted from the element types of `A` and `B`) and the types of `A` and `B`.
+
+For Kronecker powers, iterative multiplications of the same matrix, i.e.,
 
 ```math
 \bigotimes_{i=1}^K A = A\otimes A \otimes \ldots \otimes A\,,
@@ -30,4 +32,4 @@ KroneckerPower
 IndexedKroneckerProduct
 ```
 
-It is important to note that since all instances of subtypes of `GeneralizedKroneckerProduct` are instances of an `AbstractMatrix`, it is possible to combine them at heart. This is because Kronecker products are between matrices.
+It is important to note that since all instances of subtypes of `GeneralizedKroneckerProduct` are instances of an `AbstractMatrix`, it is possible to combine them at heart. This is because Kronecker products are between any types of matrices, which Kronecker products themselves are.

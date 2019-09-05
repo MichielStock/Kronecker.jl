@@ -91,7 +91,3 @@ function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int}=nothing)
         return kronecker(sum(A, dims=dims), sum(B, dims=dims))
     end
 end
-
-
-function squaremult(A::AbstractKroneckerProduct, B::StridedMatrix)
-    squarecheck(A)

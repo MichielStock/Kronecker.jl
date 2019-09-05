@@ -90,6 +90,11 @@
         @test_throws DimensionMismatch (A ⊗ D) * (C ⊗ B)
     end
 
+    @testset "Add to dense" begin
+        @test K + X ≈ Matrix(K) + X
+        @test X + K ≈ X + Matrix(K)
+    end
+
     @testset "Scalar multiplication" begin
         @test 3.0K ≈ 3.0X
         @test K * 2 ≈ 2X

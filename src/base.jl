@@ -1,11 +1,11 @@
-abstract type GeneralizedKroneckerProduct <: AbstractMatrix{Number} end
+abstract type GeneralizedKroneckerProduct{T} <: AbstractMatrix{T} end
 
-abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
+abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 # general Kronecker product between two matrices
-struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+struct KroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
     A::TA
     B::TB
     function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
@@ -63,10 +63,7 @@ Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
 
-function Base.eltype(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return promote_type(eltype(A), eltype(B))
-end
+Base.eltype(K::AbstractKroneckerProduct{T}) where {T} = T
 
 function Base.size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)

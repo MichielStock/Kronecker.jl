@@ -2,12 +2,13 @@ using Kronecker, Test, LinearAlgebra, Random, FillArrays
 using SparseArrays: SparseMatrixCSC, sprand, AbstractSparseMatrix
 
 @testset "Kronecker" begin
-    include("testbase.jl")
-    include("testkroneckerpowers.jl")
-    include("testvectrick.jl")
-    include("testindexed.jl")
-    include("testeigen.jl")
-    include("testkroneckersum.jl")
-    include("testfactorization.jl")
-    include("testkroneckergraphs.jl")
+    # include("base.jl")
+    # include("kroneckerpowers.jl")
+    # include("vectrick.jl")
+    # include("indexed.jl")
+    # include("eigen.jl")
+    include("cholesky.jl")
+    # include("kroneckersum.jl")
+    # include("factorization.jl")
+    # include("kroneckergraphs.jl")
 end

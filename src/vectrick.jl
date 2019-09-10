@@ -39,9 +39,9 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
         "Dimension missmatch between kronecker system and vector"))
     V = vectrick_reshape(v, d, b)
     if (d + a) * b < (b + c) * d
-        x .= vec(N * (V * transpose(M)))
+        mul!(vectrick_reshape(x, c, a), N, V * transpose(M))
     else
-        x .= vec((N * V) * transpose(M))
+        mul!(vectrick_reshape(x, c, a), N * V, transpose(M))
     end
     return x
 end

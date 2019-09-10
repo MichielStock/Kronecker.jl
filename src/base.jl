@@ -221,6 +221,17 @@ Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 """
 Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
+"""
+    copy(K::AbstractKroneckerProduct)
+
+Creates a copy of a Kronecker product. Recursively uses `copy` to copy all
+elements of the Kronecker product into a new type of Kronecker.
+"""
+function Base.copy(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return copy(A) ⊗ copy(B)
+end
+
 function Base.:+(A::AbstractKroneckerProduct, B::StridedMatrix)
     C = Matrix(A)
     C .+= B

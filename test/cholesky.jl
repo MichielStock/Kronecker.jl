@@ -19,6 +19,7 @@ to_psd(A) = A * A' + I
     @test det(chol_A_kron_B) ≈ det(chol_A_kron_B_dense)
     @test logdet(chol_A_kron_B) ≈ logdet(chol_A_kron_B_dense)
 
+    @test inv(chol_A_kron_B) ≈ inv(chol_A_kron_B_dense)
 
     # Test backsolve vs dense vector from the left.
     x = randn(rng, M * N)

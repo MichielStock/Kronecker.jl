@@ -60,8 +60,13 @@ function logdet(C::KroneckerCholesky)
     return size(B, 1) * logdet_A + size(A, 1) * logdet_B
 end
 
+function Base.inv(C::KroneckerCholesky)
+    A, B = getmatrices(C.factors)
+    invA = inv(Cholesky(A, C.uplo, 0))
+    invB = inv(Cholesky(B, C.uplo, 0))
+    return invA ⊗ invB
+end
+
 function \(C::KroneckerCholesky, x::AbstractVecOrMat)
-    C_upper = C.U
-    C_lower = C.L
-    return C_upper \ (C_lower \ x)
+    return inv(C) * x
 end

@@ -55,6 +55,7 @@ reshape_rows(x, sizes...) = transpose(reshape(collect(transpose(x)), reverse(siz
 
 kron_id_a(a, x) = reshape_cols(a * reshape_cols(x, size(a)[2], :), :, size(x)[2])
 kron_a_id(a, x) = reshape_rows(a * reshape_rows(x, size(a)[2], :), :, size(x)[2])
+
 function kron_a_b(A, B, x)
     a, b = size(A)
     c, d = size(B)
@@ -85,7 +86,7 @@ function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int}=nothing)
     if dims == nothing
         s = zero(eltype(K))
         sumB = sum(B)
-        return sum(sum(B) * A)
+        return sum(sumB * A)
     else
         return kronecker(sum(A, dims=dims), sum(B, dims=dims))
     end

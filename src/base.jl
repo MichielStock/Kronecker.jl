@@ -132,7 +132,7 @@ order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 """
     tr(K::AbstractKroneckerProduct)
 
-Compute the determinant of a Kronecker product.
+Compute the trace of a Kronecker product.
 """
 function LinearAlgebra.det(K::AbstractKroneckerProduct)
     squarecheck(K)

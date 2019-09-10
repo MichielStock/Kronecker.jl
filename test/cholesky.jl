@@ -13,11 +13,14 @@ to_psd(A) = A * A' + I
     A_kron_B_dense = kron(A, B)
     chol_A_kron_B_dense = cholesky(A_kron_B_dense)
 
+    @test size(chol_A_kron_B) == size(chol_A_kron_B_dense)
+
     # Check for agreement in user-facing properties of Kronecker-factored and dense.
     @test chol_A_kron_B.U ≈ chol_A_kron_B_dense.U
     @test chol_A_kron_B.L ≈ chol_A_kron_B_dense.L
     @test det(chol_A_kron_B) ≈ det(chol_A_kron_B_dense)
     @test logdet(chol_A_kron_B) ≈ logdet(chol_A_kron_B_dense)
+
 
     @test inv(chol_A_kron_B) ≈ inv(chol_A_kron_B_dense)
 

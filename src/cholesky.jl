@@ -4,6 +4,17 @@ import LinearAlgebra: cholesky, Cholesky, char_uplo, UpperTriangular, LowerTrian
 
 const KroneckerCholesky{T} = Cholesky{T, <:AbstractKroneckerProduct{T}} where {T}
 
+"""
+    cholesky(K::AbstractKroneckerProduct; check=true)
+
+Compute the Cholesky factorization of a product `K` of symmetric and positive
+definite matrices and return a Cholesky factorization, with the Kronecker
+structure retained. The following functions are available for Cholesky
+factorizations of Kronecker products: `size`, `\`, `inv`, `det`, `logdet` and
+`isposdef`.
+
+See documentation of `LinearAlgebra.cholesky` for details.
+"""
 function cholesky(K::AbstractKroneckerProduct; check=true)
     A, B = getmatrices(K)
     chol_A, chol_B = cholesky(A; check=true), cholesky(B; check=true)
@@ -14,21 +25,49 @@ function Cholesky(factors::KroneckerProduct{T}, uplo::AbstractChar, info::Intege
     return Cholesky{T, typeof(factors)}(factors, uplo, info)
 end
 
-function UpperTriangular(C::AbstractKroneckerProduct)
-    A, B = getmatrices(C)
+"""
+    UpperTriangular(K::AbstractKroneckerProduct)
+
+Converts a `AbstractKroneckerProduct` by taking the upper triangular part of
+the individual matrices.
+
+Generally NOT the same matrix as `UpperTriangular(collect(K))`.
+"""
+function UpperTriangular(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
     return UpperTriangular(A) ⊗ UpperTriangular(B)
 end
 
-function LowerTriangular(C::AbstractKroneckerProduct)
-    A, B = getmatrices(C)
+"""
+    LowerTriangular(K::AbstractKroneckerProduct)
+
+Converts a `AbstractKroneckerProduct` by taking the lower triangular part of
+the individual matrices.
+
+Generally NOT the same matrix as `LowerTriangular(collect(K))`.
+"""
+function LowerTriangular(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
     return LowerTriangular(A) ⊗ LowerTriangular(B)
 end
 
-function istril(C::AbstractKroneckerProduct)
-    A, B = getmatrices(C)
+"""
+    istril(K::AbstractKroneckerProduct)
+
+Checks if all matrices in an `AbstractKroneckerProduct` are lower triangular.
+Implies that `K` is lower triangular.
+"""
+function istril(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
     return istril(A) && istril(B)
 end
 
+"""
+    istriu(K::AbstractKroneckerProduct)
+
+Checks if all matrices in an `AbstractKroneckerProduct` are upper triangular.
+Implies that `K` is upper triangular.
+"""
 function istriu(C::AbstractKroneckerProduct)
     A, B = getmatrices(C)
     return istriu(A) && istriu(B)
@@ -53,6 +92,12 @@ function getproperty(C::KroneckerCholesky, d::Symbol)
     end
 end
 
+"""
+    logdet(K::KroneckerCholesky)
+
+Compute the logarithm of the determinant of the Cholesky factorization of a
+Kronecker product.
+"""
 function logdet(C::KroneckerCholesky)
     A, B = getmatrices(C.factors)
     logdet_A = logdet(Cholesky(A, C.uplo, 0))
@@ -60,6 +105,11 @@ function logdet(C::KroneckerCholesky)
     return size(B, 1) * logdet_A + size(A, 1) * logdet_B
 end
 
+"""
+    inv(C::KroneckerCholesky)
+
+Compute the inverse of the Cholesky factorization of a Kronecker product.
+"""
 function Base.inv(C::KroneckerCholesky)
     A, B = getmatrices(C.factors)
     invA = inv(Cholesky(A, C.uplo, 0))
@@ -67,6 +117,6 @@ function Base.inv(C::KroneckerCholesky)
     return invA ⊗ invB
 end
 
-function \(C::KroneckerCholesky, x::AbstractVecOrMat)
-    return inv(C) * x
+function \(C::KroneckerCholesky, v::AbstractVecOrMat)
+    return inv(C) * v
 end

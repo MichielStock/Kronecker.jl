@@ -4,10 +4,10 @@ import LinearAlgebra: cholesky, Cholesky, char_uplo, UpperTriangular, LowerTrian
 
 const KroneckerCholesky{T} = Cholesky{T, <:AbstractKroneckerProduct{T}} where {T}
 
-function cholesky(A::AbstractKroneckerProduct; check=true)
-    P, Q = getmatrices(A)
-    chol_P, chol_Q = cholesky(P; check=true), cholesky(Q; check=true)
-    return Cholesky(chol_P.factors ⊗ chol_Q.factors, 'U', 0)
+function cholesky(K::AbstractKroneckerProduct; check=true)
+    A, B = getmatrices(K)
+    chol_A, chol_B = cholesky(A; check=true), cholesky(B; check=true)
+    return Cholesky(chol_A.factors ⊗ chol_B.factors, 'U', 0)
 end
 
 function Cholesky(factors::KroneckerProduct{T}, uplo::AbstractChar, info::Integer) where {T}
@@ -42,9 +42,10 @@ function getproperty(C::KroneckerCholesky, d::Symbol)
     Cuplo != 'U' && throw(NotImplementedError(""))
 
     if d == :U
-        return UpperTriangular(Cuplo === char_uplo(d) ? Cfactors : copy(Cfactors'))
+        return UpperTriangular(Cfactors)
     elseif d == :L
-        return LowerTriangular(Cuplo === char_uplo(d) ? Cfactors : copy(Cfactors'))
+        return LowerTriangular(copy(Cfactors'))
+        #return LowerTriangular(Cuplo === char_uplo(d) ? Cfactors : copy(Cfactors'))
     elseif d == :UL
         return (Cuplo === 'U' ? UpperTriangular(Cfactors) : LowerTriangular(Cfactors))
     else
@@ -61,5 +62,6 @@ end
 
 function \(C::KroneckerCholesky, x::AbstractVecOrMat)
     C_upper = C.U
-    return C_upper \ (C_upper' \ x)
+    C_lower = C.L
+    return C_upper \ (C_lower \ x)
 end

@@ -17,7 +17,7 @@ See documentation of `LinearAlgebra.cholesky` for details.
 """
 function cholesky(K::AbstractKroneckerProduct; check=true)
     A, B = getmatrices(K)
-    chol_A, chol_B = cholesky(A; check=true), cholesky(B; check=true)
+    chol_A, chol_B = cholesky(A; check=check), cholesky(B; check=check)
     return Cholesky(chol_A.factors ⊗ chol_B.factors, 'U', 0)
 end
 

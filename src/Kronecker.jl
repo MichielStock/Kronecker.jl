@@ -10,7 +10,7 @@ export CholeskyKronecker
 
 export isprob, naivesample, fastsample, sampleindices
 
-using LinearAlgebra
+using LinearAlgebra, FillArrays
 import LinearAlgebra: mul!, lmul!, rmul!
 import Base: collect
 using SparseArrays: sparse

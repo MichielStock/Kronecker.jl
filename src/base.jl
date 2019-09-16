@@ -51,7 +51,7 @@ Binary operator for `kronecker`, computes as Lazy Kronecker product. See
 Computes and returns the (i,j)-th element of an `AbstractKroneckerProduct` K.
 Uses recursion if `K` is of an order greater than two.
 """
-function Base.getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+function getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
     A, B = getmatrices(K)
     m, n = size(A)
     k, l = size(B)
@@ -72,7 +72,7 @@ Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
 
-function Base.eltype(K::AbstractKroneckerProduct)
+function eltype(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return promote_type(eltype(A), eltype(B))
 end
@@ -82,7 +82,7 @@ end
 
 Returns a the size of an `AbstractKroneckerProduct` instance.
 """
-function Base.size(K::AbstractKroneckerProduct)
+function size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     (m, n) = size(A)
     (k, l) = size(B)
@@ -94,7 +94,7 @@ end
 
 Returns a the size of an `GeneralizedKroneckerProduct` instance.
 """
-Base.size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
+size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
 
 # CHECKS
 
@@ -192,7 +192,7 @@ end
 
 Compute the inverse of a Kronecker product.
 """
-function Base.inv(K::AbstractKroneckerProduct)
+function inv(K::AbstractKroneckerProduct)
     squarecheck(K)
     A, B = getmatrices(K)
     return KroneckerProduct(inv(A), inv(B))
@@ -203,7 +203,7 @@ end
 
 Compute the adjoint of a Kronecker product.
 """
-function Base.adjoint(K::AbstractKroneckerProduct)
+function adjoint(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(A', B')
 end

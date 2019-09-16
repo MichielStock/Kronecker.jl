@@ -22,14 +22,4 @@ These work similar as intances of `AbstractKroneckerProduct`.
 
 Finally, we have `IndexedKroneckerProduct <: GeneralizedKroneckerProduct`, which stores submatrices of a Kronecker product. This contains both the Kronecker product as well as the indices.
 
-```@docs
-GeneralizedKroneckerProduct
-AbstractKroneckerProduct
-KroneckerProduct
-AbstractKroneckerSum
-KroneckerSum
-KroneckerPower
-IndexedKroneckerProduct
-```
-
 It is important to note that since all instances of subtypes of `GeneralizedKroneckerProduct` are instances of an `AbstractMatrix`, it is possible to combine them at heart. This is because Kronecker products are between any types of matrices, which Kronecker products themselves are.

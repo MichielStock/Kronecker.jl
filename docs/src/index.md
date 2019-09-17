@@ -6,6 +6,7 @@ Pages = [
     "man/types.md",
     "man/multiplication.md"
     "man/factorization.md",
+    "man/indexed.md",
     "man/kroneckersums.md",
     "man/kroneckerpowers.md"
 ]

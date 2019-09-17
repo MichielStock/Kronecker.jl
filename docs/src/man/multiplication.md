@@ -51,8 +51,11 @@ The vec trick works with higher-order Kronecker products. **However, at the mome
 ## Docstrings
 
 ```@docs
-*
 mul!
 lmul!
 rmul!
 ```
+
+## Sampled Kronecker-vector multiplications
+
+See [Indexed Kronecker products](@ref) for the specifics.

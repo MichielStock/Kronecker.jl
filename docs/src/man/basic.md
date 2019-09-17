@@ -34,6 +34,7 @@ order
 getmatrices
 issquare
 issymmetric
+sum
 ```
 
 ## Linear algebra

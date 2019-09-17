@@ -130,6 +130,12 @@ function Base.conj(K::AbstractKroneckerSum)
     return kroneckersum(conj(A), conj(B))
 end
 
+"""
+    exp(K::AbstractKroneckerSum)
+
+Computes the matrix exponential of an `AbstractKroneckerSum` `K`. Returns an
+instance of `KroneckerProduct`. 
+"""
 function Base.exp(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return kronecker(exp(A), exp(B))

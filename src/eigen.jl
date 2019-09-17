@@ -2,6 +2,14 @@ using LinearAlgebra: Eigen
 import LinearAlgebra: eigen, \, det, logdet, inv
 import Base: +
 
+"""
+    eigen(K::AbstractKroneckerProduct)
+
+Wrapper around `eigen` from the `LinearAlgebra` package. Performs Eigenvalue decompositon
+on the matrices of a `AbstractKroneckerProduct` instances and returns an
+`Eigen` type. The functions `size`, `\\`, `inv`, `det`,
+and `logdet` are overloaded to efficiently work with this type.
+"""
 function eigen(K::AbstractKroneckerProduct)
     squarecheck(K)
     A, B = getmatrices(K)

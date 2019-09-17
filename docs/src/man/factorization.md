@@ -19,7 +19,7 @@ The case where $A$ and $B$ are postive semi-definite occurs frequently in machin
 ```@repl
 using Kronecker, LinearAlgebra # hide
 A, B = rand(10, 10), randn(4, 4);
-As, Bs = (A, B) .|> X -> X * X';  # make postive definite
+As, Bs = (A, B) .|> X -> X * X';  # make positive definite
 K = As ⊗ Bs
 E = eigen(K)
 logdet(E)
@@ -35,4 +35,22 @@ eigen
 det(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
 logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
 inv(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
+```
+
+## Cholesky factorization
+
+Similar to the eigenvalue decompositon, `cholesky` has been overloaded to allow for efficient Cholesky decompositon of Kronecker products of symmetric and positive definite matrices.
+
+```@repl
+using Kronecker, LinearAlgebra # hide
+A, B = rand(10, 10), randn(4, 4);
+As, Bs = (A, B) .|> X -> X * X';  # make positive definite
+K = As ⊗ Bs
+C = cholesky(K)
+logdet(C)
+inv(E)
+```
+
+```@docs
+cholesky
 ```

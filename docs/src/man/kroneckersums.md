@@ -6,7 +6,7 @@ A Kronecker sum between two square matrices of the same size is defined as
 A \oplus B = A ⊗ I + I \oplus B\,.
 ```
 
-To construct objects of the `KroneckerSum` type, one can either use `kroneckersum` or the binary operator `⊕`. Lazy Kronecker sums work like lazy Kronecker products, though there are far fewer methods to efficiently process these constructs. The most important property for Kronecker sums relates to matrix exponentiation:
+To construct objects of the `KroneckerSum` type, one can either use `kroneckersum` or the binary operator `⊕`. Lazy Kronecker sums work like lazy Kronecker products, though there are far fewer methods to process these constructs efficiently. The most important property for Kronecker sums relates to matrix exponentiation:
 ```math
 \exp(A \oplus B) = \exp(A) \otimes \exp(B)\,.
 ```

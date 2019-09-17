@@ -22,7 +22,7 @@ A, B, C, D = randn(5, 5), randn(4, 4), randn(5, 4), randn(4, 4);
 
 ## Vec trick
 
-Reshaping allows to compute a product between a Kronecker product and vector as two matrix multiplications. This is the so-called vec trick which holds for any set of conformable matrices:
+Reshaping allows computing a product between a Kronecker product and vector as two matrix multiplications. This is the so-called vec trick which holds for any set of conformable matrices:
 
 ```math
 (A \otimes B) \text{vec}(X) = \text{vec}(B^\intercal X A).
@@ -46,7 +46,7 @@ x = randn(60, 2);
 (A ⊗ B) * x
 ```
 
-The vec trick works with higher-order Kronecker products. **However, at the moment this will have a substantional overhead and likely be relatively slow.**
+The vec trick works with higher-order Kronecker products. **However, at the moment this has a substantial overhead and likely be relatively slow.**
 
 ## Docstrings
 

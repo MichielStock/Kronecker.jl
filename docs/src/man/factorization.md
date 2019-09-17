@@ -1,12 +1,12 @@
 # Factorization methods
 
-For many forms of matrix factorization (eigenvalue decompositon, LU factorization, Cholesky factoization...), the decompositon of the Kronecker product is the Kronecker product of the decompostions. We have overloaded some of the factorization functions from `LinearAlgebra` to compute the factorization of instances of `AbstractKroneckerProduct`.
+Many forms of matrix factorization such as eigenvalue decomposition, LU factorization, Cholesky factoization etc., can be computed efficiently. The decomposition of the Kronecker product is the Kronecker product of the decompositions. We have overloaded some of the factorization functions from `LinearAlgebra` to compute the factorization of instances of `AbstractKroneckerProduct`.
 
-## Eigenvalue decompositon
+## Eigenvalue decomposition
 
-The function `eigen` of `LinearAlgebra` is overloaded to compute the decompositon of `AbstractKroneckerProduct`s. The result is a factorization of the `Eigen` type, containing a vector of the eigenvalues and a matrix with the eigenvectors, just like long-time users would expect! The eigenvectors are structured as Kronecker products and can be processed accordingly.
+The function `eigen` of `LinearAlgebra` is overloaded to compute the decomposition of `AbstractKroneckerProduct`s. The result is a factorization of the `Eigen` type, containing a vector of the eigenvalues and a matrix with the eigenvectors. Just like long-time users would expect! The eigenvectors are structured as Kronecker products and can be processed accordingly.
 
-The functions `det`, `logdet`, `inv` and `\` are overloaded the make use of this decompositon.
+The functions `det`, `logdet`, `inv` and `\` are overloaded the make use of this decomposition.
 
 The eigenvalue decompositon of matrices can be used to solve large systems of the form:
 
@@ -14,7 +14,7 @@ The eigenvalue decompositon of matrices can be used to solve large systems of th
 (A \otimes B + c\cdot I) \mathbf{x} = \mathbf{b}
 ```
 
-The case where $A$ and $B$ are postive semi-definite occurs frequently in machine learning, for example in ridge regression.
+The case where $A$ and $B$ are positive semi-definite frequently occurs in machine learning, for example in ridge regression.
 
 ```@repl
 using Kronecker, LinearAlgebra # hide
@@ -39,7 +39,7 @@ inv(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
 
 ## Cholesky factorization
 
-Similar to the eigenvalue decompositon, `cholesky` has been overloaded to allow for efficient Cholesky decompositon of Kronecker products of symmetric and positive definite matrices.
+Similar to the eigenvalue decomposition, `cholesky` has been overloaded to allow for efficient Cholesky decomposition of Kronecker products of symmetric and positive definite matrices.
 
 ```@repl
 using Kronecker, LinearAlgebra # hide

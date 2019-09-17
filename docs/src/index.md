@@ -1,5 +1,9 @@
 # Kronecker.jl
 
+*A general-purpose toolbox for efficient Kronecker-based algebra.*
+
+`Kronecker.jl` is a Julia package for working with large-scale Kronecker systems. The main feature of `Kronecker.jl` is providing a function `kronecker(A, B)` used to obtain an instance of the lazy `GeneralizedKroneckerProduct` type. In contrast to the native Julia function `kron(A, B)`, this does not compute the Kronecker product but instead stores the matrices in a specialized structure. Commonly-used mathematical functions are overloaded to provide the most efficient methods to work with Kronecker products. We also provide an equivalent binary operator `⊗` which can be used directly as a Kronecker product in statements, i.e., A ⊗ B`.
+
 ```@contents
 Pages = [
     "man/basic.md",
@@ -12,16 +16,12 @@ Pages = [
 ]
 ```
 
-*A general-purpose toolbox for efficient Kronecker-based algebra.*
-
-`Kronecker.jl` is a Julia package for working with large-scale Kronecker systems. The main feature of `Kronecker.jl` is providing a function `kronecker(A, B)` used to obtain an instance of the lazy `GeneralizedKroneckerProduct` type. In contrast to the native Julia function `kron(A, B)`, this does not compute the Kronecker product but instead stores the matrices in a specialized structure. Commonly-used mathematical functions are overloaded to provide the most efficient methods to work with Kronecker products. We also provide an equivalent binary operator `⊗` which can be used directly as a Kronecker product in statements, i.e., A ⊗ B`.
-
 ## Package features
 
 - `tr`, `det`, `size`, `eltype`, `inv`, ... are efficient functions to work with Kronecker products. Either the result is a numeric value, or returns a new `KroneckerProduct` type.
 - Kronecker product - vector multiplications are performed using the vec trick. Two Kronecker products of conformable size can be multiplied efficiently, yielding another Kronecker product.
 - Working with incomplete systems using the [sampled vec trick](https://arxiv.org/pdf/1601.01507.pdf).
-- overloading of the the function `eigen` to compute eigenvalue decompostions of Kronecker products. Can be used to efficiently solve systems of the form `(A ⊗ B +λI) \ v`.
+- Overloading of the function `eigen` to compute eigenvalue decompositions of Kronecker products. It can be used to efficiently solve systems of the form `(A ⊗ B +λI) \ v`.
 - Higher-order Kronecker systems are supported: most functions work on `A ⊗ B ⊗ C` or systems of arbitrary order.
   - Efficient sampling of [Kronecker graphs](https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf) is supported.
 - Kronecker powers are supported: `kronecker(A, 3)` or `A ⊗ 3`.

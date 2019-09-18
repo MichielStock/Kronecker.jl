@@ -1,0 +1,3 @@
+# Indexed Kronecker products
+
+To be completed...

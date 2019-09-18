@@ -37,7 +37,7 @@ kroneckersum(A::AbstractMatrix, B::AbstractMatrix...) = kroneckersum(A,kronecker
     kroneckersum(A::AbstractMatrix, pow::Int)
 
 Kronecker-sum power, computes
-`A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)'.
+`A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)`.
 """
 function kroneckersum(A::AbstractMatrix, pow::Int)
     @assert pow > 0 "Works only with positive powers!"
@@ -130,6 +130,12 @@ function Base.conj(K::AbstractKroneckerSum)
     return kroneckersum(conj(A), conj(B))
 end
 
+"""
+    exp(K::AbstractKroneckerSum)
+
+Computes the matrix exponential of an `AbstractKroneckerSum` `K`. Returns an
+instance of `KroneckerProduct`.
+"""
 function Base.exp(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return kronecker(exp(A), exp(B))

@@ -48,7 +48,7 @@ As, Bs = (A, B) .|> X -> X * X';  # make positive definite
 K = As ⊗ Bs
 C = cholesky(K)
 logdet(C)
-inv(E)
+inv(C)
 ```
 
 ```@docs

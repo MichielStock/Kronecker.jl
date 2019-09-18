@@ -2,9 +2,9 @@
 
 `Kronecker.jl` allows for efficient multiplication of large Kronecker systems by overloading the multiplication function `*`. We distinguish three cases:
 
-- *Kronecker-Kronecker multiplications* yield again a type of `AbstractKroneckerProduct`;
-- *Kronecker-vector multiplications* use the 'vec trick' and yield a vector;
-- *sampled Kronecker-vector multiplications* use the sampled-vec trick to yield a vector.
+- **Kronecker-Kronecker multiplications** yield again a type of `AbstractKroneckerProduct`;
+- **Kronecker-vector multiplications** use the 'vec trick' and yield a vector;
+- **sampled Kronecker-vector multiplications** use the sampled-vec trick to yield a vector.
 
 ## Kronecker-kronecker multiplications
 
@@ -20,7 +20,7 @@ A, B, C, D = randn(5, 5), randn(4, 4), randn(5, 4), randn(4, 4);
 (A ⊗ B) * (C ⊗ D)
 ```
 
-## Vec trick
+## The Vec trick
 
 Reshaping allows computing a product between a Kronecker product and vector as two matrix multiplications. This is the so-called vec trick which holds for any set of conformable matrices:
 

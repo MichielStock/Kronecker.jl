@@ -37,7 +37,7 @@ kroneckersum(A::AbstractMatrix, B::AbstractMatrix...) = kroneckersum(A,kronecker
     kroneckersum(A::AbstractMatrix, pow::Int)
 
 Kronecker-sum power, computes
-`A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)'.
+`A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)`.
 """
 function kroneckersum(A::AbstractMatrix, pow::Int)
     @assert pow > 0 "Works only with positive powers!"
@@ -130,6 +130,12 @@ function Base.conj(K::AbstractKroneckerSum)
     return kroneckersum(conj(A), conj(B))
 end
 
+"""
+    exp(K::AbstractKroneckerSum)
+
+Computes the matrix exponential of an `AbstractKroneckerSum` `K`. Returns an
+instance of `KroneckerProduct`.
+"""
 function Base.exp(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return kronecker(exp(A), exp(B))
@@ -150,6 +156,7 @@ function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
 end
 =#
 
+if VERSION < v"1.3.0-alpha.115"
 function LinearAlgebra.mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
     A, B = getmatrices(K)
     a, b = size(A)
@@ -160,9 +167,28 @@ function LinearAlgebra.mul!(x::AbstractVector, K::AbstractKroneckerSum, v::Abstr
     e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
 
     V = reshape(v, d, b)
-    x .= vec(V * transpose(A)) .+ vec(B * V)
+    X = reshape(x, c, a)
+    mul!(X, V, transpose(A))
+    X .+= B * V
     return x
 end
+else # 5-arg mul! is available
+function LinearAlgebra.mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+    A, B = getmatrices(K)
+    a, b = size(A)
+    c, d = size(B)
+    e = length(v)
+    f = length(x)
+    f == a * c || throw(DimensionMismatch("Dimension missmatch between kronecker system and result placeholder"))
+    e == b * d || throw(DimensionMismatch("Dimension missmatch between kronecker system and vector"))
+
+    V = reshape(v, d, b)
+    X = reshape(x, c, a)
+    mul!(X, V, transpose(A))
+    mul!(X, B, V, true, true)
+    return x
+end
+end # VERSION
 
 function Base.:*(K::AbstractKroneckerSum, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)

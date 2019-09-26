@@ -4,8 +4,13 @@ abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
-# general Kronecker product between two matrices
-struct KroneckerProduct{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
+"""
+    KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+
+Concrete Kronecker product between two matrices `A` and `B`.
+"""
+struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
+
     A::TA
     B::TB
     function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
@@ -41,8 +46,13 @@ Binary operator for `kronecker`, computes as Lazy Kronecker product. See
 ⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
 ⊗(A::AbstractMatrix...) = kronecker(A...)
 
+"""
+    getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
 
-function Base.getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+Computes and returns the (i,j)-th element of an `AbstractKroneckerProduct` K.
+Uses recursion if `K` is of an order greater than two.
+"""
+function getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
     A, B = getmatrices(K)
     m, n = size(A)
     k, l = size(B)
@@ -63,16 +73,32 @@ Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
 
+"""
+  eltype(K::AbstractKroneckerProduct{T})
+
+Returns the type of the elements of the Kronecker product.
+"""
 Base.eltype(K::AbstractKroneckerProduct{T}) where {T} = T
 
-function Base.size(K::AbstractKroneckerProduct)
+
+"""
+    size(K::AbstractKroneckerProduct)
+
+Returns a the size of an `AbstractKroneckerProduct` instance.
+"""
+function size(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     (m, n) = size(A)
     (k, l) = size(B)
     return m * k, n * l
 end
 
-Base.size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
+"""
+    size(K::GeneralizedKroneckerProduct)
+
+Returns a the size of an `GeneralizedKroneckerProduct` instance.
+"""
+size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
 
 # CHECKS
 
@@ -130,7 +156,7 @@ order(M::AbstractMatrix) = 1
 order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 
 """
-    tr(K::AbstractKroneckerProduct)
+    det(K::AbstractKroneckerProduct)
 
 Compute the trace of a Kronecker product.
 """
@@ -170,7 +196,7 @@ end
 
 Compute the inverse of a Kronecker product.
 """
-function Base.inv(K::AbstractKroneckerProduct)
+function inv(K::AbstractKroneckerProduct)
     squarecheck(K)
     A, B = getmatrices(K)
     return KroneckerProduct(inv(A), inv(B))
@@ -181,7 +207,7 @@ end
 
 Compute the adjoint of a Kronecker product.
 """
-function Base.adjoint(K::AbstractKroneckerProduct)
+function adjoint(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(A', B')
 end

@@ -25,12 +25,12 @@ for s in sizes
     A = randn(s, s) / s^2
     B = rand(s, s) / s^2
     v = rand(s^2)
-    global K = A ⊗ B
-    t = @belapsed inv(K)
+    K = A ⊗ B
+    t = @belapsed inv($K)
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @belapsed inv(K)
+        t = @belapsed inv($K)
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -51,12 +51,12 @@ for s in sizes
     A = randn(s, s)
     B = rand(s, s)
     v = rand(s^2)
-    global K = A ⊗ B
-    t = @belapsed det(K)
+    K = A ⊗ B
+    t = @belapsed det($K)
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @belapsed det(K)
+        t = @belapsed det($K)
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -78,12 +78,12 @@ for s in sizes
     A = randn(s, s)
     B = rand(s, s)
     v = rand(s^2)
-    global K = A ⊗ B
-    t = @belapsed K * K
+    K = A ⊗ B
+    t = @belapsed $K * $K
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @belapsed K * K
+        t = @belapsed $K * $K
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -100,13 +100,13 @@ times_naive = []
 for s in sizes
     A = randn(s, s)
     B = rand(s, s)
-    global v = rand(s^2)
-    global K = A ⊗ B
-    t = @belapsed K * v
+    v = rand(s^2)
+    K = A ⊗ B
+    t = @belapsed $K * $v
     push!(times_kron, t)
     if s^2 < 5000
         K = collect(K)
-        t = @belapsed K * v
+        t = @belapsed $K * $v
         push!(times_naive, t)
         compute_naive = t < tmax
     end
@@ -120,6 +120,6 @@ yaxis!(:log10)
 ylabel!("CPU time (s)")
 xaxis!(:log10)
 xlabel!("Kronecker product size")
-title!("Performance Kronecker.jl (-) v.s. native code (--)")
+title!("Performance Kronecker.jl (-) vs. native code (--)")
 
 savefig("benchmark.svg")

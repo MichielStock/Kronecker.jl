@@ -43,10 +43,8 @@ K = kronecker(A, B)  # lazy Kronecker product
 \end{lstlisting}
 %\end{verbatim}
 
-Alternatively, one can make use of Julia's Unicode support:
-$$
-\text{\texttt{K = A $\otimes$ B}}\,.
-$$
+Alternatively, one can make use of Unicode, i.e.  $\text{\texttt{K = A $\otimes$ B}}\,.$
+
 The elementary functions of \texttt{LinearAlgebra} are overloaded to work with the respective subtypes of \texttt{GeneralizedKroneckerProduct} and provide the most efficient implementation.
 
 \begin{lstlisting}[language = Julia]

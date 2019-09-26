@@ -30,6 +30,12 @@ type.
 """
 kronecker(A::AbstractMatrix, pow::Int) = KroneckerPower(A, pow)
 
+"""
+    ⊗(A::AbstractMatrix, pow::Int)
+
+Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`. Returns a lazy `KroneckerPower`
+type.
+"""
 ⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
 
 function getmatrices(K::KroneckerPower{T, TA, N}) where {T, TA, N}

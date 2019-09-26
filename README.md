@@ -1,8 +1,12 @@
 # Kronecker.jl
 
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/latest/)
+
 ![](logo.png)
 
 This is a Julia package to efficiently work with Kronecker products. It combines lazy evaluation and algebraic tricks such that it can implicitely work with huge matrices. It allows to work with large Kronecker systems both much faster and using much less memory than the naive implementation of the Kronecker product.
+
+Read the [documentation](https://michielstock.github.io/Kronecker.jl/latest/).
 
 ## Features
 

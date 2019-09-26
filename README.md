@@ -6,8 +6,6 @@
 
 This is a Julia package to efficiently work with Kronecker products. It combines lazy evaluation and algebraic tricks such that it can implicitely work with huge matrices. It allows to work with large Kronecker systems both much faster and using much less memory than the naive implementation of the Kronecker product.
 
-Read the [documentation](https://michielstock.github.io/Kronecker.jl/latest/).
-
 ## Features
 
 Given two matrices (subtype of `AbstractArray`) `A` and `B`, one can construct an instance of the `KroneckerProduct` type as `K = A ⊗ B` (typed using `\otimes TAB`). Equivalently, the function `kronecker` function can be used as well. Several functions are implemented.
@@ -24,7 +22,7 @@ Given two matrices (subtype of `AbstractArray`) `A` and `B`, one can construct a
 - [in progress] GPU compatibility!
 - [in progress] Autodiff for machine learning models!
 
-For basic use, see the [Jupyter notebook](notebooks/Benchmark.ipynb) with examples. It mainly compares `Kronecker.jl` with Julia's native `kron` function.
+Read the [documentation](https://michielstock.github.io/Kronecker.jl/latest/) to get the specifics.
 
 ## Benchmarks
 

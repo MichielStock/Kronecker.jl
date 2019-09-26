@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Kronecker.jl · Kronecker.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Kronecker.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Kronecker.jl</a><ul class="internal"><li><a class="toctext" href="#Package-features-1">Package features</a></li><li><a class="toctext" href="#Example-use-1">Example use</a></li></ul></li><li><a class="toctext" href="man/basic/">Basic use</a></li><li><a class="toctext" href="man/factorization/">Factorization methods</a></li><li><a class="toctext" href="man/indexed/">Indexed Kronecker products</a></li><li><a class="toctext" href="man/kroneckerpowers/">Kronecker powers and graphs</a></li><li><a class="toctext" href="man/kroneckersums/">Kronecker sums</a></li><li><a class="toctext" href="man/multiplication/">Multiplication</a></li><li><a class="toctext" href="man/types/">Types</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Kronecker.jl</a></li></ul><a class="edit-page" href="https://github.com/MichielStock/Kronecker.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Kronecker.jl</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Kronecker.jl-1" href="#Kronecker.jl-1">Kronecker.jl</a></h1><p><em>A general-purpose toolbox for efficient Kronecker-based algebra.</em></p><p><code>Kronecker.jl</code> is a Julia package for working with large-scale Kronecker systems. The main feature of <code>Kronecker.jl</code> is providing a function <code>kronecker(A, B)</code> used to obtain an instance of the lazy <code>GeneralizedKroneckerProduct</code> type. In contrast to the native Julia function <code>kron(A, B)</code>, this does not compute the Kronecker product but instead stores the matrices in a specialized structure.</p><p>Commonly-used mathematical functions are overloaded to provide the most efficient methods to work with Kronecker products. We also provide an equivalent binary operator <code>⊗</code> which can be used directly as a Kronecker product in statements, i.e., <code>A ⊗ B</code>.</p><ul><li><a href="#Kronecker.jl-1">Kronecker.jl</a></li><ul><li><a href="#Package-features-1">Package features</a></li><li><a href="#Example-use-1">Example use</a></li></ul><li><a href="man/basic/#Basic-use-1">Basic use</a></li><ul><li><a href="man/basic/#Constructing-Kronecker-products-1">Constructing Kronecker products</a></li><li><a href="man/basic/#Basic-properties-of-Kronecker-products-1">Basic properties of Kronecker products</a></li><li><a href="man/basic/#Linear-algebra-1">Linear algebra</a></li></ul><li><a href="man/factorization/#Factorization-methods-1">Factorization methods</a></li><ul><li><a href="man/factorization/#Eigenvalue-decomposition-1">Eigenvalue decomposition</a></li><li><a href="man/factorization/#Cholesky-factorization-1">Cholesky factorization</a></li></ul><li><a href="man/indexed/#Indexed-Kronecker-products-1">Indexed Kronecker products</a></li><li><a href="man/kroneckerpowers/#Kronecker-powers-and-graphs-1">Kronecker powers and graphs</a></li><ul><li><a href="man/kroneckerpowers/#Kronecker-powers-1">Kronecker powers</a></li><li><a href="man/kroneckerpowers/#Kronecker-graphs-1">Kronecker graphs</a></li></ul><li><a href="man/kroneckersums/#Kronecker-sums-1">Kronecker sums</a></li><li><a href="man/multiplication/#Multiplication-1">Multiplication</a></li><ul><li><a href="man/multiplication/#Kronecker-kronecker-multiplications-1">Kronecker-kronecker multiplications</a></li><li><a href="man/multiplication/#The-Vec-trick-1">The Vec trick</a></li><li><a href="man/multiplication/#Docstrings-1">Docstrings</a></li><li><a href="man/multiplication/#Sampled-Kronecker-vector-multiplications-1">Sampled Kronecker-vector multiplications</a></li></ul><li><a href="man/types/#Types-1">Types</a></li></ul><h2><a class="nav-anchor" id="Package-features-1" href="#Package-features-1">Package features</a></h2><ul><li><code>tr</code>, <code>det</code>, <code>size</code>, <code>eltype</code>, <code>inv</code>, ... are efficient functions to work with Kronecker products. Either the result is a numeric value, or returns a new <code>KroneckerProduct</code> type.</li><li>Kronecker product - vector multiplications are performed using the vec trick. Two Kronecker products of conformable size can be multiplied efficiently, yielding another Kronecker product.</li><li>Working with incomplete systems using the <a href="https://arxiv.org/pdf/1601.01507.pdf">sampled vec trick</a>.</li><li>Overloading of the function <code>eigen</code> to compute eigenvalue decompositions of Kronecker products. It can be used to efficiently solve systems of the form <code>(A ⊗ B +λI) \ v</code>.</li><li>Higher-order Kronecker systems are supported: most functions work on <code>A ⊗ B ⊗ C</code> or systems of arbitrary order.<ul><li>Efficient sampling of <a href="https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf">Kronecker graphs</a> is supported.</li></ul></li><li>Kronecker powers are supported: <code>kronecker(A, 3)</code> or <code>A ⊗ 3</code>.</li><li>A <code>KroneckerSum</code> can be constructed with <code>A ⊕ B</code> (typed using <code>\oplus TAB</code>) or <code>kroneckersum(A,B)</code>.<ul><li>Multiplication with vectors uses  a specialized version of the vec trick</li><li>Higher-order sums are supported, e.g. <code>A ⊕ B ⊕ C</code> or <code>kroneckersum(A,4)</code>.</li></ul></li></ul><h2><a class="nav-anchor" id="Example-use-1" href="#Example-use-1">Example use</a></h2><pre><code class="language-julia-repl">julia&gt; using Kronecker, LinearAlgebra
+
+julia&gt; A = [1.0 2.0;
+            3.0 5.0];
+
+julia&gt; B = Array{Float64, 2}([1 2 3;
+                   4 5 6;
+                   7 -2 9]);
+
+julia&gt; K = A ⊗ B
+6×6 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
+  1.0   2.0   3.0   2.0    4.0   6.0
+  4.0   5.0   6.0   8.0   10.0  12.0
+  7.0  -2.0   9.0  14.0   -4.0  18.0
+  3.0   6.0   9.0   5.0   10.0  15.0
+ 12.0  15.0  18.0  20.0   25.0  30.0
+ 21.0  -6.0  27.0  35.0  -10.0  45.0
+
+julia&gt; collect(K)  # yield the dense matrix
+6×6 Array{Float64,2}:
+  1.0   2.0   3.0   2.0    4.0   6.0
+  4.0   5.0   6.0   8.0   10.0  12.0
+  7.0  -2.0   9.0  14.0   -4.0  18.0
+  3.0   6.0   9.0   5.0   10.0  15.0
+ 12.0  15.0  18.0  20.0   25.0  30.0
+ 21.0  -6.0  27.0  35.0  -10.0  45.0
+
+julia&gt; tr(K)
+90.0
+
+julia&gt; det(K)
+-3600.000000000004
+
+julia&gt; K&#39;  # (conjugate transpose)
+6×6 Kronecker.KroneckerProduct{Float64,Adjoint{Float64,Array{Float64,2}},Adjoint{Float64,Array{Float64,2}}}:
+ 1.0   4.0   7.0   3.0  12.0   21.0
+ 2.0   5.0  -2.0   6.0  15.0   -6.0
+ 3.0   6.0   9.0   9.0  18.0   27.0
+ 2.0   8.0  14.0   5.0  20.0   35.0
+ 4.0  10.0  -4.0  10.0  25.0  -10.0
+ 6.0  12.0  18.0  15.0  30.0   45.0
+
+julia&gt; inv(K&#39;)
+6×6 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
+  4.75   0.5  -3.58333   -2.85  -0.3   2.15
+ -2.0   -1.0   1.33333    1.2    0.6  -0.8
+ -0.25   0.5  -0.25       0.15  -0.3   0.15
+ -1.9   -0.2   1.43333    0.95   0.1  -0.716667
+  0.8    0.4  -0.533333  -0.4   -0.2   0.266667
+  0.1   -0.2   0.1       -0.05   0.1  -0.05
+
+julia&gt; K * K  # (A * A) ⊗ (B * B)
+6×6 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
+  210.0    42.0   294.0   360.0    72.0   504.0
+  462.0   147.0   672.0   792.0   252.0  1152.0
+  434.0   -98.0   630.0   744.0  -168.0  1080.0
+  540.0   108.0   756.0   930.0   186.0  1302.0
+ 1188.0   378.0  1728.0  2046.0   651.0  2976.0
+ 1116.0  -252.0  1620.0  1922.0  -434.0  2790.0
+
+julia&gt; v = collect(1:6)
+6-element Array{Int64,1}:
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+
+julia&gt; K * v
+6-element Array{Float64,1}:
+  78.0
+ 186.0
+ 174.0
+ 202.0
+ 481.0
+ 450.0</code></pre><footer><hr/><a class="next" href="man/basic/"><span class="direction">Next</span><span class="title">Basic use</span></a></footer></article></body></html>

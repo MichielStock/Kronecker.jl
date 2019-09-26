@@ -6,175 +6,175 @@ julia&gt; As, Bs = (A, B) .|&gt; X -&gt; X * X&#39;;  # make positive definite
 
 julia&gt; K = As ⊗ Bs
 40×40 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
-  14.6758   -4.35411    8.69787   …  -1.72536    3.44662   -4.01069
-  -4.35411   3.52613   -1.93783       1.39727   -0.767886   0.742745
-   8.69787  -1.93783    5.5165       -0.767886   2.18597   -2.21399
- -10.1213    1.87439   -5.5872        0.742745  -2.21399    4.72426
-  12.343    -3.662      7.31529      -2.33658    4.6676    -5.43148
-  -3.662     2.96563   -1.6298    …   1.89225   -1.03991    1.00586
-   7.31529  -1.6298     4.63962      -1.03991    2.96036   -2.9983
-  -8.51248   1.57644   -4.69908       1.00586   -2.9983     6.39784
-  12.9569   -3.84413    7.67912      -2.2864     4.56736   -5.31484
-  -3.84413   3.11313   -1.71086       1.85162   -1.01758    0.984264
-   ⋮                              ⋱
- -10.2517    1.89852   -5.65914       0.906974  -2.70353    5.76884
-   9.99595  -2.96566    5.92427      -1.48723    2.97093   -3.45715
-  -2.96566   2.40171   -1.31989       1.20442   -0.661905   0.640234
-   5.92427  -1.31989    3.75738      -0.661905   1.88427   -1.90842
-  -6.89381   1.27668   -3.80554   …   0.640234  -1.90842    4.07223
-   5.81545  -1.72536    3.44662      -1.58225    3.16074   -3.67802
-  -1.72536   1.39727   -0.767886      1.28137   -0.704193   0.681138
-   3.44662  -0.767886   2.18597      -0.704193   2.00466   -2.03035
-  -4.01069   0.742745  -2.21399       0.681138  -2.03035    4.3324
+  3.19053    -0.134204   -0.77847    …  -0.153667   -0.891372    0.579663
+ -0.134204    0.28176     0.129522       0.322623    0.148306   -1.54308
+ -0.77847     0.129522    4.72415        0.148306    5.40929     2.84512
+  0.506243   -1.34763     2.48476       -1.54308     2.84512    10.0092
+  1.93944    -0.0815788  -0.473211      -0.0978925  -0.567842    0.36927
+ -0.0815788   0.171274    0.0787329  …   0.205525    0.0944775  -0.983007
+ -0.473211    0.0787329   2.87169        0.0944775   3.44595     1.81246
+  0.307731   -0.81919     1.51042       -0.983007    1.81246     6.37626
+  3.31606    -0.139484   -0.809098      -0.138269   -0.802054    0.521579
+ -0.139484    0.292845    0.134618       0.290295    0.133446   -1.38846
+  ⋮                                  ⋱
+  0.475047   -1.26459     2.33164       -1.77177     3.26678    11.4925
+  3.30162    -0.138876   -0.805574      -0.161841   -0.938784    0.610495
+ -0.138876    0.29157     0.134032       0.339784    0.156195   -1.62516
+ -0.805574    0.134032    4.88863        0.156195    5.69701     2.99645
+  0.523868   -1.39455     2.57127    …  -1.62516     2.99645    10.5415
+  3.65325    -0.153667   -0.891372      -0.230601   -1.33764     0.869872
+ -0.153667    0.322623    0.148306       0.484145    0.222556   -2.31562
+ -0.891372    0.148306    5.40929        0.222556    8.11746     4.26953
+  0.579663   -1.54308     2.84512       -2.31562     4.26953    15.0203
 
 julia&gt; E = eigen(K)
 Eigen{Number,Float64,Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}},Array{Float64,1}}
 eigenvalues:
 40-element Array{Float64,1}:
-   7.059409817189738e-5
-   0.005073178909303394
-   0.01103188238804387
-   0.07211183605761068
-   0.0003260451263468046
-   0.023430928382087327
-   0.050951730813167735
-   0.3330549338735437
-   0.001087595683228247
-   0.07815904763833971
+   4.502183803030306e-5
+   0.01606283858820627
+   0.028461277993907966
+   0.06534586222886932
+   0.00028998158926967085
+   0.10345929144108061
+   0.18331651896940082
+   0.42088679206233925
+   0.0005243061105194624
+   0.1870613194071693
    ⋮
-  12.993291116301545
-   0.023515159632266136
-   1.6898949768410751
-   3.674761518555773
-  24.020723830785695
-   0.25317457077513156
-  18.19415398863527
-  39.56410182666792
- 258.6176977179669
+   7.979354401487306
+   0.007226007302659037
+   2.578086413568633
+   4.568036571242659
+  10.488014224264726
+   0.07819703824564075
+  27.8990476259564
+  49.43351362757443
+ 113.49720738780042
 eigenvectors:
 40×40 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
-  0.0206209   -0.0060688    0.0115601   …  0.0521485  -0.0993349   0.203043
-  0.00955546  -0.0265521   -0.0177747      0.22816     0.152736   -0.0555316
- -0.0248696   -0.0171411    0.00723221     0.147291   -0.0621456   0.118261
-  0.00435942  -0.0108796    0.0255371      0.0934868  -0.219438   -0.164057
-  0.276274    -0.0813082    0.15488        0.0586091  -0.111641    0.228198
-  0.128022    -0.355739    -0.238141    …  0.256426    0.171658   -0.0624113
- -0.333196    -0.229652     0.0968953      0.165539   -0.0698447   0.132913
-  0.0584064   -0.145761     0.34214        0.105069   -0.246624   -0.184382
-  0.103203    -0.0303729    0.0578557      0.0653247  -0.124433    0.254345
-  0.0478229   -0.132887    -0.0889583      0.285808    0.191327   -0.0695626
-  ⋮                                     ⋱
- -0.0269184    0.0671788   -0.157686       0.127976   -0.300393   -0.224581
-  0.0323899   -0.00953246   0.0181579      0.0515488  -0.0981925   0.200708
-  0.0150091   -0.0417063   -0.0279193      0.225536    0.15098    -0.054893
- -0.0390634   -0.026924     0.0113599      0.145597   -0.0614309   0.116901
-  0.00684748  -0.0170889    0.040112    …  0.0924116  -0.216914   -0.16217
- -0.376567     0.110825    -0.211104       0.0284734  -0.0542375   0.110863
- -0.174496     0.484879     0.324591       0.124577    0.0833948  -0.0303206
-  0.454153     0.31302     -0.13207        0.0804219  -0.0339319   0.0645714
- -0.0796091    0.198676    -0.466344       0.0510444  -0.119814   -0.0895763
+  0.000753014   0.0291019   …  -0.209177   -0.16145    -0.00580362
+ -0.0358002     0.00502647     -0.0361291   0.0370512   0.0314805
+  0.00475177    0.0199116      -0.14312     0.190502   -0.109285
+ -0.006919     -0.00916586      0.0658821  -0.0784492  -0.238572
+  0.00428258    0.16551        -0.19177    -0.148015   -0.00532065
+ -0.203604      0.0285868   …  -0.0331225   0.0339679   0.0288607
+  0.0270245     0.113242       -0.13121     0.174649   -0.100191
+ -0.03935      -0.0521285       0.0603995  -0.0719207  -0.218718
+  0.00681158    0.263248       -0.263974   -0.203744   -0.00732394
+ -0.32384       0.0454682      -0.0455935   0.0467571   0.0397271
+  ⋮                         ⋱
+ -0.0704319    -0.0933039       0.0932094  -0.110989   -0.337529
+ -0.0054556    -0.210844       -0.269716   -0.208176   -0.00748327
+  0.259373     -0.0364168      -0.0465854   0.0477744   0.0405914
+ -0.0344267    -0.14426        -0.184541    0.245636   -0.140914
+  0.0501283     0.0664068   …   0.0849493  -0.101154   -0.307618
+  0.0029146     0.112641       -0.260287   -0.200898   -0.00722164
+ -0.138567      0.0194554      -0.0449567   0.0461041   0.0391722
+  0.0183921     0.0770697      -0.17809     0.237049   -0.135988
+ -0.0267805    -0.0354772       0.0819793  -0.097617   -0.296863
 
 julia&gt; logdet(E)
--53.89472525469099
+-57.54611533342943
 
 julia&gt; b = randn(40);
 
 julia&gt; (E + 0.1I) \ b  # solve a system
 40-element Array{Float64,1}:
-  0.3698596021980942
-  1.2427817659013314
-  2.910579104640197
-  2.1920616570600764
- -2.8759172337325607
- -4.8562730243675745
- -0.6923530661689541
- -5.309807994741563
- -2.7901690812540894
-  2.41962807223644
-  ⋮
-  3.373202704613318
- -0.466862436839057
- -1.687636114274151
- -0.6548027794817427
- -0.5600452823842796
- -1.7807812553190838
-  3.2996430653912534
-  6.910102899777014
-  5.836825072819716</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.eigen" href="#LinearAlgebra.eigen"><code>LinearAlgebra.eigen</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">eigen(K::AbstractKroneckerProduct)</code></pre><p>Wrapper around <code>eigen</code> from the <code>LinearAlgebra</code> package. Performs Eigenvalue decompositon on the matrices of a <code>AbstractKroneckerProduct</code> instances and returns an <code>Eigen</code> type. The functions <code>size</code>, <code>\</code>, <code>inv</code>, <code>det</code>, and <code>logdet</code> are overloaded to efficiently work with this type.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/67485030d55bcef84c167b227f50127f26409e8f/src/eigen.jl#L5-L12">source</a></section><div class="admonition warning"><div class="admonition-title">Missing docstring.</div><div class="admonition-text"><p>Missing docstring for <code>+(E::Eigen, B::UniformScaling)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition warning"><div class="admonition-title">Missing docstring.</div><div class="admonition-text"><p>Missing docstring for <code>+(::Eigen, ::UniformScaling)</code>. Check Documenter&#39;s build log for details.</p></div></div><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.det-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}" href="#LinearAlgebra.det-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}"><code>LinearAlgebra.det</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">det(K::Eigen)</code></pre><p>Compute the determinant of the eigenvalue decomp of aKronecker product.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/67485030d55bcef84c167b227f50127f26409e8f/src/eigen.jl#L40-L44">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.logdet-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}" href="#LinearAlgebra.logdet-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}"><code>LinearAlgebra.logdet</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">logdet(K::Eigen)</code></pre><p>Compute the logarithm of the determinant of the eigenvalue decomp of aKronecker product.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/67485030d55bcef84c167b227f50127f26409e8f/src/eigen.jl#L47-L52">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.inv-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}" href="#Base.inv-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}"><code>Base.inv</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">inv(K::Eigen)</code></pre><p>Compute the inverse of the eigenvalue decomp of aKronecker product. Returns another type of <code>Eigen</code>.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/67485030d55bcef84c167b227f50127f26409e8f/src/eigen.jl#L55-L60">source</a></section><h2><a class="nav-anchor" id="Cholesky-factorization-1" href="#Cholesky-factorization-1">Cholesky factorization</a></h2><p>Similar to the eigenvalue decomposition, <code>cholesky</code> has been overloaded to allow for efficient Cholesky decomposition of Kronecker products of symmetric and positive definite matrices.</p><pre><code class="language-julia-repl">
+  -0.25352410823103766
+   4.683814180565557
+  -1.4798828052395478
+  -0.6227581888877363
+  -0.31197462494206935
+  -6.258273097609101
+  -3.2453593861673555
+   1.528381169373044
+   2.0227346765421146
+  -6.611233845102179
+   ⋮
+  -0.6469838812657756
+  -2.758847208538396
+   8.191976863248302
+   2.6749315018798803
+  -0.2871297199575841
+   1.0919365678151243
+ -12.287857162218284
+   0.21913025420045512
+  -0.43646162828529805</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.eigen" href="#LinearAlgebra.eigen"><code>LinearAlgebra.eigen</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">eigen(K::AbstractKroneckerProduct)</code></pre><p>Wrapper around <code>eigen</code> from the <code>LinearAlgebra</code> package. Performs Eigenvalue decompositon on the matrices of a <code>AbstractKroneckerProduct</code> instances and returns an <code>Eigen</code> type. The functions <code>size</code>, <code>\</code>, <code>inv</code>, <code>det</code>, and <code>logdet</code> are overloaded to efficiently work with this type.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/1b436cde2f17d8fbf6caa7143cd9e027654e2826/src/eigen.jl#L5-L12">source</a></section><div class="admonition warning"><div class="admonition-title">Missing docstring.</div><div class="admonition-text"><p>Missing docstring for <code>+(E::Eigen, B::UniformScaling)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition warning"><div class="admonition-title">Missing docstring.</div><div class="admonition-text"><p>Missing docstring for <code>+(::Eigen, ::UniformScaling)</code>. Check Documenter&#39;s build log for details.</p></div></div><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.det-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}" href="#LinearAlgebra.det-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}"><code>LinearAlgebra.det</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">det(K::Eigen)</code></pre><p>Compute the determinant of the eigenvalue decomp of aKronecker product.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/1b436cde2f17d8fbf6caa7143cd9e027654e2826/src/eigen.jl#L40-L44">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.logdet-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}" href="#LinearAlgebra.logdet-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}"><code>LinearAlgebra.logdet</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">logdet(K::Eigen)</code></pre><p>Compute the logarithm of the determinant of the eigenvalue decomp of aKronecker product.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/1b436cde2f17d8fbf6caa7143cd9e027654e2826/src/eigen.jl#L47-L52">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.inv-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}" href="#Base.inv-Tuple{Eigen{#s4,#s3,#s2,U} where U&lt;:(AbstractArray{T,1} where T) where #s2&lt;:AbstractKroneckerProduct where #s3&lt;:Number where #s4&lt;:Number}"><code>Base.inv</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">inv(K::Eigen)</code></pre><p>Compute the inverse of the eigenvalue decomp of aKronecker product. Returns another type of <code>Eigen</code>.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/1b436cde2f17d8fbf6caa7143cd9e027654e2826/src/eigen.jl#L55-L60">source</a></section><h2><a class="nav-anchor" id="Cholesky-factorization-1" href="#Cholesky-factorization-1">Cholesky factorization</a></h2><p>Similar to the eigenvalue decomposition, <code>cholesky</code> has been overloaded to allow for efficient Cholesky decomposition of Kronecker products of symmetric and positive definite matrices.</p><pre><code class="language-julia-repl">
 julia&gt; A, B = rand(10, 10), randn(4, 4);
 
 julia&gt; As, Bs = (A, B) .|&gt; X -&gt; X * X&#39;;  # make positive definite
 
 julia&gt; K = As ⊗ Bs
 40×40 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
-  3.34047   -1.67831     0.248367   …   -3.93365    0.582125   -4.95865
- -1.67831    2.93157     0.0589129       6.87104    0.13808     6.03834
-  0.248367   0.0589129   1.33692         0.13808    3.13348    -0.889111
- -2.11564    2.5763     -0.379344        6.03834   -0.889111    6.3829
-  6.28093   -3.15566     0.466994       -7.72733    1.14354    -9.74086
- -3.15566    5.5121      0.110771   …   13.4976     0.271248   11.8618
-  0.466994   0.110771    2.51375         0.271248   6.15547    -1.74659
- -3.97794    4.84409    -0.713264       11.8618    -1.74659    12.5387
-  5.51175   -2.76921     0.409804       -6.4898     0.9604     -8.18086
- -2.76921    4.83707     0.0972058      11.336      0.227808    9.96217
-  ⋮                                 ⋱
- -2.77348    3.37737    -0.497298       11.6057    -1.70888    12.268
-  4.56951   -2.29581     0.339747       -7.74016    1.14544    -9.75703
- -2.29581    4.01017     0.0805883      13.52       0.271698   11.8815
-  0.339747   0.0805883   1.8288          0.271698   6.1657     -1.74949
- -2.89403    3.52418    -0.518914   …   11.8815    -1.74949    12.5595
-  7.82942   -3.93365     0.582125      -11.3927     1.68596   -14.3614
- -3.93365    6.87104     0.13808        19.9001     0.399912   17.4884
-  0.582125   0.13808     3.13348         0.399912   9.07527    -2.57506
- -4.95865    6.03834    -0.889111       17.4884    -2.57506    18.4863
+  5.28403  11.5674    4.74692  -5.44684  …   9.81376   4.02729  -4.6211
+ 11.5674   28.8565   14.8024   -5.89001     24.4818   12.5583   -4.99709
+  4.74692  14.8024   22.3253   11.3327      12.5583   18.9408    9.61467
+ -5.44684  -5.89001  11.3327   25.3214      -4.99709   9.61467  21.4827
+  5.52986  12.1055    4.96776  -5.70024     12.2716    5.03593  -5.77846
+ 12.1055   30.1989   15.491    -6.16402  …  30.6133   15.7036   -6.24861
+  4.96776  15.491    23.3639   11.8599      15.7036   23.6845   12.0227
+ -5.70024  -6.16402  11.8599   26.4994      -6.24861  12.0227   26.863
+  3.87443   8.48157   3.4806   -3.9938       8.45076   3.46796  -3.9793
+  8.48157  21.1585   10.8536   -4.31875     21.0817   10.8142   -4.30306
+  ⋮                                      ⋱
+ -4.32485  -4.67673   8.99828  20.1054      -5.30076  10.1989   22.7882
+  4.11752   9.01373   3.69898  -4.24439      9.25303   3.79718  -4.35707
+  9.01373  22.4861   11.5346   -4.58972     23.083    11.8408   -4.71157
+  3.69898  11.5346   17.3967    8.83087     11.8408   17.8586    9.06532
+ -4.24439  -4.58972   8.83087  19.7314   …  -4.71157   9.06532  20.2552
+  4.48298   9.81376   4.02729  -4.6211      11.731     4.81409  -5.52392
+  9.81376  24.4818   12.5583   -4.99709     29.2648   15.0118   -5.97336
+  4.02729  12.5583   18.9408    9.61467     15.0118   22.6412   11.4931
+ -4.6211   -4.99709   9.61467  21.4827      -5.97336  11.4931   25.6797
 
 julia&gt; C = cholesky(K)
 40×40 CholeskyKronecker{Cholesky{Float64,Array{Float64,2}},Cholesky{Float64,Array{Float64,2}}}
 U factor:
 40×40 Kronecker.KroneckerProduct{Float64,UpperTriangular{Float64,Array{Float64,2}},UpperTriangular{Float64,Array{Float64,2}}}:
- 1.8277  -0.918268  0.135891  …  -2.15224    0.318502    -2.71306
- 0.0      1.44511   0.127116      3.38707    0.297935     2.4545
- 0.0      0.0       1.14118       0.0        2.67471     -0.729451
- 0.0      0.0       0.0           0.0        0.0          1.02125
- 0.0     -0.0       0.0          -0.118017   0.017465    -0.14877
- 0.0      0.0       0.0       …   0.185729   0.0163372    0.134591
- 0.0      0.0       0.0           0.0        0.146667    -0.0399992
- 0.0      0.0       0.0           0.0        0.0          0.0559996
- 0.0     -0.0       0.0           0.016117  -0.0023851    0.0203167
- 0.0      0.0       0.0          -0.025364  -0.00223108  -0.0183804
- ⋮                            ⋱
- 0.0      0.0       0.0           0.0        0.0          0.20179
- 0.0     -0.0       0.0          -0.518397   0.0767155   -0.653477
- 0.0      0.0       0.0           0.815822   0.0717617    0.591198
- 0.0      0.0       0.0           0.0        0.64424     -0.175698
- 0.0      0.0       0.0       …   0.0        0.0          0.245981
- 0.0     -0.0       0.0          -0.30521    0.0451669   -0.38474
- 0.0      0.0       0.0           0.480322   0.0422503    0.348073
- 0.0      0.0       0.0           0.0        0.379302    -0.103444
- 0.0      0.0       0.0           0.0        0.0          0.144823
+ 2.2987  5.03213  2.06504  -2.36953  2.40564  …   1.75198     -2.01031
+ 0.0     1.87993  2.34626   3.20956  0.0          1.99057      2.72299
+ 0.0     0.0      3.54344   2.45395  0.0          3.00626      2.08194
+ 0.0     0.0      0.0       1.83945  0.0          0.0          1.56059
+ 0.0     0.0      0.0      -0.0      1.24555      0.659367    -0.756589
+ 0.0     0.0      0.0       0.0      0.0      …   0.749158     1.02481
+ 0.0     0.0      0.0       0.0      0.0          1.13142      0.783546
+ 0.0     0.0      0.0       0.0      0.0          0.0          0.587335
+ 0.0     0.0      0.0      -0.0      0.0          0.00889183  -0.0102029
+ 0.0     0.0      0.0       0.0      0.0          0.0101027    0.01382
+ ⋮                                            ⋱
+ 0.0     0.0      0.0       0.0      0.0          0.0          0.0929336
+ 0.0     0.0      0.0      -0.0      0.0         -0.673015     0.772249
+ 0.0     0.0      0.0       0.0      0.0         -0.764665    -1.04602
+ 0.0     0.0      0.0       0.0      0.0         -1.15484     -0.799764
+ 0.0     0.0      0.0       0.0      0.0      …  -0.0         -0.599492
+ 0.0     0.0      0.0      -0.0      0.0          0.0657679   -0.0754652
+ 0.0     0.0      0.0       0.0      0.0          0.0747241    0.102219
+ 0.0     0.0      0.0       0.0      0.0          0.112852     0.078154
+ 0.0     0.0      0.0       0.0      0.0          0.0          0.0585831
 
 julia&gt; logdet(C)
--4.205420958534319
+-38.98709731645563
 
 julia&gt; inv(C)
 40×40 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
-  52.536      -49.5714     18.0239    …   16.2093     -5.89358    -29.5007
- -49.5714     248.482     -82.6333       -81.2507     27.0201      93.2209
-  18.0239     -82.6333     83.8374        27.0201    -27.4138     -33.9587
-  90.2195    -285.09      103.853         93.2209    -33.9587    -124.518
- -13.1767      12.4331     -4.52061       -4.64495     1.68888      8.45377
-  12.4331     -62.3225     20.7255    …   23.2834     -7.74293    -26.7136
-  -4.52061     20.7255    -21.0275        -7.74293     7.85575      9.73126
- -22.6282      71.5042    -26.0477       -26.7136      9.73126     35.682
-   0.588988    -0.555751    0.202067       0.610611   -0.222014    -1.11131
-  -0.555751     2.78576    -0.926412      -3.06076     1.01786      3.51168
-   ⋮                                  ⋱
-  13.6105     -43.0086     15.6672        12.7074     -4.62909    -16.9737
-  10.535       -9.9405      3.6143         4.06064    -1.47642     -7.39033
-  -9.9405      49.8279    -16.5704       -20.3544      6.7689      23.3531
-   3.6143     -16.5704     16.8118         6.7689     -6.86753     -8.50711
-  18.0916     -57.1688     20.8255    …   23.3531     -8.50711    -31.1934
- -17.1787      16.2093     -5.89358       -6.20663     2.25669     11.296
-  16.2093     -81.2507     27.0201        31.1115    -10.3462     -35.6949
-  -5.89358     27.0201    -27.4138       -10.3462     10.4969      13.003
- -29.5007      93.2209    -33.9587       -35.6949     13.003       47.6787</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.cholesky" href="#LinearAlgebra.cholesky"><code>LinearAlgebra.cholesky</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">cholesky(K::AbstractKroneckerProduct; check = true)</code></pre><p>Wrapper around <code>cholesky</code> from the <code>LinearAlgebra</code> package. Performs Cholesky on the matrices of a <code>AbstractKroneckerProduct</code> instances and returns a <code>CholeskyKronecker</code> type. Similar to <code>Cholesky</code>, <code>size</code>, <code>\</code>, <code>inv</code>, <code>det</code>, and <code>logdet</code> are overloaded to efficiently work with this type.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/67485030d55bcef84c167b227f50127f26409e8f/src/factorization.jl#L42-L49">source</a></section><footer><hr/><a class="previous" href="../basic/"><span class="direction">Previous</span><span class="title">Basic use</span></a><a class="next" href="../indexed/"><span class="direction">Next</span><span class="title">Indexed Kronecker products</span></a></footer></article></body></html>
+      1.41117e5  -43485.0    …   -8422.05    -2868.87     5204.07
+ -43485.0         16035.5         3105.7       368.108   -1253.98
+ -14812.6          1900.63         368.108    1114.34    -1030.22
+  26869.8         -6474.62       -1253.98    -1030.22     1487.61
+  36866.0        -11360.2        -2195.21     -747.772    1356.44
+ -11360.2          4189.17   …     809.502      95.9476   -326.852
+  -3869.72          496.529         95.9476    290.454    -268.528
+   7019.6         -1691.46        -326.852    -268.528     387.747
+ -53954.0         16625.9         3212.71     1094.37    -1985.17
+  16625.9         -6130.92       -1184.71     -140.42      478.351
+      ⋮                      ⋱
+ -56984.3         13731.1         2662.5      2187.4     -3158.54
+      2.29261e5  -70646.5       -13698.8     -4666.32     8464.6
+ -70646.5         26051.5         5051.53      598.741   -2039.65
+ -24064.9          3087.8          598.741    1812.52    -1675.69
+  43653.2        -10518.8    …   -2039.65    -1675.69     2419.65
+  27331.1         -8422.05       -1649.62     -561.922    1019.31
+  -8422.05         3105.7          608.309      72.1009   -245.617
+  -2868.87          368.108         72.1009    218.265    -201.788
+   5204.07        -1253.98        -245.617    -201.788     291.377</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.cholesky" href="#LinearAlgebra.cholesky"><code>LinearAlgebra.cholesky</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">cholesky(K::AbstractKroneckerProduct; check = true)</code></pre><p>Wrapper around <code>cholesky</code> from the <code>LinearAlgebra</code> package. Performs Cholesky on the matrices of a <code>AbstractKroneckerProduct</code> instances and returns a <code>CholeskyKronecker</code> type. Similar to <code>Cholesky</code>, <code>size</code>, <code>\</code>, <code>inv</code>, <code>det</code>, and <code>logdet</code> are overloaded to efficiently work with this type.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/1b436cde2f17d8fbf6caa7143cd9e027654e2826/src/factorization.jl#L42-L49">source</a></section><footer><hr/><a class="previous" href="../basic/"><span class="direction">Previous</span><span class="title">Basic use</span></a><a class="next" href="../indexed/"><span class="direction">Next</span><span class="title">Indexed Kronecker products</span></a></footer></article></body></html>

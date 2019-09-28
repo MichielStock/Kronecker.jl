@@ -1,7 +1,5 @@
 # Kronecker.jl
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/latest/)
-
 ![](logo.png)
 
 This is a Julia package to efficiently work with Kronecker products. It combines lazy evaluation and algebraic tricks such that it can implicitely work with huge matrices. It allows to work with large Kronecker systems both much faster and using much less memory than the naive implementation of the Kronecker product.
@@ -68,4 +66,5 @@ This is very much a work in progress! Please start an issue for bugs or requests
 
 ## Status `master` branch
 
-[![Build Status](https://travis-ci.com/MichielStock/Kronecker.jl.svg?branch=master)](https://travis-ci.com/MichielStock/Kronecker.jl) [![Coverage Status](https://coveralls.io/repos/github/MichielStock/Kronecker.jl/badge.svg?branch=master)](https://coveralls.io/github/MichielStock/Kronecker.jl?branch=master)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/latest/)[![Build Status](https://travis-ci.com/MichielStock/Kronecker.jl.svg?branch=master)](https://travis-ci.com/MichielStock/Kronecker.jl) [![Coverage Status](https://coveralls.io/repos/github/MichielStock/Kronecker.jl/badge.svg?branch=master)](https://coveralls.io/github/MichielStock/Kronecker.jl?branch=master) [![DOI](https://zenodo.org/badge/160198570.svg)](https://zenodo.org/badge/latestdoi/160198570)
+

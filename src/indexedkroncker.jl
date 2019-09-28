@@ -1,7 +1,7 @@
 Index = Union{UnitRange{I}, AbstractVector{I}} where I <: Int #TODO: make for general indices
 
-struct IndexedKroneckerProduct <: GeneralizedKroneckerProduct
-    K::AbstractKroneckerProduct
+struct IndexedKroneckerProduct{T} <: GeneralizedKroneckerProduct{T}
+    K::AbstractKroneckerProduct{T}
     p::Index
     q::Index
     r::Index
@@ -25,7 +25,7 @@ struct IndexedKroneckerProduct <: GeneralizedKroneckerProduct
         if !(maximum(r) ≤ n && maximum(t) ≤ l)
             throw(BoundsError("Indices exeed matrix bounds"))
         end
-        return new(K, p, q, r, t)
+        return new{eltype(K)}(K, p, q, r, t)
     end
 end
 

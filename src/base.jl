@@ -1,6 +1,6 @@
-abstract type GeneralizedKroneckerProduct <: AbstractMatrix{Number} end
+abstract type GeneralizedKroneckerProduct{T} <: AbstractMatrix{T} end
 
-abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
+abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
@@ -9,7 +9,8 @@ Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 Concrete Kronecker product between two matrices `A` and `B`.
 """
-struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
+
     A::TA
     B::TB
     function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
@@ -72,10 +73,13 @@ Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
 
-function eltype(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return promote_type(eltype(A), eltype(B))
-end
+"""
+  eltype(K::AbstractKroneckerProduct{T})
+
+Returns the type of the elements of the Kronecker product.
+"""
+Base.eltype(K::AbstractKroneckerProduct{T}) where {T} = T
+
 
 """
     size(K::AbstractKroneckerProduct)
@@ -154,7 +158,7 @@ order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 """
     det(K::AbstractKroneckerProduct)
 
-Compute the determinant of a Kronecker product.
+Compute the trace of a Kronecker product.
 """
 function LinearAlgebra.det(K::AbstractKroneckerProduct)
     squarecheck(K)
@@ -242,6 +246,17 @@ end
 Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 """
 Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
+
+"""
+    copy(K::AbstractKroneckerProduct)
+
+Creates a copy of a Kronecker product. Recursively uses `copy` to copy all
+elements of the Kronecker product into a new type of Kronecker.
+"""
+function Base.copy(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return copy(A) ⊗ copy(B)
+end
 
 function Base.:+(A::AbstractKroneckerProduct, B::StridedMatrix)
     C = Matrix(A)

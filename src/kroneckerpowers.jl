@@ -13,12 +13,12 @@ Efficient way of storing Kronecker powers, e.g.
 
 K = A ⊗ A ⊗ ... ⊗ A.
 """
-struct KroneckerPower{TA<:AbstractMatrix, N} <: AbstractKroneckerProduct
+struct KroneckerPower{T, TA<:AbstractMatrix{T}, N} <: AbstractKroneckerProduct{T}
    A::TA
    pow::Integer
    function KroneckerPower(A::AbstractMatrix{T}, pow::Integer) where {T}
       @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
-      return new{typeof(A), pow}(A, pow)
+      return new{T, typeof(A), pow}(A, pow)
     end
 end
 
@@ -38,9 +38,11 @@ type.
 """
 ⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
 
-getmatrices(K::KroneckerPower{T, N}) where {T, N} = (K.A, KroneckerPower(K.A, K.pow-1))
-getmatrices(K::KroneckerPower{T, 2}) where {T} = (K.A, K.A)
-getmatrices(K::KroneckerPower{T, 1}) where {T} = (K.A, )
+function getmatrices(K::KroneckerPower{T, TA, N}) where {T, TA, N}
+    return (K.A, KroneckerPower(K.A, K.pow-1))
+end
+getmatrices(K::KroneckerPower{T, TA, 2}) where {T, TA} = (K.A, K.A)
+getmatrices(K::KroneckerPower{T, TA, 1}) where {T, TA} = (K.A, )
 
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow
@@ -124,8 +126,10 @@ function Base.conj(K::KroneckerPower)
 end
 
 # mixed-product property
-function Base.:*(K1::KroneckerPower{T1, N},
-                        K2::KroneckerPower{T2, N}) where {T1, T2, N}
+function Base.:*(
+    K1::KroneckerPower{T1, TA1, N},
+    K2::KroneckerPower{T1, TA2, N},
+) where {T1, TA1, T2, TA2, N}
     if size(K1, 2) != size(K2, 1)
         throw(DimensionMismatch("Mismatch between K1 and K2"))
     end

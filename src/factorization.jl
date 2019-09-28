@@ -9,7 +9,7 @@ Standard matrix factorization algorithms applied on Kronecker systems.
 =#
 
 
-abstract type FactorizedKronecker <: AbstractKroneckerProduct end
+abstract type FactorizedKronecker{T} <: AbstractKroneckerProduct{T} end
 
 # CHOLESKY DECOMPOSITION
 # ----------------------

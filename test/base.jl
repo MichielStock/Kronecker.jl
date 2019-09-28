@@ -31,6 +31,12 @@
         @test order(K) == 2
     end
 
+    @testset "Copy" begin
+        copy_of_K = copy(K)
+        @test copy_of_K isa AbstractKroneckerProduct
+        @test copy(K3) isa AbstractKroneckerProduct
+    end
+
     @testset "Linear algebra" begin
         @test tr(K) ≈ tr(X)
         @test det(K) ≈ det(X)

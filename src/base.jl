@@ -284,7 +284,10 @@ end
 Scale an `AbstractKroneckerProduct` `K` inplace by a factor `a` by rescaling the
 **left** matrix.
 """
-LinearAlgebra.lmul!(a::Number, K::AbstractKroneckerProduct) = lmul!(a, K.A)
+function LinearAlgebra.lmul!(a::Number, K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    lmul!(a, A)
+end
 
 """
     rmul!(K::AbstractKroneckerProduct, a::Number)
@@ -292,7 +295,18 @@ LinearAlgebra.lmul!(a::Number, K::AbstractKroneckerProduct) = lmul!(a, K.A)
 Scale an `AbstractKroneckerProduct` `K` inplace by a factor `a` by rescaling the
 **right** matrix.
 """
-LinearAlgebra.rmul!(K::AbstractKroneckerProduct, a::Number) = rmul!(K.B, a)
+function LinearAlgebra.rmul!(K::AbstractKroneckerProduct, a::Number)
+    A, B = getmatrices(K)
+    rmul!(B, a)
+end
 
-Base.:*(a::Number, K::AbstractKroneckerProduct) = kronecker(a * K.A, K.B)
-Base.:*(K::AbstractKroneckerProduct, a::Number) = kronecker(a * K.A, K.B)
+function Base.:*(a::Number, K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    kronecker(a * A, B)
+end
+
+
+function Base.:*(K::AbstractKroneckerProduct, a::Number)
+    A, B = getmatrices(K)
+    kronecker(A, B * a)
+end

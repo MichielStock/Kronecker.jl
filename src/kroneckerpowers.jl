@@ -110,7 +110,6 @@ end
 Compute the transpose of a Kronecker power.
 """
 function Base.transpose(K::KroneckerPower)
-    A, B = getmatrices(K)
     return KroneckerPower(transpose(K.A), K.pow)
 end
 

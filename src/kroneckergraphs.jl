@@ -79,7 +79,7 @@ function sampleindices(K::AbstractKroneckerProduct, s::Int)
     indices = similar(indicesA)
     for (o, (Ia, Ib)) in enumerate(zip(indicesA, indicesB))
         (i, j), (k, l) = Ia, Ib
-        indices[o] = ((i - 1) * p + k, (j - 1) * q + l)
+        @inbounds indices[o] = ((i - 1) * p + k, (j - 1) * q + l)
     end
     return indices
 end

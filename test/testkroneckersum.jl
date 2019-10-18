@@ -55,4 +55,10 @@
         @test EKS isa AbstractKroneckerProduct
         @test EKS ≈ exp(kron(A, IB) + kron(IA, B))
     end
+
+    @testset "sum over Kronecker sum" begin
+        @test sum(KS) ≈ sum(kronsum)
+        @test sum(KS3) ≈ sum(kronsum3)
+    end
+
 end

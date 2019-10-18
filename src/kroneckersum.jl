@@ -141,6 +141,14 @@ function Base.exp(K::AbstractKroneckerSum)
     return kronecker(exp(A), exp(B))
 end
 
+function Base.sum(K::KroneckerSum)
+    A, B = getmatrices(K)
+    n, m = size(A, 1), size(B, 1)
+    return m * sum(A) + n * sum(B)
+end
+
+# TODO: sum over index
+
 #=
 function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
 

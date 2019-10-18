@@ -5,7 +5,7 @@
     B = rand(3,3); IB = oneunit(B)
 
     KS = A ⊕ B
-    kronsum = kron(A,IB) + kron(IA,B)
+    kronsum = kron(A, IB) + kron(IA, B)
 
     @test collect(KS) ≈ kronsum
     @test collect(KS) isa SparseMatrixCSC
@@ -59,6 +59,14 @@
     @testset "sum over Kronecker sum" begin
         @test sum(KS) ≈ sum(kronsum)
         @test sum(KS3) ≈ sum(kronsum3)
+
+        for dims in 1:2
+            @test sum(KS, dims=dims) ≈ sum(kronsum, dims=dims)
+            @test sum(KS3, dims=dims) ≈ sum(kronsum3, dims=dims)
+        end
+
+        @test_throws ArgumentError sum(KS, dims=-1)
+        @test_throws ArgumentError sum(KS3, dims=3)
     end
 
 end

@@ -141,13 +141,28 @@ function Base.exp(K::AbstractKroneckerSum)
     return kronecker(exp(A), exp(B))
 end
 
+#=
 function Base.sum(K::KroneckerSum)
     A, B = getmatrices(K)
     n, m = size(A, 1), size(B, 1)
     return m * sum(A) + n * sum(B)
 end
+=#
 
-# TODO: sum over index
+function Base.sum(K::KroneckerSum; dims::Union{Int,Nothing}=nothing)
+    A, B = getmatrices(K)
+    n, m = size(A, 1), size(B, 1)
+    if dims==1
+        return kron(sum(A, dims=1), ones(1, m)) .+ kron(ones(1, n), sum(B, dims=1))
+    elseif dims==2
+        return kron(sum(A, dims=2), ones(m, 1)) .+ kron(ones(n, 1), sum(B, dims=2))
+    elseif dims==nothing
+        m * sum(A) + n * sum(B)
+    else
+        throw(ArgumentError("`dims` should be 1 or 2"))
+    end
+end
+
 
 #=
 function Base.:*(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)

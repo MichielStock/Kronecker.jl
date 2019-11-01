@@ -22,5 +22,6 @@ include("eigen.jl")
 include("factorization.jl")
 include("kroneckersum.jl")
 include("kroneckergraphs.jl")
+include("names.jl")
 
 end # module

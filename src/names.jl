@@ -17,7 +17,7 @@ kronecker(A::NamedDimsArray{L}, p::Int) where {L} =
 kron_names(left::Tuple, right::Tuple) = map(_join, left, right)
 
 _join(i::Symbol, j::Symbol) = _join(Val(i), Val(j))
-@generated _join(::Val{i}, ::Val{j}) where {i,j} = QuoteNode(Symbol(i, :⊗, j))
+@generated _join(::Val{i}, ::Val{j}) where {i,j} = QuoteNode(Symbol(i, :_, j))
 
 kron_names(L::Tuple, ::Val{1}) = L
 kron_names(L::Tuple, ::Val{p}) where {p} = kron_names(kron_names(L,L), Val(p-1))

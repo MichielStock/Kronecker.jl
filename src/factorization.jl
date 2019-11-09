@@ -9,14 +9,14 @@ Standard matrix factorization algorithms applied on Kronecker systems.
 =#
 
 
-abstract type FactorizedKronecker <: AbstractKroneckerProduct end
+abstract type FactorizedKronecker{T} <: AbstractKroneckerProduct{T} end
 
 # CHOLESKY DECOMPOSITION
 # ----------------------
 
 import LinearAlgebra: Cholesky, cholesky
 
-struct CholeskyKronecker{T<:Union{Cholesky,FactorizedKronecker},S<:Union{Cholesky,FactorizedKronecker}} <: FactorizedKronecker
+struct CholeskyKronecker{T<:Union{Cholesky,FactorizedKronecker},S<:Union{Cholesky,FactorizedKronecker}} <: FactorizedKronecker{Float64}
     A::T
     B::S
 end

@@ -16,6 +16,9 @@
         @test issquare(K1)
         @test !issquare(K2)
 
+        @test eltype(K1) <: Real
+        @test eltype(K2) <: Integer
+
         @test order(K1) == 3
 
         @test getmatrices(K1)[1] === A

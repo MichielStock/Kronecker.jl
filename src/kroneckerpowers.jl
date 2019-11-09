@@ -13,12 +13,12 @@ Efficient way of storing Kronecker powers, e.g.
 
 K = A ⊗ A ⊗ ... ⊗ A.
 """
-struct KroneckerPower{TA<:AbstractMatrix, N} <: AbstractKroneckerProduct
+struct KroneckerPower{T<:Any,TA<:AbstractMatrix{T}, N} <: AbstractKroneckerProduct{T}
    A::TA
    pow::Integer
    function KroneckerPower(A::AbstractMatrix{T}, pow::Integer) where {T}
       @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
-      return new{typeof(A), pow}(A, pow)
+      return new{eltype(A), typeof(A), pow}(A, pow)
     end
 end
 
@@ -28,7 +28,7 @@ end
 Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`. Returns a lazy `KroneckerPower`
 type.
 """
-kronecker(A::AbstractMatrix, pow::Int) = KroneckerPower(A, pow)
+kronecker(A::AbstractMatrix, pow::Integer) = KroneckerPower(A, pow)
 
 """
     ⊗(A::AbstractMatrix, pow::Int)
@@ -36,15 +36,15 @@ kronecker(A::AbstractMatrix, pow::Int) = KroneckerPower(A, pow)
 Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`. Returns a lazy `KroneckerPower`
 type.
 """
-⊗(A::AbstractMatrix, pow::Int) = kronecker(A, pow)
+⊗(A::AbstractMatrix, pow::Integer) = kronecker(A, pow)
 
-getmatrices(K::KroneckerPower{T, N}) where {T, N} = (K.A, KroneckerPower(K.A, K.pow-1))
-getmatrices(K::KroneckerPower{T, 2}) where {T} = (K.A, K.A)
-getmatrices(K::KroneckerPower{T, 1}) where {T} = (K.A, )
+getmatrices(K::KroneckerPower{T,TA,N}) where {T,TA,N} = (K.A, KroneckerPower(K.A, K.pow-1))
+getmatrices(K::KroneckerPower{T,TA,2}) where {T,TA} = (K.A, K.A)
+getmatrices(K::KroneckerPower{T,TA,1}) where {T,TA} = (K.A, )
 
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow
-Base.eltype(K::KroneckerPower) = eltype(K.A)
+Base.eltype(K::KroneckerPower{T,TA,N}) where {T,TA,N} = T
 issquare(K::KroneckerPower) = issquare(K.A)
 
 # SCALAR EQUIVALENTS FOR AbstractKroneckerProduct
@@ -123,8 +123,8 @@ function Base.conj(K::KroneckerPower)
 end
 
 # mixed-product property
-function Base.:*(K1::KroneckerPower{T1, N},
-                        K2::KroneckerPower{T2, N}) where {T1, T2, N}
+function Base.:*(K1::KroneckerPower{T,TA,N},
+                        K2::KroneckerPower{S,TB,N}) where {T,TA,S,TB,N}
     if size(K1, 2) != size(K2, 1)
         throw(DimensionMismatch("Mismatch between K1 and K2"))
     end

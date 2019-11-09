@@ -1,15 +1,17 @@
-abstract type GeneralizedKroneckerProduct <: AbstractMatrix{Number} end
+abstract type GeneralizedKroneckerProduct{T} <: AbstractMatrix{T} end
 
-abstract type AbstractKroneckerProduct <: GeneralizedKroneckerProduct end
+Base.eltype(K::GeneralizedKroneckerProduct{T}) where {T} = T
+
+abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 """
-    KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+    KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
 
 Concrete Kronecker product between two matrices `A` and `B`.
 """
-struct KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct
+struct KroneckerProduct{T<:Any,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
     A::TA
     B::TB
     function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
@@ -46,12 +48,12 @@ Binary operator for `kronecker`, computes as Lazy Kronecker product. See
 ⊗(A::AbstractMatrix...) = kronecker(A...)
 
 """
-    getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+    getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
 
 Computes and returns the (i,j)-th element of an `AbstractKroneckerProduct` K.
 Uses recursion if `K` is of an order greater than two.
 """
-function getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     A, B = getmatrices(K)
     m, n = size(A)
     k, l = size(B)
@@ -72,11 +74,6 @@ Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
 
-function eltype(K::AbstractKroneckerProduct)
-    A, B = getmatrices(K)
-    return promote_type(eltype(A), eltype(B))
-end
-
 """
     size(K::AbstractKroneckerProduct)
 
@@ -94,7 +91,7 @@ end
 
 Returns a the size of an `GeneralizedKroneckerProduct` instance.
 """
-size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
+size(K::GeneralizedKroneckerProduct, dim::Integer) = size(K)[dim]
 
 # CHECKS
 

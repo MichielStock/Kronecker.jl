@@ -29,6 +29,13 @@
 
         @test order(A) == 1
         @test order(K) == 2
+
+        @test eltype(K) <: Float64
+
+        @test K isa AbstractKroneckerProduct
+        @test K isa AbstractKroneckerProduct{Float64}
+
+        @test K isa AbstractMatrix{Float64}
     end
 
     @testset "Linear algebra" begin

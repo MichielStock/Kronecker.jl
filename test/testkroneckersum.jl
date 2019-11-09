@@ -7,6 +7,11 @@
     KS = A ⊕ B
     kronsum = kron(A, IB) + kron(IA, B)
 
+    @test eltype(KS) <: Float64
+    @test KS isa AbstractMatrix{Float64}
+    @test KS isa GeneralizedKroneckerProduct{Float64}
+    @test !isa(KS, AbstractKroneckerProduct)
+
     @test collect(KS) ≈ kronsum
     @test collect(KS) isa SparseMatrixCSC
 

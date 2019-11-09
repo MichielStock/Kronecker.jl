@@ -1,12 +1,13 @@
-Index = Union{UnitRange{I}, AbstractVector{I}} where I <: Int #TODO: make for general indices
+Index = AbstractVector{I} where I <: Integer
 
-struct IndexedKroneckerProduct <: GeneralizedKroneckerProduct
-    K::AbstractKroneckerProduct
-    p::Index
-    q::Index
-    r::Index
-    t::Index
-    function IndexedKroneckerProduct(K, p::Index, q::Index, r::Index, t::Index)
+struct IndexedKroneckerProduct{T<:Any,TK<:AbstractKroneckerProduct} <: GeneralizedKroneckerProduct{T}
+    K::TK
+    p
+    q
+    r
+    t
+    function IndexedKroneckerProduct(K::AbstractKroneckerProduct, p::Index, q::Index, r::Index,
+                            t::Index)
         if order(K) != 2
             throw(DimensionMismatch(
                 "Indexed Kronecker only implemented for second order Kronecker systems"
@@ -25,7 +26,7 @@ struct IndexedKroneckerProduct <: GeneralizedKroneckerProduct
         if !(maximum(r) ≤ n && maximum(t) ≤ l)
             throw(BoundsError("Indices exeed matrix bounds"))
         end
-        return new(K, p, q, r, t)
+        return new{eltype(K),typeof(K)}(K, p, q, r, t)
     end
 end
 

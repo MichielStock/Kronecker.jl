@@ -1,5 +1,7 @@
 abstract type GeneralizedKroneckerProduct{T} <: AbstractMatrix{T} end
 
+Base.eltype(K::GeneralizedKroneckerProduct{T}) where {T} = T
+
 abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
@@ -71,10 +73,6 @@ getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
 Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
-
-function Base.eltype(K::AbstractKroneckerProduct{T}) where {T}
-    return T
-end
 
 """
     size(K::AbstractKroneckerProduct)

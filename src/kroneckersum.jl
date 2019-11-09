@@ -1,6 +1,6 @@
-abstract type AbstractKroneckerSum <: GeneralizedKroneckerProduct end
+abstract type AbstractKroneckerSum{T} <: GeneralizedKroneckerProduct{T} end
 
-struct KroneckerSum{T, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerSum
+struct KroneckerSum{T<:Any, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerSum{T}
     A::TA
     B::TB
     function KroneckerSum(A::AbstractMatrix{T},

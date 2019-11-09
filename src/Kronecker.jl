@@ -18,9 +18,9 @@ include("base.jl")
 include("kroneckerpowers.jl")
 include("vectrick.jl")
 include("indexedkroncker.jl")
-#include("eigen.jl")
+include("eigen.jl")
 include("factorization.jl")
-#include("kroneckersum.jl")
+include("kroneckersum.jl")
 include("kroneckergraphs.jl")
 
 end # module

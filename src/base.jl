@@ -48,12 +48,12 @@ Binary operator for `kronecker`, computes as Lazy Kronecker product. See
 ⊗(A::AbstractMatrix...) = kronecker(A...)
 
 """
-    getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+    getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
 
 Computes and returns the (i,j)-th element of an `AbstractKroneckerProduct` K.
 Uses recursion if `K` is of an order greater than two.
 """
-function getindex(K::AbstractKroneckerProduct, i1::Int, i2::Int)
+function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     A, B = getmatrices(K)
     m, n = size(A)
     k, l = size(B)
@@ -91,7 +91,7 @@ end
 
 Returns a the size of an `GeneralizedKroneckerProduct` instance.
 """
-size(K::GeneralizedKroneckerProduct, dim::Int) = size(K)[dim]
+size(K::GeneralizedKroneckerProduct, dim::Integer) = size(K)[dim]
 
 # CHECKS
 

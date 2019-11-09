@@ -114,50 +114,6 @@ function genvectrick!(M, N, v, u, p, q, r, t)
     return u
 end
 
-function genvectrick2!(M, N, v, u, p, q, r, t)
-    # computes N ⊗ M
-    a, b = size(M)
-    c, d = size(N)
-    e = length(v)
-    f = length(u)
-
-    u .= 0  # reset for inplace
-    if a * e + d * f < c * e + b *f
-        # compute T = VM'
-        T = zeros(eltype(v), d, a)
-        @simd for k in 1:a
-            @simd for h in 1:e
-                i, j = r[h], t[h]
-                @inbounds T[j,k] += v[h] * M[k,i]
-            end
-        end
-        @simd for k in 1:d
-            @simd for h in 1:f
-                i, j = p[h], q[h]
-                @inbounds u[h] += N[j,k] * T[k,i]
-            end
-        end
-    else
-        # compute S = NV
-        S = zeros(eltype(v), d, a)
-
-        @simd for k in 1:c
-            @simd for h in 1:e
-                i, j = r[h], t[h]
-                @inbounds S[k,j] += v[h] * N[k,j]
-            end
-        end
-
-        @simd for k in 1:b
-            @simd for h in 1:f
-                i, j = p[h], q[h]
-                @inbounds u[h] += S[j,k] * M[i,k]
-            end
-        end
-    end
-    return u
-end
-
 function genvectrick(M, N, v, p, q, r, t)
     # computes N ⊗ M
     f = length(p)

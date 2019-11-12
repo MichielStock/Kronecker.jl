@@ -39,7 +39,7 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
         "Dimension missmatch between kronecker system and vector"))
     V = vectrick_reshape(v, d, b)
     X = vectrick_reshape(x, c, a)
-    if (d + a) * b < (b + c) * d
+    if b * c * (a + d) < a * d * (b + c)
         mul!(X, N, V * transpose(M))
     else
         mul!(X, N * V, transpose(M))
@@ -60,7 +60,7 @@ kron_a_id(a, x) = reshape_rows(a * reshape_rows(x, size(a)[2], :), :, size(x)[2]
 function kron_a_b(A, B, x)
     a, b = size(A)
     c, d = size(B)
-    if (d + a) * b < (b + c) * d
+    if b * c * (a + d) < a * d * (b + c)
         return kron_a_id(A, kron_id_a(B, x))
     else
         return kron_id_a(B, kron_a_id(A, x))

@@ -132,5 +132,14 @@
         x = randn(n_a * n_b)
         @test K\(K*x) ≈ x
         @test (x'*K)/K ≈ x'
+
+        # testing for non-square A, B
+        A = randn(n_b, n_a)
+        B = randn(n_a, n_b)
+        K = A ⊗ B
+        x = randn(n_a * n_b)
+        c = (K*x)
+        xls = K\c
+        @test K'*(K*xls) ≈ K'c # test via normal equations
     end
 end

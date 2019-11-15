@@ -124,8 +124,8 @@
     end
 
     @testset "Solving Linear Systems" begin
-        n_a = 2
-        n_b = 3
+        n_a = 8
+        n_b = 16
         A = randn(n_a, n_a)
         B = randn(n_b, n_b)
         K = A ⊗ B
@@ -139,6 +139,7 @@
         K = A ⊗ B
         x = randn(n_a * n_b)
         c = (K*x)
+        c .+= randn(size(c)) # this moves c out of range(K), necessitating least-squares
         xls = K\c
         @test K'*(K*xls) ≈ K'c # test via normal equations
     end

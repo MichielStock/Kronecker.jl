@@ -312,13 +312,6 @@ end
 using LinearAlgebra: checksquare
 function LinearAlgebra.:\(K::AbstractKroneckerProduct{T}, c::AbstractVector{T}) where {T}
     size(K, 2) != length(c) && throw(DimensionMismatch("size(K, 2) != length(c)"))
-    if !(issquare(K.A) && issquare(K.B))
-        return Matrix(K)\c
-    else
-        C = reshape(c, size(K.B, 1), size(K.A, 1)) # matricify
-        return vec((K.B \ C) / K.A') #(A ⊗ B)vec(X) = vec(C) <=> BXA' = C => X = B^{-1} C A'^{-1}
-    end
+    C = reshape(c, size(K.B, 1), size(K.A, 1)) # matricify
+    return vec((K.B \ C) / K.A') #(A ⊗ B)vec(X) = vec(C) <=> BXA' = C => X = B^{-1} C A'^{-1}
 end
-
-# !issquare(K.A) && throw(DimensionMismatch("matrix A is not square: dimensions are " * size(K.A)))
-# !issquare(K.B) && throw(DimensionMismatch("matrix B is not square: dimensions are " * size(K.B)))

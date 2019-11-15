@@ -122,4 +122,15 @@
         @test K.B ≈ 2B
         @test K ≈ 6kron(A, B)
     end
+
+    @testset "Solving Linear Systems" begin
+        n_a = 2
+        n_b = 3
+        A = randn(n_a, n_a)
+        B = randn(n_b, n_b)
+        K = A ⊗ B
+        x = randn(n_a * n_b)
+        @test K\(K*x) ≈ x
+        @test (x'*K)/K ≈ x'
+    end
 end

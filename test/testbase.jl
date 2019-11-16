@@ -124,23 +124,42 @@
     end
 
     @testset "Solving Linear Systems" begin
-        n_a = 8
-        n_b = 16
-        A = randn(n_a, n_a)
-        B = randn(n_b, n_b)
+        n = 8
+        m = 16
+        # 1) testing square kronecker product with square A, B
+        A = randn(n, n)
+        B = randn(m, m)
         K = A ⊗ B
-        x = randn(n_a * n_b)
-        @test K\(K*x) ≈ x
+        x = randn(n * m)
+        b = K*x
+        @test K\b ≈ x
         @test (x'*K)/K ≈ x'
 
-        # testing for non-square A, B
-        A = randn(n_b, n_a)
-        B = randn(n_a, n_b)
-        K = A ⊗ B
-        x = randn(n_a * n_b)
-        c = (K*x)
-        c .+= randn(size(c)) # this moves c out of range(K), necessitating least-squares
-        xls = K\c
-        @test K'*(K*xls) ≈ K'c # test via normal equations
+        # testing least squares solution
+        function test_ls_solve(size_A, size_B)
+            A = randn(size_A)
+            B = randn(size_B)
+            x = randn(size(A, 2) * size(B, 2))
+            K = kronecker(A, B)
+            b = K*x
+            b .+= randn(size(b)) # this moves b out of range(K), necessitating least-squares
+            xls = K\b
+            return K'*(K*xls) ≈ K'b # test via normal equations
+        end
+
+        # 2) kronecker product is square, but A, B aren't
+        size_A = (m, n)
+        size_B = (n, m)
+        @test test_ls_solve(size_A, size_B)
+
+        # 3) kronecker product is not square, dimension of x is larger than b
+        size_A = (n, n)
+        size_B = (n, m)
+        @test test_ls_solve(size_A, size_B)
+
+        # 4) kronecker product is not square, dimension of x is smaller than b
+        size_A = (m, n)
+        size_B = (m, m)
+        @test test_ls_solve(size_A, size_B)
     end
 end

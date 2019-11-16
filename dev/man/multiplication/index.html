@@ -1,67 +1,67 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Multiplication · Kronecker.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Kronecker.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Kronecker.jl</a></li><li><a class="toctext" href="../basic/">Basic use</a></li><li><a class="toctext" href="../factorization/">Factorization methods</a></li><li><a class="toctext" href="../indexed/">Indexed Kronecker products</a></li><li><a class="toctext" href="../kroneckerpowers/">Kronecker powers and graphs</a></li><li><a class="toctext" href="../kroneckersums/">Kronecker sums</a></li><li class="current"><a class="toctext" href>Multiplication</a><ul class="internal"><li><a class="toctext" href="#Kronecker-kronecker-multiplications-1">Kronecker-kronecker multiplications</a></li><li><a class="toctext" href="#The-Vec-trick-1">The Vec trick</a></li><li><a class="toctext" href="#Docstrings-1">Docstrings</a></li><li><a class="toctext" href="#Sampled-Kronecker-vector-multiplications-1">Sampled Kronecker-vector multiplications</a></li></ul></li><li><a class="toctext" href="../types/">Types</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Multiplication</a></li></ul><a class="edit-page" href="https://github.com/MichielStock/Kronecker.jl/blob/master/docs/src/man/multiplication.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Multiplication</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Multiplication-1" href="#Multiplication-1">Multiplication</a></h1><p><code>Kronecker.jl</code> allows for efficient multiplication of large Kronecker systems by overloading the multiplication function <code>*</code>. We distinguish three cases:</p><ul><li><strong>Kronecker-Kronecker multiplications</strong> yield again a type of <code>AbstractKroneckerProduct</code>;</li><li><strong>Kronecker-vector multiplications</strong> use the &#39;vec trick&#39; and yield a vector;</li><li><strong>sampled Kronecker-vector multiplications</strong> use the sampled-vec trick to yield a vector.</li></ul><h2><a class="nav-anchor" id="Kronecker-kronecker-multiplications-1" href="#Kronecker-kronecker-multiplications-1">Kronecker-kronecker multiplications</a></h2><p>Multiplying two conformable Kronecker products of the same order yield a new Kronecker product, based on the mixed-product property:</p><div>\[(A \otimes B)(C \otimes D) = (AC) \otimes (BD),\]</div><pre><code class="language-julia">A, B, C, D = randn(5, 5), randn(4, 4), randn(5, 4), randn(4, 4);
 (A ⊗ B) * (C ⊗ D)</code></pre><pre><code class="language-none">20×16 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
- -2.02051     0.285258    -2.05922     1.56591    …   2.94895     -2.24249   
-  0.19587    -0.00974904   0.223146    0.0677022     -0.319561    -0.0969542 
- -1.12007     0.231408    -1.21602     0.291557       1.74143     -0.417529  
- -3.01362     0.717216    -3.25213     1.48986        4.65728     -2.13358   
-  4.55578    -0.64319      4.64307    -3.53077       -2.25571      1.71532   
- -0.441643    0.0219818   -0.503143   -0.152653   …   0.244438     0.0741621 
-  2.52551    -0.521771     2.74185    -0.657393      -1.33205      0.319376  
-  6.79502    -1.61716      7.33281    -3.35929       -3.56244      1.63202   
- -2.89327     0.408475    -2.94871     2.24231        3.20785     -2.43937   
-  0.280477   -0.0139601    0.319534    0.0969462     -0.347616    -0.105466  
- -1.60389     0.331364    -1.74129     0.417495   …   1.89432     -0.454186  
- -4.31536     1.02702     -4.65689     2.13341        5.06616     -2.3209    
-  0.554484   -0.0782826    0.565108   -0.429729      -5.82826      4.43202   
- -0.0537523   0.00267541  -0.0612376  -0.0185794      0.631575     0.191619  
-  0.307379   -0.0635047    0.333711   -0.0800112     -3.44173      0.825198  
-  0.827022   -0.196824     0.892476   -0.408859   …  -9.20457      4.21678   
- -1.81198     0.255818    -1.8467      1.4043         0.0559523   -0.0425482 
-  0.175656   -0.00874289   0.200117    0.060715      -0.00606323  -0.00183957
- -1.00448     0.207525    -1.09052     0.261467       0.0330413   -0.00792205
- -2.7026      0.643196    -2.9165      1.3361         0.0883655   -0.0404818 </code></pre><h2><a class="nav-anchor" id="The-Vec-trick-1" href="#The-Vec-trick-1">The Vec trick</a></h2><p>Reshaping allows computing a product between a Kronecker product and vector as two matrix multiplications. This is the so-called vec trick which holds for any set of conformable matrices:</p><div>\[(A \otimes B) \text{vec}(X) = \text{vec}(B^\intercal X A).\]</div><p>Here, <span>$\text{vec}(\cdot)$</span> is the vectorization operator, which stacks all columns of a matrix into a vector.</p><pre><code class="language-julia">A, B = rand(10, 10), rand(5, 6);
+  0.695278    10.0376    -0.434972  …  -2.90545    0.125905   -0.0723655
+  5.30439     -2.15156   -4.02142       0.622782   1.16403     1.77173  
+ -8.21874     -1.4201    -6.92832       0.411057   2.00545     1.37903  
+  0.0050255   -5.32464    4.69817       1.54125   -1.35992    -1.23872  
+  0.430971     6.22185   -0.26962       1.29303   -0.0560326   0.0322053
+  3.28795     -1.33365   -2.4927    …  -0.277161  -0.518035   -0.788484 
+ -5.09443     -0.880255  -4.29456      -0.182935  -0.892498   -0.613719 
+  0.00311508  -3.30051    2.91219      -0.685914   0.605214    0.551274 
+ -0.642273    -9.27237    0.401812     -3.79499    0.164453   -0.0945212
+ -4.90001      1.98753    3.71485       0.813455   1.52041     2.31416  
+  7.59219      1.31184    6.40014   …   0.536907   2.61944     1.80124  
+ -0.00464238   4.91872   -4.34001       2.01313   -1.77627    -1.61796  
+ -0.236268    -3.41096    0.147812     11.9409    -0.51745     0.29741  
+ -1.80253      0.731139   1.36655      -2.55953   -4.78395    -7.28149  
+  2.79288      0.482576   2.35437      -1.68937   -8.24205    -5.66757  
+ -0.00170776   1.80941   -1.59653   …  -6.33429    5.58903     5.09091  
+  0.662965     9.57111   -0.414757     -5.32321    0.230678   -0.132584 
+  5.05787     -2.05157   -3.83453       1.14103    2.13267     3.24607  
+ -7.83679     -1.3541    -6.60634       0.753117   3.67428     2.52659  
+  0.00479194  -5.07719    4.47983       2.82381   -2.49157    -2.26951  </code></pre><h2><a class="nav-anchor" id="The-Vec-trick-1" href="#The-Vec-trick-1">The Vec trick</a></h2><p>Reshaping allows computing a product between a Kronecker product and vector as two matrix multiplications. This is the so-called vec trick which holds for any set of conformable matrices:</p><div>\[(A \otimes B) \text{vec}(X) = \text{vec}(B^\intercal X A).\]</div><p>Here, <span>$\text{vec}(\cdot)$</span> is the vectorization operator, which stacks all columns of a matrix into a vector.</p><pre><code class="language-julia">A, B = rand(10, 10), rand(5, 6);
 x = randn(60);
 (A ⊗ B) * x</code></pre><pre><code class="language-none">50-element Array{Float64,1}:
- 2.4104829187221153
- 1.7353699032765264
- 1.6025983504731325
- 4.66523566531526  
- 2.753324203968247 
- 2.792638558000614 
- 4.245449777797649 
- 1.9764551425929178
- 5.211924031113675 
- 1.995067689424603 
- ⋮                 
- 3.7299447184226557
- 1.563536069798958 
- 3.8064888192442843
- 3.084317077291842 
- 3.641734347753203 
- 4.4189238830517   
- 2.9860804574326325
- 6.661097601495388 
- 3.626072754028025 </code></pre><p>Note that this trick is extended to also work with matrices:</p><pre><code class="language-julia">A, B = rand(10, 10), rand(5, 6);
+ -4.431248592379231 
+ -7.736350400656786 
+ -3.8187639261331765
+ -2.9042176380097193
+ -5.5599673763050985
+ -1.2220084076201345
+ -4.934921518256974 
+ -2.3190144284240466
+ -2.737775368099024 
+ -3.287615782687242 
+  ⋮                 
+ -5.183551402333079 
+ -3.404308881471121 
+ -2.9728209795572518
+ -4.5832444085604465
+ -2.713429872059529 
+ -4.876676593084815 
+ -1.6589504949293026
+ -1.5194891583275487
+ -3.7922957764872285</code></pre><p>Note that this trick is extended to also work with matrices:</p><pre><code class="language-julia">A, B = rand(10, 10), rand(5, 6);
 x = randn(60, 2);
 (A ⊗ B) * x</code></pre><pre><code class="language-none">50×2 Transpose{Float64,Array{Float64,2}}:
- -0.367987   2.18154 
- -0.15483    2.52016 
-  0.206867   2.24139 
-  0.249927   1.5249  
-  0.661399   4.79688 
- -1.1706     3.41403 
- -1.58768    3.54684 
-  0.791568   3.6664  
-  0.954168   2.47304 
-  0.903579   4.02899 
-  ⋮                  
- -1.38814   -1.6208  
- -1.68181   -0.540336
- -1.14158   -0.244436
- -1.03515    0.600151
- -2.31571    0.864453
- -3.13278    0.190456
- -2.38225    1.01113 
- -1.55333    0.801451
- -1.98609   -0.142672</code></pre><p>The vec trick works with higher-order Kronecker products. <strong>However, at the moment this has a substantial overhead and likely be relatively slow.</strong></p><h2><a class="nav-anchor" id="Docstrings-1" href="#Docstrings-1">Docstrings</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.mul!" href="#LinearAlgebra.mul!"><code>LinearAlgebra.mul!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)</code></pre><p>Calculates the vector-matrix multiplication <code>K * v</code> and stores the result in <code>x</code>, overwriting its existing value.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/43b19a7dfb024e93f96095aa6f6c9bf9b8d64ba0/src/vectrick.jl#L24-L29">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.lmul!" href="#LinearAlgebra.lmul!"><code>LinearAlgebra.lmul!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">lmul!(a::Number, K::AbstractKroneckerProduct)</code></pre><p>Scale an <code>AbstractKroneckerProduct</code> <code>K</code> inplace by a factor <code>a</code> by rescaling the <strong>left</strong> matrix.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/43b19a7dfb024e93f96095aa6f6c9bf9b8d64ba0/src/base.jl#L278-L283">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.rmul!" href="#LinearAlgebra.rmul!"><code>LinearAlgebra.rmul!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">rmul!(K::AbstractKroneckerProduct, a::Number)</code></pre><p>Scale an <code>AbstractKroneckerProduct</code> <code>K</code> inplace by a factor <code>a</code> by rescaling the <strong>right</strong> matrix.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/43b19a7dfb024e93f96095aa6f6c9bf9b8d64ba0/src/base.jl#L289-L294">source</a></section><h2><a class="nav-anchor" id="Sampled-Kronecker-vector-multiplications-1" href="#Sampled-Kronecker-vector-multiplications-1">Sampled Kronecker-vector multiplications</a></h2><p>See <a href="../indexed/#Indexed-Kronecker-products-1">Indexed Kronecker products</a> for the specifics.</p><footer><hr/><a class="previous" href="../kroneckersums/"><span class="direction">Previous</span><span class="title">Kronecker sums</span></a><a class="next" href="../types/"><span class="direction">Next</span><span class="title">Types</span></a></footer></article></body></html>
+ 0.997658    3.64893  
+ 1.25129     1.85116  
+ 2.78549    -0.0810436
+ 1.80778     1.29811  
+ 1.94548     2.02049  
+ 0.730344    2.19086  
+ 0.960395    0.943463 
+ 1.81068    -1.25017  
+ 1.63117     0.898636 
+ 1.63603     1.05116  
+ ⋮                    
+ 2.60277    -0.696057 
+ 2.99427    -4.22447  
+ 1.27471     0.430204 
+ 1.66538     0.422984 
+ 0.0899486   1.82165  
+ 0.436551    1.62509  
+ 2.05037    -1.88022  
+ 1.58886     2.25734  
+ 2.10357     1.03552  </code></pre><p>The vec trick works with higher-order Kronecker products. <strong>However, at the moment this has a substantial overhead and likely be relatively slow.</strong></p><h2><a class="nav-anchor" id="Docstrings-1" href="#Docstrings-1">Docstrings</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.mul!" href="#LinearAlgebra.mul!"><code>LinearAlgebra.mul!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)</code></pre><p>Calculates the vector-matrix multiplication <code>K * v</code> and stores the result in <code>x</code>, overwriting its existing value.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/a90606c44e838a34594169f6201f8f8c4829e2ec/src/vectrick.jl#L24-L29">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.lmul!" href="#LinearAlgebra.lmul!"><code>LinearAlgebra.lmul!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">lmul!(a::Number, K::AbstractKroneckerProduct)</code></pre><p>Scale an <code>AbstractKroneckerProduct</code> <code>K</code> inplace by a factor <code>a</code> by rescaling the <strong>left</strong> matrix.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/a90606c44e838a34594169f6201f8f8c4829e2ec/src/base.jl#L278-L283">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="LinearAlgebra.rmul!" href="#LinearAlgebra.rmul!"><code>LinearAlgebra.rmul!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">rmul!(K::AbstractKroneckerProduct, a::Number)</code></pre><p>Scale an <code>AbstractKroneckerProduct</code> <code>K</code> inplace by a factor <code>a</code> by rescaling the <strong>right</strong> matrix.</p></div></div><a class="source-link" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/a90606c44e838a34594169f6201f8f8c4829e2ec/src/base.jl#L289-L294">source</a></section><h2><a class="nav-anchor" id="Sampled-Kronecker-vector-multiplications-1" href="#Sampled-Kronecker-vector-multiplications-1">Sampled Kronecker-vector multiplications</a></h2><p>See <a href="../indexed/#Indexed-Kronecker-products-1">Indexed Kronecker products</a> for the specifics.</p><footer><hr/><a class="previous" href="../kroneckersums/"><span class="direction">Previous</span><span class="title">Kronecker sums</span></a><a class="next" href="../types/"><span class="direction">Next</span><span class="title">Types</span></a></footer></article></body></html>

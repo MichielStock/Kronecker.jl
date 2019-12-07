@@ -13,6 +13,7 @@ using LinearAlgebra, FillArrays
 import LinearAlgebra: mul!, lmul!, rmul!
 import Base: collect, *, getindex, size, eltype, inv, adjoint
 using SparseArrays: sparse
+using LinearAlgebra: checksquare
 
 include("base.jl")
 include("kroneckerpowers.jl")

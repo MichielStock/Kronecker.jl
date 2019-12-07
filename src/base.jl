@@ -11,7 +11,7 @@ Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 Concrete Kronecker product between two matrices `A` and `B`.
 """
-struct KroneckerProduct{T<:Any,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
+struct KroneckerProduct{T<:Any, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
     A::TA
     B::TB
     function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
@@ -106,24 +106,13 @@ function issquare(A::AbstractMatrix)
 end
 
 """
-    issquare(K::AbstractKroneckerProduct)
-
-Checks if all matrices of a Kronecker product are square.
-"""
-issquare(K::AbstractKroneckerProduct) = issquare(K.A) && issquare(K.B)
-
-squarecheck(K::AbstractKroneckerProduct) = issquare(K) || throw(
-            DimensionMismatch(
-                "kronecker system is not composed of two square matrices: " *
-                                        "$size(K.A) and $size(K.B)"))
-
-"""
     issymmetric(K::AbstractKroneckerProduct)
 
 Checks if a Kronecker product is symmetric.
 """
 function LinearAlgebra.issymmetric(K::AbstractKroneckerProduct)
-    return squarecheck(K) && issymmetric(K.A) && issymmetric(K.B)
+    A, B = getmatrices(K)
+    return issymmetric(A) && issymmetric(B)
 end
 
 """
@@ -133,8 +122,8 @@ Test whether a Kronecker product is positive definite (and Hermitian) by trying
 to perform a Cholesky factorization of K.
 """
 function LinearAlgebra.isposdef(K::AbstractKroneckerProduct)
-    squarecheck(K)
-    return isposdef(K.A) && isposdef(K.B)
+    A, B = getmatrices(K)
+    return isposdef(A) && isposdef(B)
 end
 
 # SCALAR PROPERTIES
@@ -153,12 +142,16 @@ order(M::AbstractKroneckerProduct) = order(M.A) + order(M.B)
 
 Compute the determinant of a Kronecker product.
 """
-function LinearAlgebra.det(K::AbstractKroneckerProduct)
-    squarecheck(K)
+function LinearAlgebra.det(K::AbstractKroneckerProduct{T}) where {T}
+    checksquare(K)
     A, B = getmatrices(K)
-    m = size(A)[1]
-    n = size(B)[1]
-    return det(K.A)^n * det(K.B)^m
+    if issquare(A) && issquare(B)
+        m = size(A)[1]
+        n = size(B)[1]
+        return det(K.A)^n * det(K.B)^m
+    else
+        return zero(T)
+    end
 end
 
 """
@@ -166,12 +159,16 @@ end
 
 Compute the logarithm of the determinant of a Kronecker product.
 """
-function LinearAlgebra.logdet(K::AbstractKroneckerProduct)
-    squarecheck(K)
+function LinearAlgebra.logdet(K::AbstractKroneckerProduct{T}) where {T}
+    checksquare(K)
     A, B = getmatrices(K)
-    m = size(A)[1]
-    n = size(B)[1]
-    return n * logdet(A) + m * logdet(B)
+    if issquare(A) && issquare(B)
+        m = size(A)[1]
+        n = size(B)[1]
+        return n * logdet(A) + m * logdet(B)
+    else
+        return real(T)(-Inf)
+    end
 end
 
 """
@@ -180,8 +177,13 @@ end
 Compute the trace of a Kronecker product.
 """
 function LinearAlgebra.tr(K::AbstractKroneckerProduct)
-    squarecheck(K)
-    return tr(K.A) * tr(K.B)
+    checksquare(K)
+    A, B = getmatrices(K)
+    if issquare(A) && issquare(B)
+        return tr(A) * tr(B)
+    else
+        return sum(diag(K))
+    end
 end
 
 """
@@ -190,9 +192,13 @@ end
 Compute the inverse of a Kronecker product.
 """
 function inv(K::AbstractKroneckerProduct)
-    squarecheck(K)
+    checksquare(K)
     A, B = getmatrices(K)
-    return KroneckerProduct(inv(A), inv(B))
+    if issquare(A) && issquare(B)
+        return KroneckerProduct(inv(A), inv(B))
+    else
+        throw(SingularException(1))
+    end
 end
 
 """

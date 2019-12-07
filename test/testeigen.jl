@@ -37,4 +37,26 @@ end
     eigen_tests(rng, kronecker(C, D))
     eigen_tests(rng, kronecker(kronecker(A, B), kronecker(B, A)))
     eigen_tests(rng, kronecker(A, 4))
+
+    function test_non_square_extension()
+        local n, m, A, B, K, M
+        n, m = 3, 5
+        # 1. K is square, while A, B aren't
+        A = randn(n, m)
+        B = randn(m, n)
+        K = A ⊗ B
+        M = Matrix(K)
+        E = eigen(K)
+        F = eigen(M)
+        @test E.values ≈ F.values
+        @test det(E) ≈ det(F)
+        @test Matrix(E) ≈ K
+
+        # 2. K is not square
+        A = randn(n, m)
+        B = randn(m, m)
+        K = A ⊗ B
+        @test_throws DimensionMismatch eigen(K)
+    end
+    test_non_square_extension()
 end

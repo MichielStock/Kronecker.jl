@@ -38,6 +38,36 @@
         @test K isa AbstractMatrix{Float64}
     end
 
+    # testing all linear algebra functions' behavior on square and non-square matrices
+    function test_non_square_extensions()
+        local n, m, A, B, K, M
+        n, m = 3, 5
+        # 1. K is square, while A, B aren't
+        A = randn(n, m)
+        B = randn(m, n)
+        K = A ⊗ B
+        M = Matrix(K)
+        @test tr(K) ≈ tr(M)
+        @test det(K) ≈ 0
+        @test logdet(K) ≈ -Inf
+        @test !isposdef(K)
+        @test !issymmetric(K)
+        @test LinearAlgebra.checksquare(K) == size(K, 1) # should not throw on square matrix
+        @test_throws SingularException inv(K) # if K is square but singular
+
+        # 2. K is not square
+        A = randn(n, m)
+        B = randn(m, m)
+        K = A ⊗ B
+        @test !isposdef(K)
+        @test !issymmetric(K)
+        @test_throws DimensionMismatch tr(K)
+        @test_throws DimensionMismatch det(K)
+        @test_throws DimensionMismatch logdet(K)
+        @test_throws DimensionMismatch LinearAlgebra.checksquare(K)
+        @test_throws DimensionMismatch inv(K)
+    end
+
     @testset "Linear algebra" begin
         @test tr(K) ≈ tr(X)
         @test det(K) ≈ det(X)
@@ -51,6 +81,8 @@
         As = A' * A
         Bs = B * B'
         @test logdet(As ⊗ Bs) ≈ log(det(As ⊗ Bs)) ≈ log(det(kron(As, Bs)))
+
+        test_non_square_extensions()
     end
 
     @testset "Mismatch errors" begin

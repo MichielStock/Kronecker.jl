@@ -5,17 +5,23 @@ import Base: +
 """
     eigen(K::AbstractKroneckerProduct)
 
-Wrapper around `eigen` from the `LinearAlgebra` package. Performs Eigenvalue decompositon
-on the matrices of a `AbstractKroneckerProduct` instances and returns an
-`Eigen` type. The functions `size`, `\\`, `inv`, `det`,
-and `logdet` are overloaded to efficiently work with this type.
+Wrapper around `eigen` from the `LinearAlgebra` package.
+If the matrices of an `AbstractKroneckerProduct` instance are square,
+performs Eigenvalue decompositon on them and returns an `Eigen` type.
+Otherwise, it collects the instance and runs eigen on the full matrix.
+The functions, `\\`, `inv`, and `logdet` are overloaded to efficiently work
+with this type.
 """
 function eigen(K::AbstractKroneckerProduct)
-    squarecheck(K)
+    checksquare(K)
     A, B = getmatrices(K)
-    A_λ, A_Γ = eigen(A)
-    B_λ, B_Γ = eigen(B)
-    return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
+    if issquare(A) && issquare(B)
+        A_λ, A_Γ = eigen(A)
+        B_λ, B_Γ = eigen(B)
+        return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
+    else
+        return eigen(Matrix(K))
+    end
 end
 
 +(E::Eigen, B::UniformScaling) = Eigen(E.values .+ B.λ, E.vectors)
@@ -36,13 +42,6 @@ function \(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}, v::Abstract
     λ, Γ = E
     return Γ * (Diagonal(λ) \ (Γ' * v))
 end
-
-"""
-    det(K::Eigen)
-
-Compute the determinant of the eigenvalue decomp of aKronecker product.
-"""
-det(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = prod(E.values)
 
 """
     logdet(K::Eigen)

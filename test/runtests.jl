@@ -4,6 +4,7 @@ using SparseArrays: SparseMatrixCSC, sprand, AbstractSparseMatrix
 @testset "Kronecker" begin
     include("testbase.jl")
     include("testkroneckerpowers.jl")
+    include("testnames.jl")
     include("testvectrick.jl")
     include("testindexed.jl")
     include("testeigen.jl")

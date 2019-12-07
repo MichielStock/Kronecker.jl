@@ -55,7 +55,7 @@ issquare(K::KroneckerPower) = issquare(K.A)
 Compute the determinant of a Kronecker power.
 """
 function LinearAlgebra.det(K::KroneckerPower)
-    squarecheck(K)
+    checksquare(K.A)
     A, pow = K.A, K.pow
     n = size(A, 1)
     return det(K.A)^(n * pow)
@@ -67,7 +67,7 @@ end
 Compute the logarithm of the determinant of a Kronecker power.
 """
 function LinearAlgebra.logdet(K::KroneckerPower)
-    squarecheck(K)
+    checksquare(K.A)
     A, pow = K.A, K.pow
     n = size(A, 1)
     return n * pow * logdet(K.A)
@@ -79,7 +79,7 @@ end
 Compute the trace of a Kronecker power.
 """
 function LinearAlgebra.tr(K::KroneckerPower)
-    squarecheck(K)
+    checksquare(K.A)
     return tr(K.A)^K.pow
 end
 
@@ -91,7 +91,7 @@ end
 Compute the inverse of a Kronecker power.
 """
 function Base.inv(K::KroneckerPower)
-    squarecheck(K)
+    checksquare(K.A)
     return KroneckerPower(inv(K.A), K.pow)
 end
 

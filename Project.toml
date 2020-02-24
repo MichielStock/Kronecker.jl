@@ -15,7 +15,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [compat]
 julia = "1"
 FillArrays = "^0"
-NamedDims = "0.7"
+NamedDims = "0.2"
 StatsBase = "~0.32"
 
 [extras]

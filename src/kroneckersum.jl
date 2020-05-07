@@ -75,6 +75,7 @@ end
 
 Base.size(K::AbstractKroneckerSum, dim::Int) = size(K)[dim]
 
+
 function Base.getindex(K::AbstractKroneckerSum, i1::Int, i2::Int)
     A, B = getmatrices(K)
     m, n = size(A)
@@ -102,6 +103,7 @@ function LinearAlgebra.tr(K::AbstractKroneckerSum)
     return m * tr(A) + n * tr(B)
 end
 
+
 """
     collect(K::AbstractKroneckerSum)
 
@@ -110,10 +112,23 @@ native matrix. Returns the result as a sparse matrix.
 """
 function Base.collect(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
-    A, B = sparse(A), sparse(B)
+    #A, B = sparse(A), sparse(B)
     IA, IB = oneunit(A), oneunit(B)
     return kron(A, IB) + kron(IA, B)
 end
+
+function Base.kron(K::AbstractKroneckerSum, C::AbstractMatrix)
+    A, B = getmatrices(K)
+    IA, IB = oneunit(A), oneunit(B)
+    return kron(kron(A, IB) + kron(IA,B), C)
+end
+
+function Base.kron(A::AbstractMatrix, K::AbstractKroneckerSum)
+    B, C = getmatrices(K)
+    IB, IC = oneunit(B), oneunit(C)
+    return kron(A, kron(B, IC) + kron(IB, C))
+end
+
 
 function Base.adjoint(K::AbstractKroneckerSum)
     A, B = getmatrices(K)

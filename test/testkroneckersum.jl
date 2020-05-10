@@ -97,6 +97,15 @@
                 end
             end
         end
+
+        @testset "call kron on Kronecker sums" begin
+            for ks in (KS, KS3, KS3AB, KS3BC)
+                cks = collect(ks)
+                @test kron(ks,D) ≈ kron(cks, D)
+                @test kron(D,ks) ≈ kron(D,cks)
+                @test kron(ks,ks) ≈ kron(cks, cks)
+            end
+        end
     end
 
 end

@@ -117,17 +117,16 @@ function Base.collect(K::AbstractKroneckerSum)
 end
 
 function Base.kron(K::AbstractKroneckerSum, C::AbstractMatrix)
-    A, B = getmatrices(K)
-    IA, IB = oneunit(A), oneunit(B)
-    return kron(kron(A, IB) + kron(IA,B), C)
+    return kron(collect(K), C)
 end
 
 function Base.kron(A::AbstractMatrix, K::AbstractKroneckerSum)
-    B, C = getmatrices(K)
-    IB, IC = oneunit(B), oneunit(C)
-    return kron(A, kron(B, IC) + kron(IB, C))
+    return kron(A, collect(K))
 end
 
+function Base.kron(K1::AbstractKroneckerSum, K2:: AbstractKroneckerSum)
+    return kron(collect(K1), collect(K2))
+end
 
 function Base.adjoint(K::AbstractKroneckerSum)
     A, B = getmatrices(K)

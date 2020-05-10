@@ -82,6 +82,21 @@
             @test_throws ArgumentError sum(KS, dims=-1)
             @test_throws ArgumentError sum(KS3, dims=3)
         end
+
+        @testset "sparse Kronecker sum" begin
+            for ks in (KS, KS3, KS3AB, KS3BC)
+                sks = sparse(ks)
+                @test sks isa AbstractKroneckerSum
+                @test issparse(sks.A)
+                @test issparse(sks.B)
+
+                if arraytype <: Array
+                    @test !issparse(ks)
+                elseif arraytype <: AbstractSparseMatrix
+                    @test issparse(ks)
+                end
+            end
+        end
     end
 
 end

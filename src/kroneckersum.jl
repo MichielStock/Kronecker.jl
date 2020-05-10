@@ -116,6 +116,27 @@ function Base.collect(K::AbstractKroneckerSum)
     return kron(A, IB) + kron(IA, B)
 end
 
+
+
+
+"""
+    SparseArrays.sparse(K::KroneckerSum)
+
+Creates a lazy instance of a `KroneckerSum` type with sparse
+matrices. If the matrices are already sparse, `K` is returned.
+"""
+function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T <: Any, TA <: AbstractSparseMatrix, TB <: AbstractSparseMatrix}
+    return K
+end
+
+function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T <: Any, TA <: AbstractMatrix, TB <: AbstractMatrix}
+    return sparse(K.A) ⊕ sparse(K.B)
+end
+
+function SparseArrays.issparse(K::AbstractKroneckerSum)
+    return issparse(K.A) && issparse(K.B)
+end
+
 function Base.kron(K::AbstractKroneckerSum, C::AbstractMatrix)
     return kron(collect(K), C)
 end

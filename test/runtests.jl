@@ -1,5 +1,6 @@
 using Kronecker, Test, LinearAlgebra, Random, FillArrays
-using SparseArrays: SparseMatrixCSC, sprand, AbstractSparseMatrix
+using SparseArrays: AbstractSparseMatrix, SparseMatrixCSC, sprand,
+    sparse, issparse
 
 @testset "Kronecker" begin
     include("testbase.jl")

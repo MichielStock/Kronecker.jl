@@ -18,7 +18,7 @@
         @test !isa(KS, AbstractKroneckerProduct)
 
         @test collect(KS) ≈ kronsum
-        @test collect(KS) isa arraytype
+        @test collect(KS) isa AbstractSparseMatrix
 
         @test issquare(KS)
 

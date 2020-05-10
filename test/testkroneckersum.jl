@@ -31,7 +31,7 @@
 
         for ks3 in [KS3, KS3AB, KS3BC]
             @test collect(ks3) ≈ kronsum3
-            @test collect(ks3) isa arraytype
+            @test collect(ks3) isa AbstractSparseMatrix
             @test order(ks3) == 3
             @test getindex(ks3,2,3) == kronsum3[2,3]
         end

@@ -108,10 +108,11 @@ end
     collect(K::AbstractKroneckerSum)
 
 Collects a lazy instance of the `AbstractKroneckerSum` type into a full,
-native matrix.
+native matrix. Returns the result as a sparse matrix.
 """
 function Base.collect(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
+    #A, B = sparse(A), sparse(B)
     IA, IB = oneunit(A), oneunit(B)
     return kron(A, IB) + kron(IA, B)
 end

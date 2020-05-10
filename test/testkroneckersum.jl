@@ -24,9 +24,9 @@
 
         IC = oneunit(C)
         KS3 = A ⊕ B ⊕ C
-        KS3AB = (A ⊕ B) ⊕ C 
+        KS3AB = (A ⊕ B) ⊕ C
         KS3BC = A ⊕ (B ⊕ C)
-        
+
         kronsum3 = kron(A,IB,IC) + kron(IA,B,IC) + kron(IA,IB,C)
 
         for ks3 in [KS3, KS3AB, KS3BC]
@@ -35,11 +35,10 @@
             @test order(ks3) == 3
             @test getindex(ks3,2,3) == kronsum3[2,3]
         end
-        
+
         @test order(KS) == 2
         @test getmatrices(KS) == (A,B)
         @test getindex(KS,2,3) == kronsum[2,3]
-        
         
         ID = oneunit(D)
 

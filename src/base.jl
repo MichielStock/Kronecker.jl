@@ -13,8 +13,8 @@ In-place collection of `K` in `C`.
 """
 function collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
     size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
-    @inbounds for (ij, Kij) in enumerate(K)
-        C[ij] = Kij
+    @inbounds for I in CartesianIndices(K)
+        C[I] = K[I] 
     end
     return C
 end

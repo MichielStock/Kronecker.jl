@@ -28,6 +28,7 @@
         @test !issymmetric(K1)
 
         @test collect(K1) ≈ K1dense
+        @test collect!(similar(K2dense), K2) ≈ K2dense
 
         @test sum(K1) ≈ sum(K1dense)
     end

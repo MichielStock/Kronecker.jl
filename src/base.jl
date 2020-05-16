@@ -7,6 +7,20 @@ abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 """
+    collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
+
+In-place collection of `K` in `C`.
+"""
+function collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
+    size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
+    @inbounds for (ij, Kij) in enumerate(K)
+        C[ij] = Kij
+    end
+    return C
+end
+
+
+"""
     KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
 
 Concrete Kronecker product between two matrices `A` and `B`.

@@ -3,7 +3,7 @@ module Kronecker
 export GeneralizedKroneckerProduct, AbstractKroneckerProduct
 export AbstractKroneckerSum, KroneckerSum
 export KroneckerPower
-export issquare, order, issymmetric, isposdef, getmatrices
+export issquare, order, issymmetric, isposdef, getmatrices, collect!
 export ⊗, kronecker, ⊕, kroneckersum
 export CholeskyKronecker
 

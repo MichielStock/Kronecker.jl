@@ -9,14 +9,28 @@ Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 """
     collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
 
-In-place collection of `K` in `C`.
+In-place collection of `K` in `C`. If possible, specialized routines are used to
+speed up the computation. The fallback is an element-wise iteration. In this case,
+this function might be slow.
 """
 function collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
     size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
     @inbounds for I in CartesianIndices(K)
-        C[I] = K[I] 
+        C[I] = K[I]
     end
     return C
+end
+
+
+"""
+    collect(K::GeneralizedKroneckerProduct)
+
+Collects a lazy instance of the `GeneralizedKroneckerProduct` type into a dense,
+native matrix. General element-wise fallback.
+"""
+function collect(K::GeneralizedKroneckerProduct{T}) where {T}
+    C = Matrix{T}(undef, size(K)...)
+    return collect!(C, K)
 end
 
 
@@ -251,6 +265,50 @@ native matrix. Equivalent with `Matrix(K::AbstractKroneckerProduct)`.
 function collect(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kron(A, B)
+end
+
+function mykron!(C::AbstractArray, A::AbstractArray, B::AbstractArray)
+    m = 0
+    @inbounds for j = 1:size(A,2), l = 1:size(B,2), i = 1:size(A,1)
+        Aij = A[i,j]
+        for k = 1:size(B,1)
+            C[m += 1] = Aij * B[k,l]
+        end
+    end
+    return C
+end
+
+function collect!(C::AbstractMatrix, K::AbstractKroneckerProduct)
+    size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
+    A, B = getmatrices(K)
+    return mykron!(C, A, B)
+end
+
+
+
+
+function tile!(C::AbstractMatrix, A::AbstractMatrix, r=1, s=1)
+    n, m = size(A)
+    N, M = size(C)
+    k = 0
+    @inbounds for q in 1:s:div(M, m), j in 1:m, repc in 1:s
+        @inbounds for p in 1:r:div(N, n), i in 1:n, repr in 1:r
+            C[k+=1] = A[i,j]
+        end
+    end
+    return C
+end
+
+function tileprod!(C::AbstractMatrix, A::AbstractMatrix, r=1, s=1)
+    n, m = size(A)
+    N, M = size(C)
+    k = 0
+    @inbounds for q in 1:s:div(M, m), j in 1:m, repc in 1:s
+        @inbounds for p in 1:r:div(N, n), i in 1:n, repr in 1:r
+            C[k+=1] *= A[i,j]
+        end
+    end
+    return C
 end
 
 """

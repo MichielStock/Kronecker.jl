@@ -128,6 +128,11 @@ function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: Abstrac
     return sparse(K.A) ⊕ sparse(K.B)
 end
 
+"""
+    SparseArrays.issparse(K::AbstractKroneckerSum)
+
+Checks if both matrices of an `AbstractKroneckerSum` are sparse.
+"""
 function SparseArrays.issparse(K::AbstractKroneckerSum)
     return issparse(K.A) && issparse(K.B)
 end

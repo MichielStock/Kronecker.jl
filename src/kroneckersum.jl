@@ -120,11 +120,11 @@ end
 Creates a lazy instance of a `KroneckerSum` type with sparse
 matrices. If the matrices are already sparse, `K` is returned.
 """
-function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T <: Any, TA <: AbstractSparseMatrix, TB <: AbstractSparseMatrix}
+function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: AbstractSparseMatrix, TB <: AbstractSparseMatrix}
     return K
 end
 
-function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T <: Any, TA <: AbstractMatrix, TB <: AbstractMatrix}
+function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: AbstractMatrix, TB <: AbstractMatrix}
     return sparse(K.A) ⊕ sparse(K.B)
 end
 

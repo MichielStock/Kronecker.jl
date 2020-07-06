@@ -130,16 +130,3 @@ function Base.:*(K1::KroneckerPower{T,TA,N},
     end
     return KroneckerPower(K1.A * K2.A, N)
 end
-
-
-function collect!(C::AbstractMatrix, K::KroneckerPower{T,TA,N}) where {T,TA,N}
-    size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
-    A = K.A
-    n, m = size(A)
-    tile!(C, A)
-    for r in 1:N-1
-        tileprod!(C, A, n, m)
-        n, m = n^2, m^2
-    end
-    return C
-end

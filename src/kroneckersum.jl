@@ -96,6 +96,21 @@ function Base.eltype(K::AbstractKroneckerSum)
     return promote_type(eltype(A), eltype(B))
 end
 
+"""
+    collect!(C::AbstractMatrix, K::AbstractKroneckerSum)
+
+In-place collection of `K` in `C` where `K` is an `AbstractKroneckerSum`, i.e.,
+`K = A ⊗ B`.
+"""
+function collect!(C::AbstractMatrix, K::AbstractKroneckerSum)
+    fill!(C, zero(eltype(C)))
+    A, B = getmatrices(K)
+    A, B = sparse(A), sparse(B)
+    IA, IB = oneunit(A), oneunit(B)
+    C .+= kron(A, IB)
+    C .+= kron(IA, B)
+end
+
 function LinearAlgebra.tr(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     n, m = size(A, 1), size(B, 1)
@@ -112,7 +127,7 @@ function Base.collect(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     A, B = sparse(A), sparse(B)
     IA, IB = oneunit(A), oneunit(B)
-    return kron(A, IB) + kron(IA, B)
+    return kron(A, IB) .+ kron(IA, B)
 end
 
 function Base.adjoint(K::AbstractKroneckerSum)

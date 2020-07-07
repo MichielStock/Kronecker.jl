@@ -12,7 +12,7 @@ export isprob, naivesample, fastsample, sampleindices
 using LinearAlgebra, FillArrays
 import LinearAlgebra: mul!, lmul!, rmul!
 import Base: collect, *, getindex, size, eltype, inv, adjoint
-using SparseArrays: sparse
+using SparseArrays
 using LinearAlgebra: checksquare
 
 include("base.jl")

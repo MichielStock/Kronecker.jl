@@ -124,10 +124,44 @@ Collects a lazy instance of the `AbstractKroneckerSum` type into a full,
 native matrix. Returns the result as a sparse matrix.
 """
 function Base.collect(K::AbstractKroneckerSum)
-    A, B = getmatrices(K)
-    A, B = sparse(A), sparse(B)
+    A, B = getmatrices(sparse(K))
     IA, IB = oneunit(A), oneunit(B)
     return kron(A, IB) .+ kron(IA, B)
+end
+
+"""
+    SparseArrays.sparse(K::KroneckerSum)
+
+Creates a lazy instance of a `KroneckerSum` type with sparse
+matrices. If the matrices are already sparse, `K` is returned.
+"""
+function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: AbstractSparseMatrix, TB <: AbstractSparseMatrix}
+    return K
+end
+
+function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: AbstractMatrix, TB <: AbstractMatrix}
+    return sparse(K.A) ⊕ sparse(K.B)
+end
+
+"""
+    SparseArrays.issparse(K::AbstractKroneckerSum)
+
+Checks if both matrices of an `AbstractKroneckerSum` are sparse.
+"""
+function SparseArrays.issparse(K::AbstractKroneckerSum)
+    return issparse(K.A) && issparse(K.B)
+end
+
+function Base.kron(K::AbstractKroneckerSum, C::AbstractMatrix)
+    return kron(collect(K), C)
+end
+
+function Base.kron(A::AbstractMatrix, K::AbstractKroneckerSum)
+    return kron(A, collect(K))
+end
+
+function Base.kron(K1::AbstractKroneckerSum, K2:: AbstractKroneckerSum)
+    return kron(collect(K1), collect(K2))
 end
 
 function Base.adjoint(K::AbstractKroneckerSum)

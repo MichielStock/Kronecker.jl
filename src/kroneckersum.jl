@@ -96,6 +96,21 @@ function Base.eltype(K::AbstractKroneckerSum)
     return promote_type(eltype(A), eltype(B))
 end
 
+"""
+    collect!(C::AbstractMatrix, K::AbstractKroneckerSum)
+
+In-place collection of `K` in `C` where `K` is an `AbstractKroneckerSum`, i.e.,
+`K = A ⊗ B`.
+"""
+function collect!(C::AbstractMatrix, K::AbstractKroneckerSum)
+    fill!(C, zero(eltype(C)))
+    A, B = getmatrices(K)
+    A, B = sparse(A), sparse(B)
+    IA, IB = oneunit(A), oneunit(B)
+    C .+= kron(A, IB)
+    C .+= kron(IA, B)
+end
+
 function LinearAlgebra.tr(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     n, m = size(A, 1), size(B, 1)
@@ -111,7 +126,7 @@ native matrix. Returns the result as a sparse matrix.
 function Base.collect(K::AbstractKroneckerSum)
     A, B = getmatrices(sparse(K))
     IA, IB = oneunit(A), oneunit(B)
-    return kron(A, IB) + kron(IA, B)
+    return kron(A, IB) .+ kron(IA, B)
 end
 
 """
@@ -175,14 +190,6 @@ function Base.exp(K::AbstractKroneckerSum)
     return kronecker(exp(A), exp(B))
 end
 
-#=
-function Base.sum(K::KroneckerSum)
-    A, B = getmatrices(K)
-    n, m = size(A, 1), size(B, 1)
-    return m * sum(A) + n * sum(B)
-end
-=#
-
 function Base.sum(K::KroneckerSum; dims::Union{Int,Nothing}=nothing)
     A, B = getmatrices(K)
     n, m = size(A, 1), size(B, 1)
@@ -190,7 +197,7 @@ function Base.sum(K::KroneckerSum; dims::Union{Int,Nothing}=nothing)
         return kron(sum(A, dims=1), ones(1, m)) .+ kron(ones(1, n), sum(B, dims=1))
     elseif dims==2
         return kron(sum(A, dims=2), ones(m, 1)) .+ kron(ones(n, 1), sum(B, dims=2))
-    elseif dims==nothing
+    elseif dims isa Nothing
         m * sum(A) + n * sum(B)
     else
         throw(ArgumentError("`dims` should be 1 or 2"))

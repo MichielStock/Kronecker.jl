@@ -1,10 +1,12 @@
 @testset "Kronecker sums" begin
+    using SparseArrays
 
     As = (rand(4,4), sprand(4,4,1.0))
     Bs = (rand(3,3), sprand(3,3,1.0))
     Cs = (rand(5,5), sprand(5,5,1.0))
     Ds = (rand(ComplexF64,6,6), sprand(ComplexF64,6,6,1.0))
     arraytypes = (Matrix, SparseMatrixCSC)
+
     for (A, B, C, D, arraytype) in zip(As, Bs, Cs, Ds, arraytypes)
         IA = oneunit(A)
         IB = oneunit(B)
@@ -39,7 +41,7 @@
         @test order(KS) == 2
         @test getmatrices(KS) == (A,B)
         @test getindex(KS,2,3) == kronsum[2,3]
-        
+
         ID = oneunit(D)
 
         @testset "Structure of sums" begin

@@ -40,6 +40,8 @@ collect(::AbstractKroneckerProduct)
 getindex
 eltype
 size(::AbstractKroneckerProduct)
+collect
+collect!
 order
 getmatrices
 issquare

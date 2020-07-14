@@ -7,6 +7,35 @@ abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
 Base.IndexStyle(::Type{<:GeneralizedKroneckerProduct}) = IndexCartesian()
 
 """
+    collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
+
+In-place collection of `K` in `C`. If possible, specialized routines are used to
+speed up the computation. The fallback is an element-wise iteration. In this case,
+this function might be slow.
+"""
+function collect!(C::AbstractMatrix, K::GeneralizedKroneckerProduct)
+    size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
+    @inbounds for I in CartesianIndices(K)
+        C[I] = K[I]
+    end
+    return C
+end
+
+
+"""
+    collect(K::GeneralizedKroneckerProduct)
+
+Collects a lazy instance of the `GeneralizedKroneckerProduct` type into a dense,
+native matrix. Falls back to the element-wise case when not specialized method
+is defined.
+"""
+function collect(K::GeneralizedKroneckerProduct{T}) where {T}
+    C = Matrix{T}(undef, size(K)...)
+    return collect!(C, K)
+end
+
+
+"""
     KroneckerProduct{T,TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
 
 Concrete Kronecker product between two matrices `A` and `B`.
@@ -228,6 +257,7 @@ end
 
 # COLLECTING
 
+#=
 """
     collect(K::AbstractKroneckerProduct)
 
@@ -238,6 +268,37 @@ function collect(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kron(A, B)
 end
+=#
+
+
+# function for in-place Kronecker product
+function _kron!(C::AbstractArray, A::AbstractArray, B::AbstractArray)
+    m = 0
+    @inbounds for j = 1:size(A,2), l = 1:size(B,2), i = 1:size(A,1)
+        Aij = A[i,j]
+        for k = 1:size(B,1)
+            C[m += 1] = Aij * B[k,l]
+        end
+    end
+    return C
+end
+
+_kron!(C::AbstractArray, A::GeneralizedKroneckerProduct, B::AbstractArray) = _kron!(C, collect(A), B)
+_kron!(C::AbstractArray, A::AbstractArray, B::GeneralizedKroneckerProduct) = _kron!(C, A, collect(B))
+_kron!(C::AbstractArray, A::GeneralizedKroneckerProduct, B::GeneralizedKroneckerProduct) = _kron!(C, collect(A), collect(B))
+
+"""
+    collect!(C::AbstractMatrix, K::AbstractKroneckerProduct)
+
+In-place collection of `K` in `C` where `K` is an `AbstractKroneckerProduct`, i.e.,
+`K = A ⊗ B`.
+"""
+function collect!(C::AbstractMatrix, K::AbstractKroneckerProduct)
+    size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
+    A, B = getmatrices(K)
+    return _kron!(C, A, B)
+end
+
 
 """
     Matrix(K::GeneralizedKroneckerProduct)

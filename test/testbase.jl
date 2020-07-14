@@ -26,6 +26,7 @@
         @test !issymmetric(K)
 
         @test K ≈ X
+        @test collect!(similar(X), K) ≈ X
 
         @test order(A) == 1
         @test order(K) == 2
@@ -47,6 +48,8 @@
         B = randn(m, n)
         K = A ⊗ B
         M = Matrix(K)
+        @test K ≈ M
+        @test collect!(similar(M), K) ≈ M
         @test tr(K) ≈ tr(M)
         @test det(K) ≈ 0
         @test logdet(K) ≈ -Inf
@@ -97,7 +100,8 @@
         @test order(K ⊗ A) == 3
         @test order(K3) == 3
         @test collect(K3) ≈ kron(X, C)
-
+        C3 = zeros(size(K3)...)
+        @test collect!(C3, K3) ≈ K3
     end
 
     @testset "Kronecker powers" begin
@@ -111,7 +115,9 @@
         @test kron(A ⊗ B, C) ≈ kron(A, B, C)
         @test kron(A, B ⊗ C) ≈ kron(A, B, C)
         @test kron(A ⊗ B, C ⊗ D) ≈ kron(A, B, C, D)
-        @test collect((A⊗B) ⊗ (C⊗D)) ≈ kron(A, B, C, D)
+        M = kron(A, B, C, D)
+        @test collect((A⊗B) ⊗ (C⊗D)) ≈ M
+        @test collect!(similar(M), (A⊗B) ⊗ (C⊗D)) ≈ M
     end
 
     @testset "Mixed product" begin

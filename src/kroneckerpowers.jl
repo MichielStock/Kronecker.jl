@@ -95,6 +95,16 @@ function Base.inv(K::KroneckerPower)
     return KroneckerPower(inv(K.A), K.pow)
 end
 
+
+"""
+    pinv(K::KroneckerPower)
+
+Compute the Moore-Penrose pseudo-inverse of a Kronecker power.
+"""
+function Base.pinv(K::KroneckerPower)
+    return KroneckerPower(pinv(K.A), K.pow)
+end
+
 """
     adjoint(K::KroneckerPower)
 

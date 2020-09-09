@@ -84,7 +84,7 @@ end
 
 function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int}=nothing)
     A, B = getmatrices(K)
-    if dims == nothing
+    if dims === nothing
         s = zero(eltype(K))
         sumB = sum(B)
         return sum(sumB * A)

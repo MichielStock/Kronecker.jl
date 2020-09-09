@@ -147,6 +147,17 @@ function LinearAlgebra.issymmetric(K::AbstractKroneckerProduct)
     return issymmetric(A) && issymmetric(B)
 end
 
+
+"""
+    ishermitian(K::AbstractKroneckerProduct)
+
+Checks if a Kronecker product is Hermitian.
+"""
+function LinearAlgebra.ishermitian(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return ishermitian(A) && ishermitian(B)
+end
+
 """
     isposdef(K::AbstractKroneckerProduct)
 

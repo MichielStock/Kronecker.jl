@@ -101,7 +101,7 @@ end
 
 Compute the Moore-Penrose pseudo-inverse of a Kronecker power.
 """
-function Base.pinv(K::KroneckerPower)
+function LinearAlgebra.pinv(K::KroneckerPower)
     return KroneckerPower(pinv(K.A), K.pow)
 end
 

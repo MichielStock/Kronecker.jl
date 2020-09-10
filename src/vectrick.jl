@@ -22,12 +22,12 @@ end
 
 
 """
-    mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
+    mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
 
 Calculates the vector-matrix multiplication `K * v` and stores the result in
 `x`, overwriting its existing value.
 """
-function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
+function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     M, N = getmatrices(K)
     a, b = size(M)
     c, d = size(N)
@@ -46,6 +46,20 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     end
     return x
 end
+
+
+function mul!(out::AbstractVecOrMat, K::AbstractKroneckerProduct, x::AbstractVecOrMat)
+    matrices = getallmatrices(K)
+
+    if length(matrices) == 2
+        return mul_vec_trick!(out, K, x)
+    elseif all(issquare, matrices)
+        return kron_mv_fast_square!(out, x, matrices...)
+    else
+        return kron_mv_fast_rect!(out, x, matrices...)
+    end
+end
+
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)

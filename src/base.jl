@@ -249,7 +249,7 @@ end
 
 Compute the Moore-Penrose pseudo-inverse of a Kronecker product.
 """
-function pinv(K::AbstractKroneckerProduct)
+function LinearAlgebra.pinv(K::AbstractKroneckerProduct)
     checksquare(K)
     A, B = getmatrices(K)
     return KroneckerProduct(pinv(A), pinv(B))

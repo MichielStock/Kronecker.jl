@@ -10,18 +10,19 @@ export CholeskyKronecker
 export isprob, naivesample, fastsample, sampleindices
 
 using LinearAlgebra, FillArrays
-import LinearAlgebra: mul!, lmul!, rmul!
+import LinearAlgebra: mul!, lmul!, rmul!, pinv
 import Base: collect, *, getindex, size, eltype, inv, adjoint
 using SparseArrays
 using LinearAlgebra: checksquare
 
 include("base.jl")
 include("kroneckerpowers.jl")
+include("kroneckersum.jl")
+include("multiply.jl")
 include("vectrick.jl")
 include("indexedkroncker.jl")
 include("eigen.jl")
 include("factorization.jl")
-include("kroneckersum.jl")
 include("kroneckergraphs.jl")
 include("names.jl")
 

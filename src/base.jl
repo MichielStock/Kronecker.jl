@@ -89,8 +89,15 @@ function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
 end
 
-getallmatrices(K::AbstractKroneckerProduct) = (K.A, getallmatrices(K.B)...)
+
+"""
+    getallmatrices(K::AbstractKroneckerProduct)
+
+Obtain all matrices in an `AbstractKroneckerProduct` object.
+"""
+getallmatrices(K::AbstractKroneckerProduct) = (getallmatrices(K.A)..., getallmatrices(K.B)...)
 getallmatrices(K::AbstractMatrix) = (K,)
+
 
 """
     getmatrices(K::AbstractKroneckerProduct)

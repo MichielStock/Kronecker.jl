@@ -59,6 +59,15 @@ documentation.
 ⊕(A::AbstractMatrix...) = kroneckersum(A...)
 ⊕(A::AbstractMatrix, pow::Int) = kroneckersum(A, pow)
 
+
+"""
+    getallmatrices(K::T) where T <: AbstractKroneckerSum
+
+Obtain the all matrices of an `AbstractKroneckerSum` object.
+"""
+Kronecker.getallmatrices(K::AbstractKroneckerSum) = (Kronecker.getallmatrices(K.A)..., Kronecker.getallmatrices(K.B)...)
+
+
 """
     getmatrices(K::T) where T <: AbstractKroneckerSum
 

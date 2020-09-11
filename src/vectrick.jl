@@ -48,15 +48,25 @@ function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerProduct, v::Abstr
 end
 
 
-function mul!(out::AbstractVecOrMat, K::AbstractKroneckerProduct, x::AbstractVecOrMat)
-    matrices = getallmatrices(K)
+function mul!(C::AbstractVecOrMat, A::AbstractKroneckerProduct, B::AbstractVecOrMat)
+    if size(A, 2) != size(B, 1)
+        throw(DimensionMismatch(
+            "A has size $(size(A)), B has size $(size(B))"
+        ))
+    elseif size(C) != (size(A, 1), size(B)[2:end]...)
+        throw(DimensionMismatch(
+            "A has size $(size(A)), B has size $(size(B)), C has size $(size(C))"
+        ))
+    end
+
+    matrices = getallfactors(A)
 
     if length(matrices) == 2
-        return mul_vec_trick!(out, K, x)
+        return mul_vec_trick!(C, A, B)
     elseif all(issquare, matrices)
-        return kron_mv_fast_square!(out, x, matrices...)
+        return kron_mv_fast_square!(C, B, matrices...)
     else
-        return kron_mv_fast_rect!(out, x, matrices...)
+        return kron_mv_fast_rect!(C, B, matrices...)
     end
 end
 

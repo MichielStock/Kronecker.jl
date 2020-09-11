@@ -61,12 +61,12 @@ documentation.
 
 
 """
-    getallmatrices(K::T) where T <: AbstractKroneckerSum
+    getallsummands(K::T) where T <: AbstractKroneckerSum
 
-Obtain the all matrices of an `AbstractKroneckerSum` object.
+Obtain the all summands of an `AbstractKroneckerSum` object.
 """
-Kronecker.getallmatrices(K::AbstractKroneckerSum) = (Kronecker.getallmatrices(K.A)..., Kronecker.getallmatrices(K.B)...)
-
+getallsummands(K::AbstractKroneckerSum) = (getallsummands(K.A)..., getallsummands(K.B)...)
+getallsummands(K::AbstractArray) = (K,)
 
 """
     getmatrices(K::T) where T <: AbstractKroneckerSum

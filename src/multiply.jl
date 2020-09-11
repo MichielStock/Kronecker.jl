@@ -125,7 +125,7 @@ function kron_mv_fast_rect!(out::AbstractVecOrMat{T}, x::AbstractVecOrMat{T}, ma
     out = copy!(out, x)
 
     i_left::Int = 1
-    i_right::Int = prod(ns)
+    i_right::Int = prod(c)
 
     for h in 1:length(matrices)
         r_h, c_h = r[h], c[h]
@@ -142,6 +142,6 @@ function kron_mv_fast_rect!(out::AbstractVecOrMat{T}, x::AbstractVecOrMat{T}, ma
 end
 
 function mul!(out::AbstractVecOrMat, K::AbstractKroneckerSum, x::AbstractVecOrMat)
-    matrices = getallmatrices(K)
+    matrices = getallsummands(K)
     return kronsum_mv_fast!(out, x, matrices...)
 end

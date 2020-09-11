@@ -91,12 +91,12 @@ end
 
 
 """
-    getallmatrices(K::AbstractKroneckerProduct)
+    getallfactors(K::AbstractKroneckerProduct)
 
-Obtain all matrices in an `AbstractKroneckerProduct` object.
+Obtain all factors in an `AbstractKroneckerProduct` object.
 """
-getallmatrices(K::AbstractKroneckerProduct) = (getallmatrices(K.A)..., getallmatrices(K.B)...)
-getallmatrices(K::AbstractMatrix) = (K,)
+getallfactors(K::AbstractKroneckerProduct) = (getallfactors(K.A)..., getallfactors(K.B)...)
+getallfactors(K::AbstractMatrix) = (K,)
 
 
 """

@@ -64,9 +64,9 @@ function mul!(C::AbstractVecOrMat, A::AbstractKroneckerProduct, B::AbstractVecOr
     if length(matrices) == 2 && ndims(C) == 1
         return mul_vec_trick!(C, A, B)
     elseif all(issquare, matrices)
-        return kron_mv_fast_square!(C, B, matrices...)
+        return kron_mv_fast_square!(C, B, matrices)
     else
-        return kron_mv_fast_rect!(C, B, matrices...)
+        return kron_mv_fast_rect!(C, B, matrices)
     end
 end
 

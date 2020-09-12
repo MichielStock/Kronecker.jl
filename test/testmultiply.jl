@@ -24,8 +24,6 @@ K3 = A ⊗ B ⊗ C
     end
 
     @testset "Reshaped vec trick" begin
-
-
         @test K * v ≈ X * v
 
         V = sprand(4, 3, 1.0)
@@ -63,4 +61,77 @@ K3 = A ⊗ B ⊗ C
 
         @test sum(kronecker(A, 3)) ≈ sum(kron(A, A, A))
     end
+
+    @testset "2-factor square KroneckerProduct MV" begin
+        A = randn(10, 10)
+        B = randn(7, 7)
+        v = randn(size(A, 2) * size(B, 2))
+
+        K1 = kronecker(A, B)
+        K2 = kronecker(B, A)
+        k1 = kron(A, B)
+        k2 = kron(B, A)
+
+        for (K, k) in [(K1, k1), (K2, k2)]
+            @test collect(K) ≈ k
+            @test (K * v) ≈ (k * v)
+        end
+    end
+
+    @testset "2-factor rectangular KroneckerProduct MV" begin
+        A = randn(10, 8)
+        B = randn(7, 9)
+        v = randn(size(A, 2) * size(B, 2))
+
+        K1 = kronecker(A, B)
+        K2 = kronecker(B, A)
+        k1 = kron(A, B)
+        k2 = kron(B, A)
+
+        for (K, k) in [(K1, k1), (K2, k2)]
+            @test collect(K) ≈ k
+            @test (K * v) ≈ (k * v)
+        end
+    end
+
+    @testset "3-factor rectangular KroneckerProduct MV" begin
+        A = randn(10, 8)
+        B = randn(7, 9)
+        C = randn(6, 4)
+        v = randn(size(A, 2) * size(B, 2) * size(C, 2))
+
+        K1 = kronecker(A, B, C)
+        K2 = kronecker(B, A, C)
+        k1 = kron(A, B, C)
+        k2 = kron(B, A, C)
+
+        for (K, k) in [(K1, k1), (K2, k2)]
+            @test collect(K) ≈ k
+            @test (K * v) ≈ (k * v)
+        end
+    end
+
+    @testset "10-factor square KroneckerProduct MV" begin
+        matrices = [randn(2,2) for i in 1:10]
+        v = randn(2^10)
+
+        K = kronecker(matrices...)
+        k = kron(matrices...)
+
+        @test collect(K) ≈ k
+        @test (K * v) ≈ (k * v)
+    end
+
+
+    @testset "10-factor rectangular KroneckerProduct MV" begin
+        matrices = [randn(3,2) for i in 1:10]
+        v = randn(2^10)
+
+        K = kronecker(matrices...)
+        k = kron(matrices...)
+
+        @test collect(K) ≈ k
+        @test (K * v) ≈ (k * v)
+    end
+
 end

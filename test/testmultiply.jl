@@ -134,4 +134,17 @@ K3 = A ⊗ B ⊗ C
         @test (K * v) ≈ (k * v)
     end
 
+
+    @testset "10-factor mixed KroneckerProduct MV" begin
+        matrices1 = [randn(2,2) for i in 1:5]
+        matrices2 = [randn(3,2) for i in 1:5]
+        v = randn(2^10)
+
+        K = kronecker(matrices1..., matrices2...)
+        k = kron(matrices1..., matrices2...)
+
+        @test collect(K) ≈ k
+        @test (K * v) ≈ (k * v)
+    end
+
 end

@@ -66,5 +66,5 @@ This is very much a work in progress! Please start an issue for bugs or requests
 
 ## Status `master` branch
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/latest/)[![Build Status](https://travis-ci.com/MichielStock/Kronecker.jl.svg?branch=master)](https://travis-ci.com/MichielStock/Kronecker.jl) [![Coverage Status](https://coveralls.io/repos/github/MichielStock/Kronecker.jl/badge.svg?branch=master)](https://coveralls.io/github/MichielStock/Kronecker.jl?branch=master) [![DOI](https://zenodo.org/badge/160198570.svg)](https://zenodo.org/badge/latestdoi/160198570)[![DOI](https://proceedings.juliacon.org/papers/10.21105/jcon.00015/status.svg)](https://doi.org/10.21105/jcon.00015)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/dev/)[![Build Status](https://travis-ci.com/MichielStock/Kronecker.jl.svg?branch=master)](https://travis-ci.com/MichielStock/Kronecker.jl) [![Coverage Status](https://coveralls.io/repos/github/MichielStock/Kronecker.jl/badge.svg?branch=master)](https://coveralls.io/github/MichielStock/Kronecker.jl?branch=master) [![DOI](https://zenodo.org/badge/160198570.svg)](https://zenodo.org/badge/latestdoi/160198570)[![DOI](https://proceedings.juliacon.org/papers/10.21105/jcon.00015/status.svg)](https://doi.org/10.21105/jcon.00015)
 

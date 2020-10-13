@@ -111,8 +111,8 @@ function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
     return C
 end
 
-for VM in [:AbstractVector, :AbstractMatrix]
-    @eval function mul!(C::$VM, A::AbstractKroneckerProduct, B::$VM)
+for CType in [:AbstractVector, :AbstractMatrix], BType in [:($CType), :(Transpose{T, $CType{T}} where T), :(Adjoint{T, $CType{T}} where T)]
+    @eval function mul!(C::$CType, A::AbstractKroneckerProduct, B::$BType)
         check_compatible_sizes(C, A, B)
 
         matrices = getallfactors(A)
@@ -126,7 +126,7 @@ for VM in [:AbstractVector, :AbstractMatrix]
         end
     end
 
-    @eval function ldiv!(C::$VM, A::AbstractKroneckerProduct, B::$VM)
+    @eval function ldiv!(C::$CType, A::AbstractKroneckerProduct, B::$BType)
         check_compatible_sizes(C, A, B, false)
 
         matrices = getallfactors(A)

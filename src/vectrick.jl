@@ -111,7 +111,8 @@ function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
     return C
 end
 
-for CType in [:AbstractVector, :AbstractMatrix], BType in [:($CType), :(Transpose{T, $CType{T}} where T), :(Adjoint{T, $CType{T}} where T)]
+for CType in [:AbstractVector, :AbstractMatrix],
+    BType in [:($CType), :(Transpose{T, <:$CType{T}} where T), :(Adjoint{T, <:$CType{T}} where T)]
     @eval function mul!(C::$CType, A::AbstractKroneckerProduct, B::$BType)
         check_compatible_sizes(C, A, B)
 

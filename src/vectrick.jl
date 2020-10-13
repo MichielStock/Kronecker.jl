@@ -84,59 +84,68 @@ end
 
 function check_compatible_sizes(C::AbstractVecOrMat, A::AbstractMatrix, B::AbstractVecOrMat, mul=true)
     m, n = mul ? size(A) : reverse(size(A))
+
     if n != size(B, 1)
         throw(DimensionMismatch(
             "A has size $(size(A)), B has size $(size(B))"
         ))
-    elseif size(C) != (m, size(B, 2))
+    elseif size(C) != (m, size(B)[2:end]...)
         throw(DimensionMismatch(
             "A has size $(size(A)), B has size $(size(B)), C has size $(size(C))"
         ))
     end
 end
 
-
-function mul!(C::AbstractVecOrMat, A::AbstractKroneckerProduct, B::AbstractVecOrMat)
-    check_compatible_sizes(C, A, B)
-
-    matrices = getallfactors(A)
-
-    if length(matrices) == 2 && ndims(C) == 1
-        return mul_vec_trick!(C, matrices[1], matrices[2], B)
-    elseif all(issquare, matrices)
-        return kron_mul_fast_square!(C, B, matrices)
-    else
-        return kron_mul_fast_rect!(C, B, matrices)
+function mul!(C::AbstractMatrix, A::AbstractKroneckerProduct, D::Diagonal)
+    check_compatible_sizes(C, A, D)
+    @inbounds for j in axes(C, 2)
+        @views C[:, j] = A[:, j] * D[j, j]
     end
+    return C
 end
-
-function mul!(C::AbstractVecOrMat, A::AbstractKroneckerProduct, D::Diagonal)
-    check_compatible_sizes(C, A, B)
-    @inbounds for i in eachindex(axes(A, 2), axes(D, 1))
-        @views C[:, i] = K[:, i] * D[i, i]
+function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
+    check_compatible_sizes(C, D, A)
+    @inbounds for i in axes(C, 1)
+        @views C[i, :] = D[i, i] * A[i, :]
     end
     return C
 end
 
+for VM in [:AbstractVector, :AbstractMatrix]
+    @eval function mul!(C::$VM, A::AbstractKroneckerProduct, B::$VM)
+        check_compatible_sizes(C, A, B)
 
-function ldiv!(C::AbstractVecOrMat, A::AbstractKroneckerProduct, B::AbstractVecOrMat)
-    check_compatible_sizes(C, A, B, false)
+        matrices = getallfactors(A)
 
-    matrices = getallfactors(A)
-
-    factors = ntuple(length(matrices)) do i
-        m = matrices[i]
-        return (m isa Factorization) ? m : factorize(m)
+        if length(matrices) == 2
+            return mul_vec_trick!(C, matrices[1], matrices[2], B)
+        elseif all(issquare, matrices)
+            return kron_mul_fast_square!(C, B, matrices)
+        else
+            return kron_mul_fast_rect!(C, B, matrices)
+        end
     end
 
-    if length(matrices) == 2 && ndims(C) == 1
-        return ldiv_vec_trick!(C, factors[1], factors[2], B)
-    elseif all(issquare, matrices)
-        return kron_ldiv_fast_square!(C, B, factors)
-    else
-        return kron_ldiv_fast_rect!(C, B, factors)
+    @eval function ldiv!(C::$VM, A::AbstractKroneckerProduct, B::$VM)
+        check_compatible_sizes(C, A, B, false)
+
+        matrices = getallfactors(A)
+
+        factors = ntuple(length(matrices)) do i
+            m = matrices[i]
+            return (m isa Factorization) ? m : factorize(m)
+        end
+
+        if length(matrices) == 2
+            return ldiv_vec_trick!(C, factors[1], factors[2], B)
+        elseif all(issquare, matrices)
+            return kron_ldiv_fast_square!(C, B, factors)
+        else
+            return kron_ldiv_fast_rect!(C, B, factors)
+        end
     end
 end
+
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
@@ -144,6 +153,10 @@ end
 
 function Base.:*(K::AbstractKroneckerProduct, v::AbstractMatrix)
     return mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), K, v)
+end
+
+function Base.:*(K::AbstractKroneckerProduct, D::Diagonal)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), K, D)
 end
 
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::AbstractKroneckerProduct)

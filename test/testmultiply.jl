@@ -42,10 +42,6 @@ K3 = A ⊗ B ⊗ C
         rng = MersenneTwister(123456)
         a, b, x = randn(rng, 30, 20), randn(rng, 40, 50), randn(rng, 1000, 1100)
 
-        @test kron(a, Diagonal(ones(50))) * x ≈ Kronecker.kron_a_id(a, x)
-        @test kron(Diagonal(ones(20)), b) * x ≈ Kronecker.kron_id_a(b, x)
-        @test kron(a, b) * x ≈ Kronecker.kron_a_b(a, b, x)
-
         @test kron(a, b) * x ≈ (a ⊗ b) * x
         @test kron(a, Eye(50)) * x ≈ (a ⊗ Eye(50)) * x
         @test kron(Eye(20), b) * x ≈ (Eye(20) ⊗ b) * x

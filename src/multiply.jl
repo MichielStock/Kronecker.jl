@@ -145,7 +145,7 @@ for N in (1, 2)
         for s in 1:length(ns)
             n = ns[s]
             i_right ÷= n
-            copy!(temp, x)
+            copyto!(temp, x)
             out += _kron_mul_kernel_square!(small_temp, temp, n, i_left, matrices[s], i_right)
             i_left *= n
         end

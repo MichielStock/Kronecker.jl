@@ -42,7 +42,7 @@ for N in (1, 2)
             i_left::Int = 1
             i_right::Int = prod(ns)
 
-            out = copy!(out, x)
+            out = copyto!(out, x)
             temp = _alloc_temp_array(maximum(ns), x)
 
             for s in 1:length(ns)
@@ -125,7 +125,7 @@ for N in (1, 2)
                 i_left *= r_h
             end
 
-            out = copy!(out, out_)
+            out = copyto!(out, out_)
             return out
         end
     end

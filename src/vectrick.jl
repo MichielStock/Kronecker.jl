@@ -164,11 +164,11 @@ function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::AbstractKroneckerPro
 end
 
 function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::AbstractKroneckerProduct)
-    return transpose(mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), transpose(K), v.parent))
+    return Matrix(transpose(mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), transpose(K), v.parent)))
 end
 
 function Base.:*(v::AbstractMatrix, K::AbstractKroneckerProduct)
-    return transpose(mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), transpose(K), transpose(v)))
+    return Matrix(transpose(mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), transpose(K), transpose(v))))
 end
 
 function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractVector)

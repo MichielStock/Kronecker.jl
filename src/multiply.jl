@@ -151,9 +151,4 @@ for N in (1, 2)
         end
         return out
     end
-
-    @eval function mul!(out::AbstractArray{T, $N}, K::AbstractKroneckerSum, x::AbstractArray{T, $N}) where T
-        matrices = getallsummands(K)
-        return kronsum_mul_fast!(out, x, matrices)
-    end
 end

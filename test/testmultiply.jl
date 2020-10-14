@@ -8,6 +8,39 @@ v = rand(12)
 K3 = A ⊗ B ⊗ C
 
 @testset "multiply" begin
+    @testset "Compatibility with other matrix ops" begin
+        K = rand(3, 3) ⊗ randn(4, 4)
+        K3 = rand(3, 3) ⊗ randn(4, 4) ⊗ randn(5, 6)
+        KPow = kronecker(randn(3, 3), 3)
+
+        for op in [adjoint, transpose, inv, pinv, conj]
+            @test collect(op(K)) ≈ op(collect(K))
+            if op != inv
+                @test collect(op(K3)) ≈ op(collect(K3))
+            else
+                @test_throws DimensionMismatch op(K3)
+            end
+        end
+    end
+
+    @testset "Compatibility with Matrix Product" begin
+        A_f = [randn(3, 4), randn(5, 6)]
+        B_f = [randn(4, 2), randn(6, 7)]
+
+        A = kronecker(A_f...)
+        B = kronecker(B_f...)
+
+        @test collect(A * B) ≈ collect(kronecker(map(*, A_f, B_f)...))
+
+        C = randn(3, 3)
+        D = randn(3, 2)
+        C_pow = kronecker(C, 3)
+        D_pow = kronecker(D, 3)
+        @test collect(C_pow * D_pow) ≈ collect(kronecker(C*D, 3))
+
+        @test_throws DimensionMismatch (D_pow * C_pow)
+    end
+
     @testset "Vec trick" begin
 
         @test K * v ≈ X * v
@@ -63,13 +96,15 @@ K3 = A ⊗ B ⊗ C
 
         res1 = (K * x)
         res2 = (K * X)
-        res3 = (K \ y)
-        res4 = (K \ Y)
-
         @test res1 ≈ (k * x)
         @test res2 ≈ (k * X)
-        @test res3 ≈ (k \ y)
-        @test res4 ≈ (k \ Y)
+
+        if K isa AbstractKroneckerProduct
+            res3 = (K \ y)
+            res4 = (K \ Y)
+            @test res3 ≈ (k \ y)
+            @test res4 ≈ (k \ Y)
+        end
 
         if size(K, 1) == size(x, 1)
             res1a = (x' * K)
@@ -109,10 +144,13 @@ K3 = A ⊗ B ⊗ C
 
         K1 = kronecker(A, B)
         K2 = kronecker(B, A)
+        KS = kroneckersum(A, B)
+
         k1 = kron(A, B)
         k2 = kron(B, A)
+        ks = kron(A, Diagonal(I, size(B, 1))) + kron(Diagonal(I, size(A, 1)), B)
 
-        for (K, k) in [(K1, k1), (K2, k2)]
+        for (K, k) in [(K1, k1), (K2, k2), (KS, ks)]
             compare_against_kron(K, k, x, X, y, Y)
         end
     end
@@ -162,12 +200,26 @@ K3 = A ⊗ B ⊗ C
         v = randn(2^10)
         V = randn(2^10, 5)
 
-        K = kronecker(matrices...)
-        k = kron(matrices...)
+        KP = kronecker(matrices...)
+        KS = kroneckersum(matrices...)
+        kp = kron(matrices...)
+        ks = collect(KS)
+
+        for (K, k) in [(KP, kp), (KS, ks)]
+            compare_against_kron(K, k, v, V, v, V)
+        end
+    end
+
+    @testset "10-factor square KroneckerPower" begin
+        A = randn(2,2)
+        v = randn(2^10)
+        V = randn(2^10, 5)
+
+        K = kronecker(ntuple(_ -> A, 10)...)
+        k = kron(ntuple(_ -> A, 10)...)
 
         compare_against_kron(K, k, v, V, v, V)
     end
-
 
     @testset "10-factor rectangular KroneckerProduct" begin
         matrices = [randn(3,2) for i in 1:10]

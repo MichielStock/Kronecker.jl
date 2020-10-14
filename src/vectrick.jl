@@ -23,7 +23,8 @@ end
 Calculates the vector-matrix multiplication `K * v` and stores the result in
 `x`, overwriting its existing value.
 """
-function mul_vec_trick!(x::AbstractVector, M::AbstractMatrix, N::AbstractMatrix, v::AbstractVector)
+function mul_vec_trick!(x::AbstractVector, A::AbstractKroneckerProduct, v::AbstractVector)
+    M, N = getmatrices(A)
     a, b = size(M)
     c, d = size(N)
     e = length(v)
@@ -39,9 +40,41 @@ function mul_vec_trick!(x::AbstractVector, M::AbstractMatrix, N::AbstractMatrix,
     return x
 end
 
-function mul_vec_trick!(X::AbstractMatrix, M::AbstractMatrix, N::AbstractMatrix, V::AbstractMatrix)
+
+if VERSION < v"1.3.0-alpha.115"
+    function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+        A, B = getmatrices(K)
+        a, b = size(A)
+        c, d = size(B)
+        e = length(v)
+        f = length(x)
+
+        V = reshape(v, d, b)
+        X = reshape(x, c, a)
+        mul!(X, V, transpose(A))
+        X .+= B * V
+        return x
+    end
+else # 5-arg mul! is available
+    function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+        A, B = getmatrices(K)
+        a, b = size(A)
+        c, d = size(B)
+        e = length(v)
+        f = length(x)
+
+        V = reshape(v, d, b)
+        X = reshape(x, c, a)
+        mul!(X, V, transpose(A))
+        mul!(X, B, V, true, true)
+        return x
+    end
+end # VERSION
+
+
+function mul_vec_trick!(X::AbstractMatrix, A::GeneralizedKroneckerProduct, V::AbstractMatrix)
     @inbounds for i in eachindex(axes(X, 2), axes(V, 2))
-        @views mul_vec_trick!(X[:, i], M, N, V[:, i])
+        @views mul_vec_trick!(X[:, i], A, V[:, i])
     end
     return X
 end
@@ -107,15 +140,16 @@ function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
     return C
 end
 
-for CType in [:AbstractVector, :AbstractMatrix],
-    BType in [:($CType), :(Transpose{T, <:$CType{T}} where T), :(Adjoint{T, <:$CType{T}} where T)]
-    @eval function mul!(C::$CType, A::AbstractKroneckerProduct, B::$BType)
+for TC in [:AbstractVector, :AbstractMatrix],
+    TB in [:($TC), :(Transpose{T, <:$TC{T}} where T), :(Adjoint{T, <:$TC{T}} where T)]
+
+    @eval function mul!(C::$TC, A::AbstractKroneckerProduct, B::$TB)
         check_compatible_sizes(C, A, B)
 
         matrices = getallfactors(A)
 
         if length(matrices) == 2
-            return mul_vec_trick!(C, matrices[1], matrices[2], B)
+            return mul_vec_trick!(C, A, B)
         elseif all(issquare, matrices)
             return kron_mul_fast_square!(C, B, matrices)
         else
@@ -123,7 +157,7 @@ for CType in [:AbstractVector, :AbstractMatrix],
         end
     end
 
-    @eval function ldiv!(C::$CType, A::AbstractKroneckerProduct, B::$BType)
+    @eval function ldiv!(C::$TC, A::AbstractKroneckerProduct, B::$TB)
         check_compatible_sizes(C, A, B, false)
 
         matrices = getallfactors(A)
@@ -141,36 +175,47 @@ for CType in [:AbstractVector, :AbstractMatrix],
             return kron_ldiv_fast_rect!(C, B, factors)
         end
     end
+
+    @eval function mul!(C::$TC, A::AbstractKroneckerSum, B::$TB)
+        check_compatible_sizes(C, A, B)
+
+        matrices = getallsummands(A)
+
+        if length(matrices) == 2
+            return mul_vec_trick!(C, A, B)
+        else
+            return kronsum_mul_fast!(C, B, matrices)
+        end
+    end
 end
 
-
-function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
+function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
 end
 
-function Base.:*(K::AbstractKroneckerProduct, v::AbstractMatrix)
+function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractMatrix)
     return mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), K, v)
 end
 
-function Base.:*(K::AbstractKroneckerProduct, D::Diagonal)
+function Base.:*(K::GeneralizedKroneckerProduct, D::Diagonal)
     return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), K, D)
 end
 
-function Base.:*(D::Diagonal, K::AbstractKroneckerProduct)
+function Base.:*(D::Diagonal, K::GeneralizedKroneckerProduct)
     return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), D, K)
 end
 
-function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::AbstractKroneckerProduct)
+function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return mul!(out, K', v.parent)'
 end
 
-function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::AbstractKroneckerProduct)
+function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return transpose(mul!(out, transpose(K), v.parent))
 end
 
-function Base.:*(v::AbstractMatrix, K::AbstractKroneckerProduct)
+function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
     out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
     return transpose(mul!(out, transpose(K), transpose(v)))
 end

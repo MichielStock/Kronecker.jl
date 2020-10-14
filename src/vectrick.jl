@@ -113,6 +113,7 @@ end
 
 
 function check_compatible_sizes(C::AbstractVecOrMat, A::AbstractMatrix, B::AbstractVecOrMat, mul=true)
+    # when performing a division (mul=false), A acts as a matrix with reversed dimensions
     m, n = mul ? size(A) : reverse(size(A))
 
     if n != size(B, 1)

@@ -144,6 +144,17 @@ function issquare(A::AbstractMatrix)
     return m == n
 end
 
+
+"""
+    issquare(A::Factorization)
+
+Checks if a Factorization struct represents a square matrix.
+"""
+function issquare(A::Factorization)
+    m, n = size(A)
+    return m == n
+end
+
 """
     issymmetric(K::AbstractKroneckerProduct)
 

@@ -81,7 +81,8 @@ end
 
 
 # SOLVING
-function ldiv_vec_trick!(x::AbstractVector, M::MatrixOrFactorization, N::MatrixOrFactorization, v::AbstractVector)
+function ldiv_vec_trick!(x::AbstractVector, A::AbstractKroneckerProduct, v::AbstractVector)
+    M, N = getmatrices(A)
     b, a = size(M)
     d, c = size(N)
     e = length(v)
@@ -103,9 +104,9 @@ function ldiv_vec_trick!(x::AbstractVector, M::MatrixOrFactorization, N::MatrixO
     # return vec((K.B \ C) / K.A') #(A ⊗ B)vec(X) = vec(C) <=> BXA' = C => X = B^{-1} C A'^{-1}
 end
 
-function ldiv_vec_trick!(X::AbstractMatrix, M::MatrixOrFactorization, N::MatrixOrFactorization, V::AbstractMatrix)
+function ldiv_vec_trick!(X::AbstractMatrix, A::AbstractKroneckerProduct, V::AbstractMatrix)
     @inbounds for i in eachindex(axes(X, 2), axes(V, 2))
-        @views ldiv_vec_trick!(X[:, i], M, N, V[:, i])
+        @views ldiv_vec_trick!(X[:, i], A, V[:, i])
     end
     return X
 end
@@ -146,14 +147,14 @@ for TC in [:AbstractVector, :AbstractMatrix],
     @eval function mul!(C::$TC, A::AbstractKroneckerProduct, B::$TB)
         check_compatible_sizes(C, A, B)
 
-        matrices = getallfactors(A)
+        factors = getallfactors(A)
 
-        if length(matrices) == 2
+        if length(factors) == 2
             return mul_vec_trick!(C, A, B)
-        elseif all(issquare, matrices)
-            return kron_mul_fast_square!(C, B, matrices)
+        elseif all(issquare, factors)
+            return kron_mul_fast_square!(C, B, factors)
         else
-            return kron_mul_fast_rect!(C, B, matrices)
+            return kron_mul_fast_rect!(C, B, factors)
         end
     end
 
@@ -162,14 +163,16 @@ for TC in [:AbstractVector, :AbstractMatrix],
 
         matrices = getallfactors(A)
 
+        # TODO: should figure out how to avoid this if possible, leave
+        #       factorization up to the user/Julia
         factors = ntuple(length(matrices)) do i
             m = matrices[i]
             return (m isa Factorization) ? m : factorize(m)
         end
 
-        if length(matrices) == 2
-            return ldiv_vec_trick!(C, factors[1], factors[2], B)
-        elseif all(issquare, matrices)
+        if length(factors) == 2
+            return ldiv_vec_trick!(C, A, B)
+        elseif all(issquare, factors)
             return kron_ldiv_fast_square!(C, B, factors)
         else
             return kron_ldiv_fast_rect!(C, B, factors)
@@ -179,12 +182,12 @@ for TC in [:AbstractVector, :AbstractMatrix],
     @eval function mul!(C::$TC, A::AbstractKroneckerSum, B::$TB)
         check_compatible_sizes(C, A, B)
 
-        matrices = getallsummands(A)
+        summands = getallsummands(A)
 
-        if length(matrices) == 2
+        if length(summands) == 2
             return mul_vec_trick!(C, A, B)
         else
-            return kronsum_mul_fast!(C, B, matrices)
+            return kronsum_mul_fast!(C, B, summands)
         end
     end
 end

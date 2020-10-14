@@ -211,7 +211,11 @@ K3 = A ⊗ B ⊗ C
     end
 
     @testset "10-factor square KroneckerPower" begin
-        A = randn(2,2)
+        # reduce condition number of the matrix to avoid accidentally triggering a
+        #  test failure
+        A = randn(2,2) + 20I
+        A /= opnorm(A)
+
         v = randn(2^10)
         V = randn(2^10, 5)
 

@@ -58,6 +58,46 @@ K3 = A ⊗ B ⊗ C
         @test sum(kronecker(A, 3)) ≈ sum(kron(A, A, A))
     end
 
+    @inline function compare_against_kron(K, k, x, X, y, Y)
+        @test collect(K) ≈ k
+
+        res1 = (K * x)
+        res2 = (K * X)
+        res3 = (K \ y)
+        res4 = (K \ Y)
+
+        @test res1 ≈ (k * x)
+        @test res2 ≈ (k * X)
+        @test res3 ≈ (k \ y)
+        @test res4 ≈ (k \ Y)
+
+        if size(K, 1) == size(x, 1)
+            res1a = (x' * K)
+            res1t = (transpose(x) * K)
+
+            @test res1a ≈ (x' * k)
+            @test res1t ≈ (transpose(x) * k)
+            @test (K' * x) ≈ (k' * x) ≈ res1a'
+            @test (transpose(K) * x) ≈ (transpose(k) * x) ≈ transpose(res1t)
+        else
+            @test_throws DimensionMismatch (x' * K)
+            @test_throws DimensionMismatch (transpose(x) * K)
+        end
+
+        if size(K, 1) == size(X, 1)
+            res2a = (X' * K)
+            res2t = (transpose(X) * K)
+
+            @test res2a ≈ (X' * k)
+            @test res2t ≈ (transpose(X) * k)
+            @test (K' * X) ≈ (k' * X) ≈ res2a'
+            @test (transpose(K) * X) ≈ (transpose(k) * X) ≈ transpose(res2t)
+        else
+            @test_throws DimensionMismatch (X' * K)
+            @test_throws DimensionMismatch (transpose(X) * K)
+        end
+
+    end
 
     @testset "2-factor square KroneckerProduct" begin
         A = randn(10, 10)
@@ -73,17 +113,7 @@ K3 = A ⊗ B ⊗ C
         k2 = kron(B, A)
 
         for (K, k) in [(K1, k1), (K2, k2)]
-            @test collect(K) ≈ k
-
-            res1 = (K * x)
-            res2 = (K * X)
-            res3 = (K \ y)
-            res4 = (K \ Y)
-
-            @test res1 ≈ (k * x)
-            @test res2 ≈ (k * X)
-            @test res3 ≈ (k \ y)
-            @test res4 ≈ (k \ Y)
+            compare_against_kron(K, k, x, X, y, Y)
         end
     end
 
@@ -102,17 +132,7 @@ K3 = A ⊗ B ⊗ C
         k2 = kron(B, A)
 
         for (K, k) in [(K1, k1), (K2, k2)]
-            @test collect(K) ≈ k
-
-            res1 = (K * x)
-            res2 = (K * X)
-            res3 = (K \ y)
-            res4 = (K \ Y)
-
-            @test res1 ≈ (k * x)
-            @test res2 ≈ (k * X)
-            @test res3 ≈ (k \ y)
-            @test res4 ≈ (k \ Y)
+            compare_against_kron(K, k, x, X, y, Y)
         end
     end
 
@@ -132,17 +152,7 @@ K3 = A ⊗ B ⊗ C
         k2 = kron(B, A, C)
 
         for (K, k) in [(K1, k1), (K2, k2)]
-            @test collect(K) ≈ k
-
-            res1 = (K * x)
-            res2 = (K * X)
-            res3 = (K \ y)
-            res4 = (K \ Y)
-
-            @test res1 ≈ (k * x)
-            @test res2 ≈ (k * X)
-            @test res3 ≈ (k \ y)
-            @test res4 ≈ (k \ Y)
+            compare_against_kron(K, k, x, X, y, Y)
         end
     end
 
@@ -155,17 +165,7 @@ K3 = A ⊗ B ⊗ C
         K = kronecker(matrices...)
         k = kron(matrices...)
 
-        @test collect(K) ≈ k
-
-        res1 = (K * v)
-        res2 = (K * V)
-        res3 = (K \ v)
-        res4 = (K \ V)
-
-        @test res1 ≈ (k * v)
-        @test res2 ≈ (k * V)
-        @test res3 ≈ (k \ v)
-        @test res4 ≈ (k \ V)
+        compare_against_kron(K, k, v, V, v, V)
     end
 
 
@@ -179,17 +179,7 @@ K3 = A ⊗ B ⊗ C
         K = kronecker(matrices...)
         k = kron(matrices...)
 
-        @test collect(K) ≈ k
-
-        res1 = (K * x)
-        res2 = (K * X)
-        res3 = (K \ y)
-        res4 = (K \ Y)
-
-        @test res1 ≈ (k * x)
-        @test res2 ≈ (k * X)
-        @test res3 ≈ (k \ y)
-        @test res4 ≈ (k \ Y)
+        compare_against_kron(K, k, x, X, y, Y)
     end
 
     @testset "10-factor mixed KroneckerProduct" begin
@@ -205,15 +195,7 @@ K3 = A ⊗ B ⊗ C
 
         @test collect(K) ≈ k
 
-        res1 = (K * x)
-        res2 = (K * X)
-        res3 = (K \ y)
-        res4 = (K \ Y)
-
-        @test res1 ≈ (k * x)
-        @test res2 ≈ (k * X)
-        @test res3 ≈ (k \ y)
-        @test res4 ≈ (k \ Y)
+        compare_against_kron(K, k, x, X, y, Y)
     end
 
 end

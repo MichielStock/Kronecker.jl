@@ -6,6 +6,8 @@ function eigen_tests(rng, C::AbstractKroneckerProduct)
     # Check approximate correctness of decomposition
     λ, Γ = eigen(C)
     @test Γ * Diagonal(λ) * Γ' ≈ C
+    @test Γ * (Diagonal(λ) * Γ') ≈ C
+    @test (Γ * Diagonal(λ)) * Γ' ≈ C
 
     # Check approximate correctness of shifted decomposition
     σ² = abs2(randn(rng))

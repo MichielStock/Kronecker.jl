@@ -11,10 +11,6 @@ Vec trick: multiplying vectors with Kronecker systems.
 
 import Base.ReshapedArray
 
-vecmulR!(X,N,V,M) = X .= N * (V * transpose(M))
-vecmulL!(X,N,V,M) = X .= (N * V) * transpose(M)
-vecmul!(X,N,V,M) = X .= N * V * transpose(M)
-
 vectrick_reshape(v::AbstractVector, d::Int, b::Int) = reshape(v, d, b)
 function vectrick_reshape(v::ReshapedArray{<:Any, 1}, d::Int, b::Int)
     return size(v.parent) == (d, b) ? v.parent : reshape(v, d, b)
@@ -160,16 +156,23 @@ function Base.:*(K::AbstractKroneckerProduct, D::Diagonal)
     return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), K, D)
 end
 
+function Base.:*(D::Diagonal, K::AbstractKroneckerProduct)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), D, K)
+end
+
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::AbstractKroneckerProduct)
-    return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K', v.parent)'
+    out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
+    return mul!(out, K', v.parent)'
 end
 
 function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::AbstractKroneckerProduct)
-    return Matrix(transpose(mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), transpose(K), v.parent)))
+    out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
+    return transpose(mul!(out, transpose(K), v.parent))
 end
 
 function Base.:*(v::AbstractMatrix, K::AbstractKroneckerProduct)
-    return Matrix(transpose(mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), transpose(K), transpose(v))))
+    out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
+    return transpose(mul!(out, transpose(K), transpose(v)))
 end
 
 function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractVector)

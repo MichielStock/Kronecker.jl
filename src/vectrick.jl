@@ -153,9 +153,9 @@ for TC in [:AbstractVector, :AbstractMatrix],
         if length(factors) == 2
             return mul_vec_trick!(C, A, B)
         elseif all(issquare, factors)
-            return kron_mul_fast_square!(C, B, factors)
+            return _kron_mul_fast_square!(C, B, factors)
         else
-            return kron_mul_fast_rect!(C, B, factors)
+            return _kron_mul_fast_rect!(C, B, factors)
         end
     end
 
@@ -174,9 +174,9 @@ for TC in [:AbstractVector, :AbstractMatrix],
         if length(factors) == 2
             return ldiv_vec_trick!(C, A, B)
         elseif all(issquare, factors)
-            return kron_ldiv_fast_square!(C, B, factors)
+            return _kron_ldiv_fast_square!(C, B, factors)
         else
-            return kron_ldiv_fast_rect!(C, B, factors)
+            return _kron_ldiv_fast_rect!(C, B, factors)
         end
     end
 
@@ -188,7 +188,7 @@ for TC in [:AbstractVector, :AbstractMatrix],
         if length(summands) == 2
             return mul_vec_trick!(C, A, B)
         else
-            return kronsum_mul_fast!(C, B, summands)
+            return _kronsum_mul_fast!(C, B, summands)
         end
     end
 end

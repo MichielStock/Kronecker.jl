@@ -6,7 +6,7 @@ using SparseArrays: AbstractSparseMatrix, SparseMatrixCSC, sprand,
     include("testbase.jl")
     include("testkroneckerpowers.jl")
     include("testnames.jl")
-    include("testvectrick.jl")
+    include("testmultiply.jl")
     include("testindexed.jl")
     include("testeigen.jl")
     include("testkroneckersum.jl")

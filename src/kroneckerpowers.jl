@@ -38,6 +38,8 @@ type.
 """
 ⊗(A::AbstractMatrix, pow::Integer) = kronecker(A, pow)
 
+getallfactors(K::KroneckerPower{T,TA,N}) where {T,TA,N} = ntuple(_ -> K.A, K.pow)
+
 getmatrices(K::KroneckerPower{T,TA,N}) where {T,TA,N} = (K.A, KroneckerPower(K.A, K.pow-1))
 getmatrices(K::KroneckerPower{T,TA,2}) where {T,TA} = (K.A, K.A)
 getmatrices(K::KroneckerPower{T,TA,1}) where {T,TA} = (K.A, )
@@ -93,6 +95,16 @@ Compute the inverse of a Kronecker power.
 function Base.inv(K::KroneckerPower)
     checksquare(K.A)
     return KroneckerPower(inv(K.A), K.pow)
+end
+
+
+"""
+    pinv(K::KroneckerPower)
+
+Compute the Moore-Penrose pseudo-inverse of a Kronecker power.
+"""
+function LinearAlgebra.pinv(K::KroneckerPower)
+    return KroneckerPower(pinv(K.A), K.pow)
 end
 
 """

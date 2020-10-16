@@ -89,6 +89,16 @@ function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
 end
 
+
+"""
+    getallfactors(K::AbstractKroneckerProduct)
+
+Obtain all factors in an `AbstractKroneckerProduct` object.
+"""
+getallfactors(K::AbstractKroneckerProduct) = (getallfactors(K.A)..., getallfactors(K.B)...)
+getallfactors(K::AbstractMatrix) = (K,)
+
+
 """
     getmatrices(K::AbstractKroneckerProduct)
 
@@ -134,6 +144,17 @@ function issquare(A::AbstractMatrix)
     return m == n
 end
 
+
+"""
+    issquare(A::Factorization)
+
+Checks if a Factorization struct represents a square matrix.
+"""
+function issquare(A::Factorization)
+    m, n = size(A)
+    return m == n
+end
+
 """
     issymmetric(K::AbstractKroneckerProduct)
 
@@ -142,6 +163,17 @@ Checks if a Kronecker product is symmetric.
 function LinearAlgebra.issymmetric(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return issymmetric(A) && issymmetric(B)
+end
+
+
+"""
+    ishermitian(K::AbstractKroneckerProduct)
+
+Checks if a Kronecker product is Hermitian.
+"""
+function LinearAlgebra.ishermitian(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return ishermitian(A) && ishermitian(B)
 end
 
 """
@@ -228,6 +260,16 @@ function inv(K::AbstractKroneckerProduct)
     else
         throw(SingularException(1))
     end
+end
+
+"""
+    pinv(K::AbstractKroneckerProduct)
+
+Compute the Moore-Penrose pseudo-inverse of a Kronecker product.
+"""
+function LinearAlgebra.pinv(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return KroneckerProduct(pinv(A), pinv(B))
 end
 
 """
@@ -373,11 +415,4 @@ end
 function Base.:*(K::AbstractKroneckerProduct, a::Number)
     A, B = getmatrices(K)
     kronecker(A, B * a)
-end
-
-# SOLVING
-function LinearAlgebra.:\(K::AbstractKroneckerProduct{T}, c::AbstractVector{T}) where {T}
-    size(K, 1) != length(c) && throw(DimensionMismatch("size(K, 1) != length(c)"))
-    C = reshape(c, size(K.B, 1), size(K.A, 1)) # matricify
-    return vec((K.B \ C) / K.A') #(A ⊗ B)vec(X) = vec(C) <=> BXA' = C => X = B^{-1} C A'^{-1}
 end

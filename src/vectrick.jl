@@ -11,10 +11,6 @@ Vec trick: multiplying vectors with Kronecker systems.
 
 import Base.ReshapedArray
 
-vecmulR!(X,N,V,M) = X .= N * (V * transpose(M))
-vecmulL!(X,N,V,M) = X .= (N * V) * transpose(M)
-vecmul!(X,N,V,M) = X .= N * V * transpose(M)
-
 vectrick_reshape(v::AbstractVector, d::Int, b::Int) = reshape(v, d, b)
 function vectrick_reshape(v::ReshapedArray{<:Any, 1}, d::Int, b::Int)
     return size(v.parent) == (d, b) ? v.parent : reshape(v, d, b)
@@ -22,21 +18,18 @@ end
 
 
 """
-    mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
+    mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
 
 Calculates the vector-matrix multiplication `K * v` and stores the result in
 `x`, overwriting its existing value.
 """
-function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
-    M, N = getmatrices(K)
+function mul_vec_trick!(x::AbstractVector, A::AbstractKroneckerProduct, v::AbstractVector)
+    M, N = getmatrices(A)
     a, b = size(M)
     c, d = size(N)
     e = length(v)
     f = length(x)
-    f == a * c || throw(DimensionMismatch(
-        "Dimension missmatch between kronecker system and result placeholder"))
-    e == b * d || throw(DimensionMismatch(
-        "Dimension missmatch between kronecker system and vector"))
+
     V = vectrick_reshape(v, d, b)
     X = vectrick_reshape(x, c, a)
     if b * c * (a + d) < a * d * (b + c)
@@ -47,44 +40,201 @@ function mul!(x::AbstractVector, K::AbstractKroneckerProduct, v::AbstractVector)
     return x
 end
 
-function Base.:*(K::AbstractKroneckerProduct, v::AbstractVector)
-    return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
+
+if VERSION < v"1.3.0-alpha.115"
+    function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+        A, B = getmatrices(K)
+        a, b = size(A)
+        c, d = size(B)
+        e = length(v)
+        f = length(x)
+
+        V = reshape(v, d, b)
+        X = reshape(x, c, a)
+        mul!(X, V, transpose(A))
+        X .+= B * V
+        return x
+    end
+else # 5-arg mul! is available
+    function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+        A, B = getmatrices(K)
+        a, b = size(A)
+        c, d = size(B)
+        e = length(v)
+        f = length(x)
+
+        V = reshape(v, d, b)
+        X = reshape(x, c, a)
+        mul!(X, V, transpose(A))
+        mul!(X, B, V, true, true)
+        return x
+    end
+end # VERSION
+
+
+function mul_vec_trick!(X::AbstractMatrix, A::GeneralizedKroneckerProduct, V::AbstractMatrix)
+    @inbounds for i in eachindex(axes(X, 2), axes(V, 2))
+        @views mul_vec_trick!(X[:, i], A, V[:, i])
+    end
+    return X
 end
 
-reshape_cols(x, sizes...) = reshape(x, sizes...)
-reshape_rows(x, sizes...) = transpose(reshape(collect(transpose(x)), reverse(sizes)...))
 
-kron_id_a(a, x) = reshape_cols(a * reshape_cols(x, size(a)[2], :), :, size(x)[2])
-kron_a_id(a, x) = reshape_rows(a * reshape_rows(x, size(a)[2], :), :, size(x)[2])
+# SOLVING
+function ldiv_vec_trick!(x::AbstractVector, A::AbstractKroneckerProduct, v::AbstractVector)
+    M, N = getmatrices(A)
+    b, a = size(M)
+    d, c = size(N)
+    e = length(v)
+    f = length(x)
 
-function kron_a_b(A, B, x)
-    a, b = size(A)
-    c, d = size(B)
+    V = vectrick_reshape(v, d, b)
+    X = vectrick_reshape(x, c, a)
     if b * c * (a + d) < a * d * (b + c)
-        return kron_a_id(A, kron_id_a(B, x))
+        S = N \ V
+        copyto!(transpose(X), M \ transpose(S))
     else
-        return kron_id_a(B, kron_a_id(A, x))
+        S = M \ transpose(V)
+        copyto!(X, N \ transpose(S))
+    end
+    return x
+
+    # size(K, 1) != length(v) && throw(DimensionMismatch("size(K, 1) != length(v)"))
+    # C = reshape(v, size(K.B, 1), size(K.A, 1)) # matricify
+    # return vec((K.B \ C) / K.A') #(A ⊗ B)vec(X) = vec(C) <=> BXA' = C => X = B^{-1} C A'^{-1}
+end
+
+function ldiv_vec_trick!(X::AbstractMatrix, A::AbstractKroneckerProduct, V::AbstractMatrix)
+    @inbounds for i in eachindex(axes(X, 2), axes(V, 2))
+        @views ldiv_vec_trick!(X[:, i], A, V[:, i])
+    end
+    return X
+end
+
+
+function check_compatible_sizes(C::AbstractVecOrMat, A::AbstractMatrix, B::AbstractVecOrMat, mul=true)
+    # when performing a division (mul=false), A acts as a matrix with reversed dimensions
+    m, n = mul ? size(A) : reverse(size(A))
+
+    if n != size(B, 1)
+        throw(DimensionMismatch(
+            "A has size $(size(A)), B has size $(size(B))"
+        ))
+    elseif size(C) != (m, size(B)[2:end]...)
+        throw(DimensionMismatch(
+            "A has size $(size(A)), B has size $(size(B)), C has size $(size(C))"
+        ))
     end
 end
 
-function Base.:*(A::AbstractKroneckerProduct, B::StridedMatrix)
-    size(A, 2) != size(B, 1) && throw(DimensionMismatch("size(A, 2) != size(B, 1)"))
-    return kron_a_b(getmatrices(A)..., B)
+function mul!(C::AbstractMatrix, A::AbstractKroneckerProduct, D::Diagonal)
+    check_compatible_sizes(C, A, D)
+    @inbounds for j in axes(C, 2)
+        @views C[:, j] = A[:, j] * D[j, j]
+    end
+    return C
+end
+function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
+    check_compatible_sizes(C, D, A)
+    @inbounds for i in axes(C, 1)
+        @views C[i, :] = D[i, i] * A[i, :]
+    end
+    return C
 end
 
-function Base.:*(A::KroneckerProduct{<:Any, <:Eye, <:AbstractMatrix}, B::StridedMatrix)
-    size(A, 2) != size(B, 1) && throw(DimensionMismatch("size(A, 2) != size(B, 1)"))
-    return kron_id_a(A.B, B)
+for TC in [:AbstractVector, :AbstractMatrix],
+    TB in [:($TC), :(Transpose{T, <:$TC{T}} where T), :(Adjoint{T, <:$TC{T}} where T)]
+
+    @eval function mul!(C::$TC, A::AbstractKroneckerProduct, B::$TB)
+        check_compatible_sizes(C, A, B)
+
+        factors = getallfactors(A)
+
+        if length(factors) == 2
+            return mul_vec_trick!(C, A, B)
+        elseif all(issquare, factors)
+            return _kron_mul_fast_square!(C, B, factors)
+        else
+            return _kron_mul_fast_rect!(C, B, factors)
+        end
+    end
+
+    @eval function ldiv!(C::$TC, A::AbstractKroneckerProduct, B::$TB)
+        check_compatible_sizes(C, A, B, false)
+
+        matrices = getallfactors(A)
+
+        # TODO: should figure out how to avoid this if possible, leave
+        #       factorization up to the user/Julia
+        factors = ntuple(length(matrices)) do i
+            m = matrices[i]
+            return (m isa Factorization) ? m : factorize(m)
+        end
+
+        if length(factors) == 2
+            return ldiv_vec_trick!(C, A, B)
+        elseif all(issquare, factors)
+            return _kron_ldiv_fast_square!(C, B, factors)
+        else
+            return _kron_ldiv_fast_rect!(C, B, factors)
+        end
+    end
+
+    @eval function mul!(C::$TC, A::AbstractKroneckerSum, B::$TB)
+        check_compatible_sizes(C, A, B)
+
+        summands = getallsummands(A)
+
+        if length(summands) == 2
+            return mul_vec_trick!(C, A, B)
+        else
+            return _kronsum_mul_fast!(C, B, summands)
+        end
+    end
 end
 
-function Base.:*(A::KroneckerProduct{<:Any, <:AbstractMatrix, <:Eye}, B::StridedMatrix)
-    size(A, 2) != size(B, 1) && throw(DimensionMismatch("size(A, 2) != size(B, 1)"))
-    return kron_a_id(A.A, B)
+function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractVector)
+    return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
+end
+
+function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractMatrix)
+    return mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), K, v)
+end
+
+function Base.:*(K::GeneralizedKroneckerProduct, D::Diagonal)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), K, D)
+end
+
+function Base.:*(D::Diagonal, K::GeneralizedKroneckerProduct)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), D, K)
+end
+
+function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
+    out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
+    return mul!(out, K', v.parent)'
+end
+
+function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
+    out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
+    return transpose(mul!(out, transpose(K), v.parent))
+end
+
+function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
+    out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
+    return transpose(mul!(out, transpose(K), transpose(v)))
+end
+
+function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractVector)
+    return ldiv!(Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K))), K, v)
+end
+
+function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractMatrix)
+    return ldiv!(Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), last(size(v))), K, v)
 end
 
 function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int}=nothing)
     A, B = getmatrices(K)
-    if dims == nothing
+    if dims === nothing
         s = zero(eltype(K))
         sumB = sum(B)
         return sum(sumB * A)

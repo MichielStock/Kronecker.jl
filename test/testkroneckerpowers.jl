@@ -25,6 +25,9 @@
         @test getmatrices(K1)[2] isa KroneckerPower
         @test order(getmatrices(K1)[2]) == 2
 
+        @test 3K1 ≈ 3K1dense ≈ K1 * 3
+        @test 9.2 * K2 ≈ 9.2K2dense ≈ K2 * 9.2
+
         @test !issymmetric(K1)
 
         @test collect(K1) ≈ K1dense

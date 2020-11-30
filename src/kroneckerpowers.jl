@@ -142,3 +142,23 @@ function Base.:*(K1::KroneckerPower{T,TA,N},
     end
     return KroneckerPower(K1.A * K2.A, N)
 end
+
+
+"""
+    lmul!(a::Number, K::KroneckerPower)
+
+Scale an `KroneckerPower` `K` inplace by a factor `a` by rescaling the matrix the base
+matrix with a factor `a^(1/N)`.
+
+It is recommended to rewrite your Kronecker product rather as `copy(A) ⊗ (A ⊗ n - 1)`
+(note the copy) for numerical stability. This will only modify the first matrix, leaving
+the chain of Kronecker products alone.
+"""
+function LinearAlgebra.lmul!(a::Number, K::KroneckerPower)
+    # will only work if eltype is some kind of float
+    #eltype(K) <: AbstractFloat || throw(InexactError)
+    n = order(K)
+    @warn "Inplace scaling of a Kronecker product, consider rewriting as `copy(A) ⊗ (A ⊗ $n - 1)`"
+    A = K.A
+    lmul!(a^(1 / n), A)
+end

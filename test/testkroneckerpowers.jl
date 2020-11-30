@@ -25,12 +25,29 @@
         @test getmatrices(K1)[2] isa KroneckerPower
         @test order(getmatrices(K1)[2]) == 2
 
+        # scaling
+        @test 3K1 ≈ 3K1dense ≈ K1 * 3
+        @test 9.2 * K2 ≈ 9.2K2dense ≈ K2 * 9.2
+
         @test !issymmetric(K1)
 
         @test collect(K1) ≈ K1dense
         @test collect!(similar(K2dense), K2) ≈ K2dense
 
         @test sum(K1) ≈ sum(K1dense)
+
+    end
+
+    @testset "Inplace scaling" begin
+        using LinearAlgebra: lmul!
+        K1copy = kronecker(copy(A), 3) 
+        K2copy = kronecker(copy(B), 3)
+
+        lmul!(2.7, K1copy)
+        @test_throws InexactError lmul!(2.3, K2copy)
+
+        @test K1copy ≈ 2.7K1dense
+
     end
 
     @testset "Linear algebra" begin

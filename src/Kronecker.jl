@@ -8,6 +8,7 @@ export ⊗, kronecker, ⊕, kroneckersum
 export CholeskyKronecker
 
 export isprob, naivesample, fastsample, sampleindices
+export SumOfKroneckers
 
 using LinearAlgebra, FillArrays
 import LinearAlgebra: mul!, lmul!, rmul!, pinv, ldiv!
@@ -25,5 +26,6 @@ include("eigen.jl")
 include("factorization.jl")
 include("kroneckergraphs.jl")
 include("names.jl")
+include("sums.jl")
 
 end # module

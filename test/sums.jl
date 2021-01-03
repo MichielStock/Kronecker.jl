@@ -26,5 +26,8 @@
     @test K * v ≈ Kdense * v
     @test K * V ≈ Kdense * V
 
+    @test 5 * K ≈ 5 * Kdense
+    @test K * 2.1 ≈ Kdense * 2.1
+
 
 end

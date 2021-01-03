@@ -42,6 +42,9 @@ Base.adjoint(K::SumOfKroneckers) = adjoint(K.KA) + adjoint(K.KB)
 Base.transpose(K::SumOfKroneckers) = transpose(K.KA) + transpose(K.KB)
 Base.conj(K::SumOfKroneckers) = conj(K.KA) + conj(K.KB)
 
+Base.:*(K::SumOfKroneckers, a::Number) = K.KA * a + K.KB * a
+Base.:*(a::Number, K::SumOfKroneckers) = a * K.KA + a * K.KB
+
 
 function Base.sum(K::SumOfKroneckers; dims::Union{Int,Nothing}=nothing)
     isnothing(dims) && return sum(K.KA) + sum(K.KB)

@@ -20,7 +20,7 @@ Given two matrices (subtype of `AbstractArray`) `A` and `B`, one can construct a
 - [in progress] GPU compatibility!
 - [in progress] Autodiff for machine learning models!
 
-Read the [documentation](https://michielstock.github.io/Kronecker.jl/latest/) to get the specifics.
+Read the [documentation](https://michielstock.github.io/Kronecker.jl/stable/) to get the specifics.
 
 ## Benchmarks
 
@@ -66,5 +66,4 @@ This is very much a work in progress! Please start an issue for bugs or requests
 
 ## Status `master` branch
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/dev/)[![Build Status](https://travis-ci.com/MichielStock/Kronecker.jl.svg?branch=master)](https://travis-ci.com/MichielStock/Kronecker.jl) [![Coverage Status](https://coveralls.io/repos/github/MichielStock/Kronecker.jl/badge.svg?branch=master)](https://coveralls.io/github/MichielStock/Kronecker.jl?branch=master) [![DOI](https://zenodo.org/badge/160198570.svg)](https://zenodo.org/badge/latestdoi/160198570)[![DOI](https://proceedings.juliacon.org/papers/10.21105/jcon.00015/status.svg)](https://doi.org/10.21105/jcon.00015)
-
+[![stable docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://michielstock.github.io/Kronecker.jl/stable/)[![dev docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://michielstock.github.io/Kronecker.jl/dev/)[![build status](https://github.com/MichielStock/Kronecker.jl/workflows/CI/badge.svg)](https://github.com/MichielStock/Kronecker.jl/actions?query=workflow%3ACI) [![coverage](http://codecov.io/github/MichielStock/Kronecker.jl/coverage.svg?branch=master)](http://codecov.io/github/MichielStock/Kronecker.jl?branch=master) [![DOI](https://zenodo.org/badge/160198570.svg)](https://zenodo.org/badge/latestdoi/160198570)[![JULIACON](https://proceedings.juliacon.org/papers/10.21105/jcon.00015/status.svg)](https://doi.org/10.21105/jcon.00015)

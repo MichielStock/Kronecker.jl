@@ -46,6 +46,21 @@ Base.:*(K::SumOfKroneckers, a::Number) = K.KA * a + K.KB * a
 Base.:*(a::Number, K::SumOfKroneckers) = a * K.KA + a * K.KB
 
 
+function Base.:*(K::KroneckerProduct{<:Any,<:SumOfKroneckers,<:AbstractMatrix}, V::VecOrMat)
+    A, B = getmatrices(K)
+    return (A.KA ⊗ B) * V .+ ((A.KB ⊗ B) * V)
+end
+
+function Base.:*(K::KroneckerProduct{<:Any,<:AbstractMatrix,<:SumOfKroneckers}, V::VecOrMat)
+    A, B = getmatrices(K)
+    return (A ⊗ B.KA) * V .+ (A ⊗ B.KB) * V
+end
+
+function Base.:*(K::KroneckerProduct{<:Any,<:SumOfKroneckers,<:SumOfKroneckers}, V::VecOrMat)
+    A, B = getmatrices(K)
+    return (A.KA ⊗ B.KA) * V .+ (A.KB ⊗ B.KB) * V .+ (A.KB ⊗ B.KA) * V .+ (A.KB ⊗ B.KB) * V 
+end
+
 function Base.sum(K::SumOfKroneckers; dims::Union{Int,Nothing}=nothing)
     isnothing(dims) && return sum(K.KA) + sum(K.KB)
     return sum(K.KA, dims=dims) + sum(K.KB, dims=dims)

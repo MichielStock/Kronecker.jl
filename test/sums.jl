@@ -29,5 +29,21 @@
     @test 5 * K ≈ 5 * Kdense
     @test K * 2.1 ≈ Kdense * 2.1
 
+    # recursive, kronecker products of Kronecker sums
+
+    Kl = (KA + KB) ⊗ C
+    Kr = C ⊗ (KA + KB)
+    Kb = ((B ⊗ C) + (B ⊗ C)) ⊗ ((B ⊗ C) + (B ⊗ C))
+
+    n = size(Kl, 2)
+    m = size(Kb, 2)
+
+    v = randn(n)
+    u = randn(m)
+
+    @test Kl * v ≈ collect(Kl) * v
+    @test Kr * v ≈ collect(Kr) * v
+    @test Kb * u ≈ collect(Kb) * u
+
 
 end

@@ -1,9 +1,9 @@
 @testset "sums" begin
 
     A = rand(10, 10)
-    B = rand(Bool, 5, 5)
+    B = rand(5, 5)
     C = randn(10, 10)
-    D = rand(1:100, 5, 5)
+    D = rand(1:10.0, 5, 5)
 
     KA = A ⊗ B
     KB = C ⊗ D
@@ -31,9 +31,17 @@
 
     # recursive, kronecker products of Kronecker sums
 
+
+    
     Kl = (KA + KB) ⊗ C
     Kr = C ⊗ (KA + KB)
     Kb = ((B ⊗ C) + (B ⊗ C)) ⊗ ((B ⊗ C) + (B ⊗ C))
+    
+    #=
+    Kl = kronecker(KA + KB, C)
+    Kr = kronecker(C, KA + KB) 
+    Kb = kronecker(kronecker(B, C) + kronecker(B, C), kronecker(B, C) + kronecker(B, C)) 
+    =#
 
     n = size(Kl, 2)
     m = size(Kb, 2)
@@ -41,9 +49,11 @@
     v = randn(n)
     u = randn(m)
 
+    
     @test Kl * v ≈ collect(Kl) * v
     @test Kr * v ≈ collect(Kr) * v
     @test Kb * u ≈ collect(Kb) * u
+    
 
 
 end

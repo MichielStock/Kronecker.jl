@@ -9,13 +9,15 @@ Sums of matrices (including a Kronecker type)
 =#
 
 """
-    SumOfKroneckers{T<:Any, TA<:GeneralizedKroneckerProduct, TB<:AbstractMatrix} <: GeneralizedKroneckerProduct{T}
+    SumOfKroneckers{T<:Any, TA<:GeneralizedKroneckerProduct,
+                            TB<:AbstractMatrix} <: GeneralizedKroneckerProduct{T}
 
 Sums of Kroneckers is a lazy sum of Kronecker terms (at least the first term has to be of the `GeneralizedKroneckerProduct` type).
 Its main use is to fascilitate the distributive property. All matrix properties that can be computed lazily are supported (such as
 `sum` and `adjoint`) while nonlinear operations are not (e.g., `inv`, `eigen`, `det`).
 """
-struct SumOfKroneckers{T<:Any, TA<:GeneralizedKroneckerProduct, TB<:AbstractMatrix} <: GeneralizedKroneckerProduct{T}
+struct SumOfKroneckers{T<:Any, TA<:GeneralizedKroneckerProduct,
+                            TB<:AbstractMatrix} <: GeneralizedKroneckerProduct{T}
     KA::TA
     KB::TB
     function SumOfKroneckers(KA::GeneralizedKroneckerProduct{T}, KB::AbstractMatrix{V}) where {T, V}

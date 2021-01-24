@@ -254,4 +254,24 @@ K3 = A ⊗ B ⊗ C
         compare_against_kron(K, k, x, X, y, Y)
     end
 
+    @testset "mixed products" begin
+        # square matrices
+        A = rand(5, 5)
+        B = rand(Bool, 5, 5)
+        C = rand(-10:10, 5, 5)
+        v = randn(5^3)
+
+        @test (A ⊗ B ⊗ C) * v ≈ collect(A ⊗ B ⊗ C) * v
+        @test (A ⊗ B ⊗ A) * v ≈ collect(A ⊗ B ⊗ A) * v
+        @test (B ⊗ B ⊗ C) * v ≈ collect(B ⊗ B ⊗ C) * v
+
+        # rectangular
+
+        A = rand(5, 5)
+        B = rand(Bool, 4, 5)
+        C = rand(-10:10, 5, 3)
+        v = randn(5*5*3)
+        @test (A ⊗ B ⊗ C) * v ≈ collect(A ⊗ B ⊗ C) * v
+        @test (C ⊗ B ⊗ A) * v ≈ collect(C ⊗ B ⊗ A) * v
+    end
 end

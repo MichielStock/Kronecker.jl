@@ -37,7 +37,7 @@ for N in (1, 2)
         end
 
         square_func! = Symbol("_kron_", op, "_fast_square!")
-        @eval function $square_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices::NTuple{M, MatrixOrFactorization{T3}}) where {T1,T2,T3,M}
+        @eval function $square_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2,M}
             ns::Vector{Int} = [size(m, 1) for m in matrices]
             i_left::Int = 1
             i_right::Int = prod(ns)

@@ -14,10 +14,10 @@ for N in (1, 2)
             op_expr_square = :(@views q[slc, :] = $op!(temp[1:n, :], m, q[slc, :]))
         end
 
-        @eval function $square_kernel!(temp::AbstractArray{T, $N}, q::AbstractArray{T, $N}, n::Int, i_left::Int, m::MatrixOrFactorization{T}, i_right::Int) where T
+        @eval function $square_kernel!(temp::AbstractArray{T1, $N}, q::AbstractArray{T2, $N}, n::Int, i_left::Int, m::MatrixOrFactorization{T3}, i_right::Int) where {T1,T2,T3}
             # apply kron(I(l), m, I(r)) where m is square to the given vector x, overwriting x in the process
 
-            if m isa Factorization || m isa Adjoint{T, <:Factorization} || m isa Transpose{T, <:Factorization} || m != I
+            if m isa Factorization || m isa Adjoint{T3, <:Factorization} || m isa Transpose{T3, <:Factorization} || m != I
                 # if matrix is the identity, skip matmul/div, unless it's some sort factorization, then proceed anyway
                 irc = i_right * n
 
@@ -37,7 +37,7 @@ for N in (1, 2)
         end
 
         square_func! = Symbol("_kron_", op, "_fast_square!")
-        @eval function $square_func!(out::AbstractArray{T, $N}, x::AbstractArray{T, $N}, matrices::NTuple{M, MatrixOrFactorization{T}}) where {T, M}
+        @eval function $square_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices::NTuple{M, MatrixOrFactorization{T3}}) where {T1,T2,T3,M}
             ns::Vector{Int} = [size(m, 1) for m in matrices]
             i_left::Int = 1
             i_right::Int = prod(ns)

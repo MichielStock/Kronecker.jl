@@ -1,9 +1,9 @@
 @testset "sums" begin
 
     A = rand(10, 10)
-    B = rand(5, 5)
+    B = rand(Bool, 5, 5)
     C = randn(10, 10)
-    D = rand(1:10.0, 5, 5)
+    D = rand(1:10, 5, 5)
 
     KA = A ⊗ B
     KB = C ⊗ D

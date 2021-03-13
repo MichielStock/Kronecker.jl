@@ -1,6 +1,6 @@
 # Factorization methods
 
-Many forms of matrix factorization such as eigenvalue decomposition, LU factorization, Cholesky factoization etc., can be computed efficiently. The decomposition of the Kronecker product is the Kronecker product of the decompositions. We have overloaded some of the factorization functions from `LinearAlgebra` to compute the factorization of instances of `AbstractKroneckerProduct`.
+Many forms of matrix factorization such as eigenvalue decomposition, LU factorization, Cholesky factorization etc., can be computed efficiently. The decomposition of the Kronecker product is the Kronecker product of the decompositions. We have overloaded some of the factorization functions from `LinearAlgebra` to compute the factorization of instances of `AbstractKroneckerProduct`.
 
 ## Eigenvalue decomposition
 
@@ -8,7 +8,7 @@ The function `eigen` of `LinearAlgebra` is overloaded to compute the decompositi
 
 The functions `det`, `logdet`, `inv` and `\` are overloaded the make use of this decomposition.
 
-The eigenvalue decompositon of matrices can be used to solve large systems of the form:
+The eigenvalue decomposition of matrices can be used to solve large systems of the form:
 
 ```math
 (A \otimes B + c\cdot I) \mathbf{x} = \mathbf{b}

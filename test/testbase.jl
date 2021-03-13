@@ -39,6 +39,13 @@
         @test K isa AbstractMatrix{Float64}
     end
 
+    @testset "Using vectors" begin
+        @test A ⊗ v ≈ kron(A, v)
+        @test v ⊗ B ≈ kron(v, B)
+        c = rand(1:10, 5)
+        @test all(c ⊗ v .≈ kron(c, v))
+    end
+
     # testing all linear algebra functions' behavior on square and non-square matrices
     function test_non_square_extensions()
         local n, m, A, B, K, M

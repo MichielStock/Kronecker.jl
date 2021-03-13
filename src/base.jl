@@ -56,6 +56,11 @@ Kronecker product explictly.
 """
 kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
 
+# version that have a vector as input reshape to matrices
+kronecker(A::AbstractVector, B::AbstractMatrix) = KroneckerProduct(reshape(A,:,1), B)
+kronecker(A::AbstractMatrix, B::AbstractVector) = KroneckerProduct(A, reshape(B,:,1))
+kronecker(A::AbstractVector, B::AbstractVector) = KroneckerProduct(reshape(A,:,1), reshape(B,:,1))
+
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)
 
@@ -64,7 +69,7 @@ Higher-order Kronecker lazy kronecker product, e.g.
 kronecker(A, B, C, D)
 ```
 """
-kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A,
+kronecker(A::AbstractVecOrMat, B::AbstractVecOrMat...) = kronecker(A,
                                                             kronecker(B...))
 
 """
@@ -73,8 +78,8 @@ kronecker(A::AbstractMatrix, B::AbstractMatrix...) = kronecker(A,
 Binary operator for `kronecker`, computes as Lazy Kronecker product. See
 `kronecker` for documentation.
 """
-⊗(A::AbstractMatrix, B::AbstractMatrix) = kronecker(A, B)
-⊗(A::AbstractMatrix...) = kronecker(A...)
+⊗(A::AbstractVecOrMat, B::AbstractVecOrMat) = kronecker(A, B)
+⊗(A::AbstractVecOrMat...) = kronecker(A...)
 
 """
     getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)

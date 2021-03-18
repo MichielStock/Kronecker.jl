@@ -12,4 +12,5 @@ using SparseArrays: AbstractSparseMatrix, SparseMatrixCSC, sprand,
     include("testkroneckersum.jl")
     include("testfactorization.jl")
     include("testkroneckergraphs.jl")
+    include("sums.jl")
 end

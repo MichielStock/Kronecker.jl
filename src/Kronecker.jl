@@ -14,6 +14,7 @@ import LinearAlgebra: mul!, lmul!, rmul!, pinv, ldiv!
 import Base: collect, *, getindex, size, eltype, inv, adjoint
 using SparseArrays
 using LinearAlgebra: checksquare
+using ChainRulesCore
 
 include("base.jl")
 include("kroneckerpowers.jl")
@@ -25,5 +26,6 @@ include("eigen.jl")
 include("factorization.jl")
 include("kroneckergraphs.jl")
 include("names.jl")
+include("chainrules.jl")
 
 end # module

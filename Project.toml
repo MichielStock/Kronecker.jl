@@ -4,6 +4,7 @@ authors = ["MichielStock <michielfmstock@gmail.com>"]
 version = "0.4.3"
 
 [deps]
+ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 FillArrays = "1a297f60-69ca-5386-bcde-b61e274b549b"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 NamedDims = "356022a1-0364-5f58-8944-0da4b18d706f"
@@ -19,8 +20,9 @@ julia = "1"
 [extras]
 PkgBenchmark = "32113eaa-f34f-5b0d-bd6c-c81e245fc73d"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 benchmark = ["PkgBenchmark"]
-test = ["Random", "Test"]
+test = ["Random", "Test", "Zygote"]

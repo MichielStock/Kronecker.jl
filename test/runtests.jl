@@ -1,4 +1,4 @@
-using Kronecker, Test, LinearAlgebra, Random, FillArrays
+using Kronecker, Test, LinearAlgebra, Random
 using SparseArrays: AbstractSparseMatrix, SparseMatrixCSC, sprand,
     sparse, issparse
 

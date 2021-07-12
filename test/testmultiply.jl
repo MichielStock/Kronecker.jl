@@ -76,8 +76,8 @@ K3 = A ⊗ B ⊗ C
         a, b, x = randn(rng, 30, 20), randn(rng, 40, 50), randn(rng, 1000, 1100)
 
         @test kron(a, b) * x ≈ (a ⊗ b) * x
-        @test kron(a, Eye(50)) * x ≈ (a ⊗ Eye(50)) * x
-        @test kron(Eye(20), b) * x ≈ (Eye(20) ⊗ b) * x
+        @test kron(a, Matrix(I, 50, 50)) * x ≈ (a ⊗ Matrix(I, 50, 50)) * x
+        @test kron(Matrix(I, 20, 20), b) * x ≈ (Matrix(I, 20, 20) ⊗ b) * x
     end
 
     @testset "sum" begin

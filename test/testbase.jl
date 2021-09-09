@@ -95,9 +95,11 @@
         test_non_square_extensions()
 
         # test power_by_squaring
-        A = reshape(1:4, 2,2)
-        K = kronecker(A, A)
-        @test (@inferred K^2) == K*K == kronecker(A^2, A^2)
+        local _m
+        local K2
+        _m = reshape(1:4, 2,2)
+        K2 = kronecker(_m, _m)
+        @test (@inferred K2^2) == K2*K2 == collect(K2)^2
     end
 
     @testset "Mismatch errors" begin

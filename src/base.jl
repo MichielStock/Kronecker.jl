@@ -89,7 +89,6 @@ Uses recursion if `K` is of an order greater than two.
 """
 function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     A, B = getmatrices(K)
-    m, n = size(A)
     k, l = size(B)
     return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
 end

@@ -12,6 +12,11 @@
     K = A ⊗ B
     K3 = kronecker(A, B, C)
 
+    L = kronecker(A, B .+ im)
+
+    Kc = collect(K)
+    K3c = collect(K3)
+
     X = kron(A, B)  # true result
 
     @testset "Types and basic properties" begin
@@ -154,6 +159,30 @@
         @test X + K ≈ X + Matrix(K)
     end
 
+    @testset "Arithmetic" begin
+        @test K + K ≈ Kc + Kc ≈ X + X
+        @test K + Kc ≈ Kc + K ≈ X + X
+        @test K + K + K ≈ Kc + Kc + Kc ≈ X + X + X
+        @test K3 + K3 ≈ K3c + K3c
+        @test K3 + K3 + K3 ≈ K3c + K3c + K3c
+
+        @test K - K ≈ Kc - Kc ≈ X - X
+        @test K - K - K ≈ Kc - Kc - Kc ≈ X - X - X
+        @test K3 - K3 ≈ K3c - K3c
+        @test K3 - K3 - K3 ≈ K3c - K3c - K3c
+
+        @test K - K + K ≈ Kc - Kc + Kc ≈ X - X + X
+        @test K + K - K ≈ Kc + Kc - Kc ≈ X - X + X
+        @test K - 2K + K ≈ Kc - 2Kc + Kc ≈ X - 2X + X
+        @test K + 2K - K ≈ Kc + 2Kc - Kc ≈ X + 2X - X
+        @test K3 - K3 + K3 ≈ K3c - K3c + K3c
+        @test K3 + K3 - K3 ≈ K3c + K3c - K3c
+
+        @test K + zero(K) ≈ Kc + zero(Kc) ≈ X + zero(X)
+
+        @test K + L ≈ L + K ≈ collect(K) + collect(L)
+    end
+
     @testset "Scalar multiplication" begin
         @test 3.0K ≈ 3.0X
         @test K * 2 ≈ 2X
@@ -161,6 +190,18 @@
         @test 3.0K isa AbstractKroneckerProduct
         @test K * 2 isa AbstractKroneckerProduct
         @test 2(K ⊗ K) isa AbstractKroneckerProduct
+    end
+
+    @testset "broadcasting" begin
+        @test K .+ K == 2 .* K == K .* 2 == K + K
+        @test K .+ reshape(K, size(K)..., 1) == Kc .+ reshape(Kc, size(Kc)..., 1)
+        @test K .- 2 .* K == -K
+        @test K .+ L == Kc + collect(L)
+        Kc .= K
+        @test all(Kc .== K)
+        @test K .+ Kc .- K == K
+        Kv = @view K[:,:]
+        @test K .+ Kv == 2K
     end
 
     @testset "Inplace scalar multiplication" begin

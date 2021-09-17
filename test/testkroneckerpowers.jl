@@ -40,7 +40,7 @@
 
     @testset "Inplace scaling" begin
         using LinearAlgebra: lmul!
-        K1copy = kronecker(copy(A), 3) 
+        K1copy = kronecker(copy(A), 3)
         K2copy = kronecker(copy(B), 3)
 
         lmul!(2.7, K1copy)
@@ -62,6 +62,23 @@
         As = A' * A
         @test det(⊗(As, 2)) ≈ det(kron(As, As))
         @test logdet(⊗(As, 2)) ≈ log(det(kron(As, As)))
+    end
+
+    @testset "inference in indexing" begin
+        @test (@inferred K2[1,1]) == K2dense[1,1]
+    end
+
+    @testset "arithmetic" begin
+        @test K2 + K2 == 2 * K2 == 2 * K2dense
+        @test K2 + K2 + K2 == 3 * K2 == 3 * K2dense
+        @test K2 - K2 == 0 * K2 == 0 * K2dense
+        @test K2 - K2 - K2 == -K2 == -K2dense
+    end
+
+    @testset "broadcasting" begin
+        @test K2 .+ K2 == 2 .* K2 == 2 .* K2dense
+        @test K2 .- K2 == 0 .* K2 == 0 .* K2dense
+        @test sin.(K2) == sin.(K2dense)
     end
 
 @testset "Mixed product" begin

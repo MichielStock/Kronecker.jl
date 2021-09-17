@@ -15,10 +15,10 @@ K = A ⊗ A ⊗ ... ⊗ A.
 """
 struct KroneckerPower{T<:Any,TA<:AbstractMatrix{T}, N} <: AbstractKroneckerProduct{T}
    A::TA
-   pow::Integer
+   pow::Int
    function KroneckerPower(A::AbstractMatrix{T}, pow::Integer) where {T}
       @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
-      return new{eltype(A), typeof(A), pow}(A, pow)
+      return new{eltype(A), typeof(A), Int(pow)}(A, Int(pow))
     end
 end
 

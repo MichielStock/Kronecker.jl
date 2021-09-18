@@ -13,7 +13,7 @@ Efficient way of storing Kronecker powers, e.g.
 
 K = A ⊗ A ⊗ ... ⊗ A.
 """
-struct KroneckerPower{T<:Any,TA<:AbstractMatrix{T}} <: AbstractKroneckerProduct{T}
+struct KroneckerPower{T,TA<:AbstractMatrix{T}} <: AbstractKroneckerProduct{T}
    A::TA
    pow::Int
    function KroneckerPower(A::AbstractMatrix, pow::Integer)
@@ -44,7 +44,6 @@ getmatrices(K::KroneckerPower) = (K.A, K.pow == 2 ? K.A : KroneckerPower(K.A, K.
 
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow
-Base.eltype(K::KroneckerPower{T}) where {T} = T
 issquare(K::KroneckerPower) = issquare(K.A)
 
 # SCALAR EQUIVALENTS FOR AbstractKroneckerProduct

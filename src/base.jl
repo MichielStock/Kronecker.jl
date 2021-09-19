@@ -48,6 +48,13 @@ struct KroneckerProduct{T<:Any, TA<:AbstractMatrix, TB<:AbstractMatrix} <: Abstr
     end
 end
 
+# conversion
+Base.convert(::Type{T}, K::KroneckerProduct) where {T<:KroneckerProduct} = K isa T ? K : T(K)
+function KroneckerProduct{T,TA,TB}(K::KroneckerProduct) where {T,TA,TB}
+    A, B = getmatrices(K)
+    KroneckerProduct(convert(TA, A), convert(TB, B))
+end
+
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)
 
@@ -419,4 +426,9 @@ end
 function Base.:*(K::AbstractKroneckerProduct, a::Number)
     A, B = getmatrices(K)
     kronecker(A, B * a)
+end
+
+function LinearAlgebra.power_by_squaring(K::KroneckerProduct, p::Integer)
+    A, B = getmatrices(K)
+    kronecker(A^p, B^p)
 end

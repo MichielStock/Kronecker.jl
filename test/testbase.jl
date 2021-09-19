@@ -93,6 +93,13 @@
         @test logdet(As ⊗ Bs) ≈ log(det(As ⊗ Bs)) ≈ log(det(kron(As, Bs)))
 
         test_non_square_extensions()
+
+        # test power_by_squaring
+        local _m
+        local K2
+        _m = reshape(1:4, 2,2)
+        K2 = kronecker(_m, _m)
+        @test (@inferred K2^2) == K2*K2 == collect(K2)^2
     end
 
     @testset "Mismatch errors" begin

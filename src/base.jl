@@ -214,7 +214,7 @@ function LinearAlgebra.det(K::AbstractKroneckerProduct{T}) where {T}
     if issquare(A) && issquare(B)
         m = size(A)[1]
         n = size(B)[1]
-        return det(K.A)^n * det(K.B)^m
+        return det(A)^n * det(B)^m
     else
         return zero(T)
     end

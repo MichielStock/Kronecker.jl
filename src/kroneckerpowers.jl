@@ -40,7 +40,7 @@ type.
 
 getallfactors(K::KroneckerPower) = ntuple(_ -> K.A, K.pow)
 
-getmatrices(K::KroneckerPower) = (K.A, K.pow == 2 ? K.A : KroneckerPower(K.A, K.pow-1))
+getmatrices(K::KroneckerPower) = (K.pow == 2 ? K.A : KroneckerPower(K.A, K.pow-1), K.A)
 
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow

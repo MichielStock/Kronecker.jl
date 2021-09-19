@@ -21,9 +21,9 @@
 
         @test order(K1) == 3
 
-        @test getmatrices(K1)[1] === A
-        @test getmatrices(K1)[2] isa KroneckerPower
-        @test order(getmatrices(K1)[2]) == 2
+        @test getmatrices(K1)[1] isa KroneckerPower
+        @test getmatrices(K1)[2] === A
+        @test order(getmatrices(K1)[1]) == 2
 
         # scaling
         @test 3K1 ≈ 3K1dense ≈ K1 * 3
@@ -63,6 +63,17 @@
         @test det(⊗(As, 2)) ≈ det(kron(As, As))
         @test logdet(⊗(As, 2)) ≈ log(det(kron(As, As)))
     end
+
+    @testset "Multiplication" begin
+        # product between two Kronecker powers
+        @test K1 * K2 ≈ K1dense * K2dense
+        # power
+        @test K1^4 ≈ K1dense^4
+        # mixed product
+        @test K1 * (A ⊗ B ⊗ A) ≈ (A ⊗ A ⊗ A) * (A ⊗ B ⊗ A)
+        @test (A ⊗ B' ⊗ A) * K1 ≈ (A ⊗ B' ⊗ A) * (A ⊗ A ⊗ A)
+    end
+
 
 @testset "Mixed product" begin
 

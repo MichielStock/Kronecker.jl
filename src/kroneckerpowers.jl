@@ -13,12 +13,12 @@ Efficient way of storing Kronecker powers, e.g.
 
 K = A ⊗ A ⊗ ... ⊗ A.
 """
-struct KroneckerPower{T<:Any,TA<:AbstractMatrix{T}, N} <: AbstractKroneckerProduct{T}
+struct KroneckerPower{T,TA<:AbstractMatrix{T}} <: AbstractKroneckerProduct{T}
    A::TA
    pow::Int
-   function KroneckerPower(A::AbstractMatrix{T}, pow::Integer) where {T}
+   function KroneckerPower(A::AbstractMatrix, pow::Integer)
       @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
-      return new{eltype(A), typeof(A), Int(pow)}(A, Int(pow))
+      return new{eltype(A), typeof(A)}(A, Int(pow))
     end
 end
 
@@ -38,15 +38,12 @@ type.
 """
 ⊗(A::AbstractMatrix, pow::Integer) = kronecker(A, pow)
 
-getallfactors(K::KroneckerPower{T,TA,N}) where {T,TA,N} = ntuple(_ -> K.A, K.pow)
+getallfactors(K::KroneckerPower) = ntuple(_ -> K.A, K.pow)
 
-getmatrices(K::KroneckerPower{T,TA,N}) where {T,TA,N} = (K.A, KroneckerPower(K.A, K.pow-1))
-getmatrices(K::KroneckerPower{T,TA,2}) where {T,TA} = (K.A, K.A)
-getmatrices(K::KroneckerPower{T,TA,1}) where {T,TA} = (K.A, )
+getmatrices(K::KroneckerPower) = (K.pow == 2 ? K.A : KroneckerPower(K.A, K.pow-1), K.A)
 
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A).^K.pow
-Base.eltype(K::KroneckerPower{T,TA,N}) where {T,TA,N} = T
 issquare(K::KroneckerPower) = issquare(K.A)
 
 # SCALAR EQUIVALENTS FOR AbstractKroneckerProduct
@@ -135,12 +132,12 @@ function Base.conj(K::KroneckerPower)
 end
 
 # mixed-product property
-function Base.:*(K1::KroneckerPower{T,TA,N},
-                        K2::KroneckerPower{S,TB,N}) where {T,TA,S,TB,N}
+function Base.:*(K1::KroneckerPower, K2::KroneckerPower)
+    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
     if size(K1, 2) != size(K2, 1)
         throw(DimensionMismatch("Mismatch between K1 and K2"))
     end
-    return KroneckerPower(K1.A * K2.A, N)
+    return KroneckerPower(K1.A * K2.A, K1.pow)
 end
 
 

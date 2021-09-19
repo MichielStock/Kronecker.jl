@@ -31,7 +31,8 @@ is defined.
 """
 function collect(K::GeneralizedKroneckerProduct{T}) where {T}
     C = Matrix{T}(undef, size(K)...)
-    return collect!(C, K)
+    collect!(C, K)
+    return C
 end
 
 
@@ -97,7 +98,7 @@ Uses recursion if `K` is of an order greater than two.
 function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     A, B = getmatrices(K)
     k, l = size(B)
-    return A[cld(i1, k), cld(i2, l)] * B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]
+    return (A[cld(i1, k), cld(i2, l)]::eltype(A)) * (B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]::eltype(B))
 end
 
 
@@ -123,6 +124,9 @@ getmatrices(K::AbstractKroneckerProduct) = (K.A, K.B)
 Returns a matrix itself. Needed for recursion.
 """
 getmatrices(A::AbstractArray) = (A,)
+
+firstmatrix(K::AbstractKroneckerProduct) = first(getmatrices(K))
+lastmatrix(K::AbstractKroneckerProduct) = last(getmatrices(K))
 
 """
     size(K::AbstractKroneckerProduct)
@@ -323,13 +327,15 @@ function collect(K::AbstractKroneckerProduct)
 end
 =#
 
+_maybecollect(A::GeneralizedKroneckerProduct) = collect(A)
+_maybecollect(A::AbstractArray) = A
 
 # function for in-place Kronecker product
 function _kron!(C::AbstractArray, A::AbstractArray, B::AbstractArray)
-    m = 0
-    @inbounds for j = 1:size(A,2), l = 1:size(B,2), i = 1:size(A,1)
+    m = first(LinearIndices(C)) - 1
+    @inbounds for j = axes(A,2), l = axes(B,2), i = axes(A,1)
         Aij = A[i,j]
-        for k = 1:size(B,1)
+        for k = axes(B,1)
             C[m += 1] = Aij * B[k,l]
         end
     end
@@ -340,16 +346,48 @@ _kron!(C::AbstractArray, A::GeneralizedKroneckerProduct, B::AbstractArray) = _kr
 _kron!(C::AbstractArray, A::AbstractArray, B::GeneralizedKroneckerProduct) = _kron!(C, A, collect(B))
 _kron!(C::AbstractArray, A::GeneralizedKroneckerProduct, B::GeneralizedKroneckerProduct) = _kron!(C, collect(A), collect(B))
 
+@inline function _kron!(C::AbstractArray, As::Tuple{AbstractArray, Vararg{AbstractArray}}, Bs::Tuple{AbstractArray, Vararg{AbstractArray}}, f = identity)
+    m = first(LinearIndices(C)) - 1
+    A1 = first(As)
+    B1 = first(Bs)
+    for j = axes(A1,2), l = axes(B1,2), i = axes(A1,1)
+        Aijs = map(A -> A[i,j], As)
+        for k = 1:size(Bs[1],1)
+            Bkls = map(B -> B[k,l], Bs)
+            Aijs_times_Bkls = map(*, Aijs, Bkls)
+            C[m += 1] = f(Aijs_times_Bkls...)
+        end
+    end
+    return C
+end
+
 """
     collect!(C::AbstractMatrix, K::AbstractKroneckerProduct)
 
 In-place collection of `K` in `C` where `K` is an `AbstractKroneckerProduct`, i.e.,
-`K = A ⊗ B`.
+`K = A ⊗ B`. This is equivalent to the broadcasted assignment `C .= K`.
+
+    collect!(f, C::AbstractMatrix, K1::AbstractKroneckerProduct, Ks::AbstractKroneckerProduct...)
+
+Evaluate `f.(K1, Ks...)` and assign it in-place to `C`. This is equivalent to the broadcasted
+operation `C .= f.(K1, Ks...)`.
 """
 function collect!(C::AbstractMatrix, K::AbstractKroneckerProduct)
     size(C) == size(K) || throw(DimensionMismatch("`K` $(size(K)) cannot be collected in `C` $(size(C))"))
     A, B = getmatrices(K)
     return _kron!(C, A, B)
+end
+
+@inline function collect!(f, C::AbstractMatrix, K1::AbstractKroneckerProduct, Ks::AbstractKroneckerProduct...)
+    @noinline throwdm(K1sz, Csz) = throw(DimensionMismatch("`K` $K1sz cannot be collected in `C` $Csz"))
+    size(C) == size(K1) || throwdm(size(K1), size(C))
+    for K in Ks
+        size(C) == size(K) || throwdm(size(K), size(C))
+    end
+    Ks_all = (K1, Ks...)
+    As = map(x -> first(getmatrices(x)), Ks_all)
+    Bs = map(x -> last(getmatrices(x)), Ks_all)
+    return _kron!(C, As, Bs, f)
 end
 
 
@@ -361,11 +399,71 @@ Converts a `GeneralizedKroneckerProduct` instance to a Matrix type.
 Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
 function Base.:+(A::AbstractKroneckerProduct, B::StridedMatrix)
-    C = Matrix(A)
+    T = promote_type(eltype(A), eltype(B))
+    C = similar(Array{T}, size(A))
+    C .= A
     C .+= B
     return C
 end
 Base.:+(A::StridedMatrix, B::AbstractKroneckerProduct) = B + A
+
+function Base.:+(A::AbstractKroneckerProduct, B1::AbstractKroneckerProduct, Brest::AbstractKroneckerProduct...)
+    Bs = (B1, Brest...)
+    for B in Bs
+        Base.promote_shape(A, B) # check size compatibility
+    end
+    # special methods to handle kronecker products with singleton matrices
+    # if one matrix is common to all products, we only need to add the other matrix
+    if all(x -> firstmatrix(x) === firstmatrix(A), Bs)
+        K1 = kronecker(firstmatrix(A), +(lastmatrix(A), map(lastmatrix, Bs)...))
+        return collect(K1)
+    elseif all(x -> lastmatrix(x) === lastmatrix(A), Bs)
+        K2 = kronecker(+(firstmatrix(A), map(firstmatrix, Bs)...), lastmatrix(A))
+        return collect(K2)
+    end
+    # if the sizes of the component matrices are compatible, the operation may be
+    # short-circuited
+    sa = map(size, getmatrices(A))
+    if all(x -> map(size, getmatrices(x)) == sa, Bs)
+        return broadcast(+, A, Bs...)
+    end
+    # collect the arrrays before adding to avoid indexing into the kronecker products
+    return +(collect(A), map(collect, Bs)...)
+end
+
+function Base.:-(A::AbstractKroneckerProduct, B::StridedMatrix)
+    T = promote_type(eltype(A), eltype(B))
+    C = similar(Array{T}, size(A))
+    C .= A
+    C .-= B
+    return C
+end
+function Base.:-(A::StridedMatrix, B::AbstractKroneckerProduct)
+    T = promote_type(eltype(A), eltype(B))
+    C = similar(Array{T}, size(A))
+    @. C = -B
+    C .+= A
+    return C
+end
+
+function Base.:-(A::AbstractKroneckerProduct, B::AbstractKroneckerProduct)
+    # special methods to handle kronecker products with singleton matrices
+    # if one matrix is common to all products, we only need to add the other matrix
+    if firstmatrix(B) === firstmatrix(A)
+        K1 = kronecker(firstmatrix(A), lastmatrix(A) - lastmatrix(B))
+        return collect(K1)
+    elseif lastmatrix(B) === lastmatrix(A)
+        K2 = kronecker(firstmatrix(A) - firstmatrix(B), lastmatrix(A))
+        return collect(K2)
+    end
+    # if the sizes of the component matrices are compatible, the operation may be
+    # short-circuited
+    if map(size, getmatrices(A)) == map(size, getmatrices(B))
+        return A .- B
+    end
+    # collect the arrrays before subtracting to avoid indexing into the kronecker products
+    return collect(A) - collect(B)
+end
 
 function Base.kron(K::AbstractKroneckerProduct, C::AbstractMatrix)
     A, B = getmatrices(K)
@@ -431,4 +529,67 @@ end
 function LinearAlgebra.power_by_squaring(K::KroneckerProduct, p::Integer)
     A, B = getmatrices(K)
     kronecker(A^p, B^p)
+end
+
+# Broadcasting machinery
+
+Base.copyto!(dest::AbstractMatrix, K::AbstractKroneckerProduct) = collect!(dest, K)
+
+struct AbsKronProdStyle <: Broadcast.AbstractArrayStyle{2} end
+AbsKronProdStyle(::Val{N}) where {N} = Broadcast.DefaultArrayStyle{N}()
+AbsKronProdStyle(::Val{2}) = AbsKronProdStyle()
+
+Base.BroadcastStyle(::Type{<:AbstractKroneckerProduct}) = AbsKronProdStyle()
+
+function Base.similar(bc::Broadcast.Broadcasted{AbsKronProdStyle}, ::Type{T}) where {T}
+    similar(Array{T}, axes(bc))
+end
+
+@inline function Base.copyto!(dest::AbstractArray, bc::Broadcast.Broadcasted{AbsKronProdStyle})
+    @noinline throwdm(axdest, axsrc) =
+        throw(DimensionMismatch("destination axes $axdest are not compatible with source axes $axsrc"))
+    axes(dest) == axes(bc) || throwdm(axes(dest), axes(bc))
+    # Some common cases that may be short-circuited
+    # Case 1, example: A .= B
+    if bc.args isa Tuple{AbstractKroneckerProduct}
+        A = bc.args[1]
+        collect!(bc.f, dest, A)
+        return dest
+    # Case 2, example: 2 .* B
+    elseif bc.args isa Tuple{Number, AbstractKroneckerProduct}
+        A = last(bc.args)
+        n = first(bc.args)
+        collect!(let n = n; x -> bc.f(n, x); end, dest, A)
+        return dest
+    # Case 3, example: B .* 2
+    elseif bc.args isa Tuple{AbstractKroneckerProduct, Number}
+        A = first(bc.args)
+        n = last(bc.args)
+        collect!(let n = n; x -> bc.f(x, n); end, dest, A)
+        return dest
+    end
+    # An operation like K1 .+ K2 may be short-circuited if the component matrices
+    # have the same size.
+    bcf = Broadcast.flatten(bc)
+    if all(x -> x isa AbstractKroneckerProduct, bcf.args)
+        sz1 = map(size, getmatrices(bcf.args[1]))
+        if all(x -> map(size, getmatrices(x)) == sz1, bcf.args[2:end])
+            collect!(bcf.f, dest, bcf.args...)
+            return dest
+        end
+    elseif all(x -> x isa Union{AbstractKroneckerProduct, StridedArray}, bcf.args)
+        # Performance is better if the kronecker products are collected before the
+        # broadcasted operation is performed, although this incurs allocations
+        broadcast!(bcf.f, dest, map(_maybecollect, bcf.args)...)
+        return dest
+    end
+    # The general case that indexes into each array.
+    # This may be slow as indexing into an AbstractKroneckerProduct is expensive
+    bc′ = Broadcast.preprocess(dest, bc)
+    # Performance may vary depending on whether `@inbounds` is placed outside the
+    # for loop or not. (cf. https://github.com/JuliaLang/julia/issues/38086)
+    @inbounds @simd for I in eachindex(bc′)
+        dest[I] = bc′[I]
+    end
+    return dest
 end

@@ -550,18 +550,18 @@ end
         throw(DimensionMismatch("destination axes $axdest are not compatible with source axes $axsrc"))
     axes(dest) == axes(bc) || throwdm(axes(dest), axes(bc))
     # Some common cases that may be short-circuited
-    # Example of case 1: A .= B
+    # Case 1, example: A .= B
     if bc.args isa Tuple{AbstractKroneckerProduct}
         A = bc.args[1]
         collect!(bc.f, dest, A)
         return dest
-    # Example of case 2: A .= 2.*B
+    # Case 2, example: 2 .* B
     elseif bc.args isa Tuple{Number, AbstractKroneckerProduct}
         A = last(bc.args)
         n = first(bc.args)
         collect!(let n = n; x -> bc.f(n, x); end, dest, A)
         return dest
-    # Example of case 3: A .= B.*2
+    # Case 3, example: B .* 2
     elseif bc.args isa Tuple{AbstractKroneckerProduct, Number}
         A = first(bc.args)
         n = last(bc.args)
@@ -572,8 +572,8 @@ end
     # have the same size.
     bcf = Broadcast.flatten(bc)
     if all(x -> x isa AbstractKroneckerProduct, bcf.args)
-        sz1 = size.(getmatrices(bcf.args[1]))
-        if all(x -> size.(getmatrices(x)) == sz1, bcf.args[2:end])
+        sz1 = map(size, getmatrices(bcf.args[1]))
+        if all(x -> map(size, getmatrices(x)) == sz1, bcf.args[2:end])
             collect!(bcf.f, dest, bcf.args...)
             return dest
         end

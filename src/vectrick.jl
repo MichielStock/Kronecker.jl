@@ -209,6 +209,11 @@ function Base.:*(D::Diagonal, K::GeneralizedKroneckerProduct)
     return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), D, K)
 end
 
+# special multiplication methods for Kronecker products
+Base.:*(K::KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}, v::AbstractVector) = Diagonal(K) * v
+Base.:*(K::KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}, D::Diagonal) = Diagonal(K) * D
+Base.:*(D::Diagonal, K::KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}) = D * Diagonal(K)
+
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return mul!(out, K', v.parent)'

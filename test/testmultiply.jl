@@ -274,4 +274,19 @@ K3 = A ⊗ B ⊗ C
         @test (A ⊗ B ⊗ C) * v ≈ collect(A ⊗ B ⊗ C) * v
         @test (C ⊗ B ⊗ A) * v ≈ collect(C ⊗ B ⊗ A) * v
     end
+
+    @testset "diagonal kronecker product" begin
+        D1 = Diagonal(ones(3));
+        D2 = Diagonal(ones(3).*2);
+        K = kronecker(D1, D1);
+        @testset "with diagonal" begin
+            D = kron(D2, D2);
+            @test K*D == collect(K) * collect(D)
+            @test D*K == collect(D) * collect(K)
+        end
+        @testset "with vector" begin
+            v = [i for i in axes(K, 2)];
+            @test K*v == collect(K)*v
+        end
+    end
 end

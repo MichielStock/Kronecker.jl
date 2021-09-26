@@ -312,6 +312,14 @@ function Base.conj(K::AbstractKroneckerProduct)
     return kronecker(conj(A), conj(B))
 end
 
+function LinearAlgebra.diag(K::KroneckerProduct)
+    A, B = getmatrices(K)
+    if issquare(A) && issquare(B)
+        return kron(diag(K.A), diag(K.B))
+    end
+    return K[diagind(K)]
+end
+
 # COLLECTING
 
 #=

@@ -64,6 +64,7 @@
         @test collect!(similar(M), K) ≈ M
         @test tr(K) ≈ tr(M)
         @test det(K) ≈ 0
+        @test diag(K) ≈ diag(M)
         @test logdet(K) ≈ -Inf
         @test !isposdef(K)
         @test !issymmetric(K)
@@ -91,6 +92,7 @@
         @test conj(K) ≈ conj(X)
         @test K' ≈ X'
         @test inv(K) ≈ inv(X)
+        @test diag(K) ≈ diag(X)
 
         # test on pos def functions
         As = A' * A

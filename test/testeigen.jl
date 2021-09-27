@@ -67,12 +67,13 @@ end
     A = rand(3,3); B = rand(4, 4);
     K = kronecker(A, B);
     Kd = kron(A, B);
-    @test eigvals(K) ≈ eigvals(Kd)
+    sort_lexicographic(v) = sort!(v, by = x -> (real(x), imag(x)))
+    @test sort_lexicographic(eigvals(K)) ≈ sort_lexicographic(eigvals(Kd))
     if VERSION >= v"1.6"
         @test real(eigvals(K, sortby = real)) ≈ real(eigvals(Kd, sortby = real)) atol=1e-14 rtol=1e-8
     end
     A = rand(2,3); B = rand(3, 2);
     K = kronecker(A, B);
     Kd = kron(A, B);
-    @test eigvals(K) ≈ eigvals(Kd)
+    @test sort_lexicographic(eigvals(K)) ≈ sort_lexicographic(eigvals(Kd))
 end

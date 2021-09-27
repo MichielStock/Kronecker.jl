@@ -276,7 +276,7 @@ K3 = A ⊗ B ⊗ C
     end
 
     @testset "diagonal kronecker product" begin
-        D1 = Diagonal(ones(3));
+        D1 = Diagonal(ones(Int, 3));
         K = kronecker(D1, D1);
         K3 = kronecker(D1, 3);
         Kdense = kron(D1, D1);
@@ -286,7 +286,7 @@ K3 = A ⊗ B ⊗ C
             @test K3 * K3 == K3dense * K3dense
         end
         @testset "with diagonal" begin
-            D2 = Diagonal(ones(3).*2);
+            D2 = Diagonal(ones(Int, 3).*2);
             D = kron(D2, D2);
             D3 = kron(D2, D2, D2);
             for (_K, _Kdense, _D) in Any[(K, Kdense, D), (K3, K3dense, D3)]

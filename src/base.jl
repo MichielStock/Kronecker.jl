@@ -454,6 +454,14 @@ function Base.:-(A::StridedMatrix, B::AbstractKroneckerProduct)
     return C
 end
 
+const KronProdDiagonal = KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}
+for T in [:Diagonal, :UniformScaling]
+    @eval Base.:+(K::KronProdDiagonal, D::$T) = Diagonal(K) + D
+    @eval Base.:+(D::$T, K::KronProdDiagonal) = D + Diagonal(K)
+    @eval Base.:-(K::KronProdDiagonal, D::$T) = Diagonal(K) - D
+    @eval Base.:-(D::$T, K::KronProdDiagonal) = D - Diagonal(K)
+end
+
 function Base.:-(A::AbstractKroneckerProduct, B::AbstractKroneckerProduct)
     # special methods to handle kronecker products with singleton matrices
     # if one matrix is common to all products, we only need to add the other matrix

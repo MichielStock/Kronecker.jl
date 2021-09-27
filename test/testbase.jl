@@ -183,6 +183,21 @@
         @test K + zero(K) ≈ Kc + zero(Kc) ≈ X + zero(X)
 
         @test K + L ≈ L + K ≈ collect(K) + collect(L)
+
+        @testset "add/subtract digonal and kronecker product" begin
+            D1 = Diagonal(1:3);
+            K = kronecker(D1, D1);
+            Kc = collect(K);
+            D2 = kron(D1, D1);
+            @test K + D2 == Kc + D2
+            @test D2 + K == D2 + Kc
+            @test K + I == Kc + I
+            @test I + K == I + Kc
+            @test K - D2 == Kc - D2
+            @test D2 - K == D2 - Kc
+            @test I - K == I - Kc
+            @test K - I == Kc - I
+        end
     end
 
     @testset "Scalar multiplication" begin

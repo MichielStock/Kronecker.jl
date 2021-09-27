@@ -8,6 +8,10 @@
     K1dense = kron(A, A, A)
     K2dense = kron(B, B, B)
 
+    C = [1 2; 3 4]
+    KC = kronecker(C, 3)
+    KCdense = kron(C, C, C)
+
     @testset "Types and basic properties" begin
 
         @test K1 isa AbstractKroneckerProduct
@@ -57,6 +61,11 @@
         @test conj(K1) ≈ conj(K1dense)
         @test K1' ≈ K1dense'
         @test inv(K1) ≈ inv(K1dense)
+
+        @test diag(K1) ≈ diag(K1dense)
+        @test diag(K2) == diag(K2dense)
+        @test diag(KC) == diag(KCdense)
+
 
         # test on pos def functions
         As = A' * A

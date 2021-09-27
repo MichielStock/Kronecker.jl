@@ -104,6 +104,14 @@ function LinearAlgebra.pinv(K::KroneckerPower)
     return KroneckerPower(pinv(K.A), K.pow)
 end
 
+function LinearAlgebra.diag(K::KroneckerPower)
+    if issquare(K.A)
+        d = reshape(diag(K.A), :, 1)
+        return vec(reduce(kron, fill(d, order(K))))
+    end
+    return K[diagind(K)]
+end
+
 """
     adjoint(K::KroneckerPower)
 

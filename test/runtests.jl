@@ -2,7 +2,13 @@ using Kronecker, Test, LinearAlgebra, Random
 using SparseArrays: AbstractSparseMatrix, SparseMatrixCSC, sprand,
     sparse, issparse
 
+using Aqua
+@testset "project quality" begin
+    Aqua.test_all(Kronecker, ambiguities=false)
+end
+
 @testset "Kronecker" begin
+
     include("testbase.jl")
     include("testkroneckerpowers.jl")
     include("testnames.jl")

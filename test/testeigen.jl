@@ -62,3 +62,11 @@ end
     end
     test_non_square_extension()
 end
+
+@testset "eigvals" begin
+    A = rand(3,3); B = rand(4, 4);
+    K = kronecker(A, B);
+    Kd = kron(A, B);
+    @test eigvals(K) ≈ eigvals(Kd)
+    @test real(eigvals(K, sortby = real)) ≈ real(eigvals(Kd, sortby = real)) atol=1e-14 rtol=1e-8
+end

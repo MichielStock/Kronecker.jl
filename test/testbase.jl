@@ -107,6 +107,9 @@
         _m = reshape(1:4, 2,2)
         K2 = kronecker(_m, _m)
         @test (@inferred K2^2) == K2*K2 == collect(K2)^2
+
+        @test svdvals(K) ≈ svdvals(Kc) ≈ svdvals(X)
+        @test rank(K) == rank(Kc) == rank(X)
     end
 
     @testset "Mismatch errors" begin

@@ -281,6 +281,10 @@ K3 = A ⊗ B ⊗ C
         K3 = kronecker(D1, 3);
         Kdense = kron(D1, D1);
         K3dense = kron(D1, D1, D1);
+        @testset "with kronecker" begin
+            @test K * K == Kdense * Kdense
+            @test K3 * K3 == K3dense * K3dense
+        end
         @testset "with diagonal" begin
             D2 = Diagonal(ones(3).*2);
             D = kron(D2, D2);
@@ -306,6 +310,12 @@ K3 = A ⊗ B ⊗ C
             v = [i for i in axes(K, 2)];
             @test K*v == Kdense*v
         end
+        @testset "with adjoint" begin
+            vadj = [i for i in axes(K, 1)]'
+            @test vadj * K == vadj * Kdense
+            vt = transpose([i for i in axes(K, 1)])
+            @test vt * K == vt * Kdense
+        end
     end
 
     @testset "multiplication with structured matrices" begin
@@ -317,12 +327,12 @@ K3 = A ⊗ B ⊗ C
                 ML = reshape(1:size(_K, 1)^2, size(_K, 1), size(_K, 1))
                 MR = reshape(1:size(_K, 2)^2, size(_K, 2), size(_K, 2))
                 LL = LowerTriangular(ML)
-                UL = LowerTriangular(ML)
+                UL = UpperTriangular(ML)
                 for _M in [LL, UL]
                     @test _M * _K == collect(_M) * collect(_K)
                 end
                 LR = LowerTriangular(MR)
-                UR = LowerTriangular(MR)
+                UR = UpperTriangular(MR)
                 for _M in [LR, UR]
                     @test _K * _M == collect(_K) * collect(_M)
                 end

@@ -140,12 +140,19 @@ function Base.conj(K::KroneckerPower)
 end
 
 # mixed-product property
-function Base.:*(K1::KroneckerPower, K2::KroneckerPower)
-    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
+function _mulmixed(K1::KroneckerPower, K2::KroneckerPower)
     if size(K1, 2) != size(K2, 1)
         throw(DimensionMismatch("Mismatch between K1 and K2"))
     end
     return KroneckerPower(K1.A * K2.A, K1.pow)
+end
+function Base.:*(K1::KroneckerPower, K2::KroneckerPower)
+    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
+    _mulmixed(K1, K2)
+end
+function Base.:*(K1::KroneckerPower{<:Any, <:Diagonal}, K2::KroneckerPower{<:Any, <:Diagonal})
+    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
+    _mulmixed(K1, K2)
 end
 
 

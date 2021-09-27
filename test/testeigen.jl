@@ -68,5 +68,11 @@ end
     K = kronecker(A, B);
     Kd = kron(A, B);
     @test eigvals(K) ≈ eigvals(Kd)
-    @test real(eigvals(K, sortby = real)) ≈ real(eigvals(Kd, sortby = real)) atol=1e-14 rtol=1e-8
+    if VERSION >= v"1.6"
+        @test real(eigvals(K, sortby = real)) ≈ real(eigvals(Kd, sortby = real)) atol=1e-14 rtol=1e-8
+    end
+    A = rand(2,3); B = rand(3, 2);
+    K = kronecker(A, B);
+    Kd = kron(A, B);
+    @test eigvals(K) ≈ eigvals(Kd)
 end

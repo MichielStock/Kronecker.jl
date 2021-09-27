@@ -12,15 +12,15 @@ Otherwise, it collects the instance and runs eigen on the full matrix.
 The functions, `\\`, `inv`, and `logdet` are overloaded to efficiently work
 with this type.
 """
-function eigen(K::AbstractKroneckerProduct)
+function eigen(K::AbstractKroneckerProduct; kw...)
     checksquare(K)
     A, B = getmatrices(K)
     if issquare(A) && issquare(B)
-        A_λ, A_Γ = eigen(A)
-        B_λ, B_Γ = eigen(B)
+        A_λ, A_Γ = eigen(A; kw...)
+        B_λ, B_Γ = eigen(B; kw...)
         return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
     else
-        return eigen(Matrix(K))
+        return eigen(Matrix(K); kw...)
     end
 end
 
@@ -38,7 +38,7 @@ function LinearAlgebra.eigvals(K::AbstractKroneckerProduct; kw...)
         end
         return λ
     else
-        return eigvals(Matrix(K))
+        return eigvals(Matrix(K); kw...)
     end
 end
 

@@ -202,17 +202,29 @@ function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractMatrix)
 end
 
 function Base.:*(K::GeneralizedKroneckerProduct, D::Diagonal)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), K, D)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), K, D)
+end
+
+function Base.:*(K::GeneralizedKroneckerProduct, D::LinearAlgebra.AbstractTriangular)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), K, D)
 end
 
 function Base.:*(D::Diagonal, K::GeneralizedKroneckerProduct)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), D, K)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), D, K)
+end
+function Base.:*(D::LinearAlgebra.AbstractTriangular, K::GeneralizedKroneckerProduct)
+    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), D, K)
 end
 
-# special multiplication methods for Kronecker products
-Base.:*(K::KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}, v::AbstractVector) = Diagonal(K) * v
-Base.:*(K::KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}, D::Diagonal) = Diagonal(K) * D
-Base.:*(D::Diagonal, K::KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}) = D * Diagonal(K)
+# special multiplication methods for Kronecker products of Diagonal matrices
+# It's usually better to convert these to Diagonal to use optimized multiplication methods
+const KroneckerDiagonal = Union{KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}, KroneckerPower{<:Any, <:Diagonal}}
+Base.:*(K::KroneckerDiagonal, v::AbstractVector) = Diagonal(K) * v
+Base.:*(K::KroneckerDiagonal, D::Diagonal) = Diagonal(K) * D
+Base.:*(K::KroneckerDiagonal, M::LinearAlgebra.AbstractTriangular) = Diagonal(K) * M
+Base.:*(K::KroneckerDiagonal, M::AbstractMatrix) = Diagonal(K) * M
+Base.:*(D::Diagonal, K::KroneckerDiagonal) = D * Diagonal(K)
+Base.:*(M::LinearAlgebra.AbstractTriangular, K::KroneckerDiagonal) = M * Diagonal(K)
 
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))

@@ -197,34 +197,25 @@ function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
 end
 
-function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractMatrix)
-    return mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), K, v)
-end
+const MulMatTypes = [:Diagonal, :AbstractTriangular, :AbstractMatrix]
 
-function Base.:*(K::GeneralizedKroneckerProduct, D::Diagonal)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), K, D)
-end
-
-function Base.:*(K::GeneralizedKroneckerProduct, D::LinearAlgebra.AbstractTriangular)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), K, D)
-end
-
-function Base.:*(D::Diagonal, K::GeneralizedKroneckerProduct)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), D, K)
-end
-function Base.:*(D::LinearAlgebra.AbstractTriangular, K::GeneralizedKroneckerProduct)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)), D, K)
+for T in MulMatTypes
+    @eval function Base.:*(K::GeneralizedKroneckerProduct, M::$T)
+        return mul!(Matrix{promote_type(eltype(M), eltype(K))}(undef, size(K, 1), size(M, 2)), K, M)
+    end
+    @eval function Base.:*(M::$T, K::GeneralizedKroneckerProduct)
+        return mul!(Matrix{promote_type(eltype(K), eltype(M))}(undef, size(M, 1), size(K, 2)), M, K)
+    end
 end
 
 # special multiplication methods for Kronecker products of Diagonal matrices
 # It's usually better to convert these to Diagonal to use optimized multiplication methods
 const KroneckerDiagonal = Union{KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}, KroneckerPower{<:Any, <:Diagonal}}
 Base.:*(K::KroneckerDiagonal, v::AbstractVector) = Diagonal(K) * v
-Base.:*(K::KroneckerDiagonal, D::Diagonal) = Diagonal(K) * D
-Base.:*(K::KroneckerDiagonal, M::LinearAlgebra.AbstractTriangular) = Diagonal(K) * M
-Base.:*(K::KroneckerDiagonal, M::AbstractMatrix) = Diagonal(K) * M
-Base.:*(D::Diagonal, K::KroneckerDiagonal) = D * Diagonal(K)
-Base.:*(M::LinearAlgebra.AbstractTriangular, K::KroneckerDiagonal) = M * Diagonal(K)
+for T in MulMatTypes
+    @eval Base.:*(K::KroneckerDiagonal, D::$T) = Diagonal(K) * D
+    @eval Base.:*(D::$T, K::KroneckerDiagonal) = D * Diagonal(K)
+end
 
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))

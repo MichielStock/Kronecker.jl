@@ -13,7 +13,7 @@ using LinearAlgebra
 import LinearAlgebra: mul!, lmul!, rmul!, pinv, ldiv!
 import Base: collect, *, getindex, size, eltype, inv, adjoint
 using SparseArrays
-using LinearAlgebra: checksquare
+using LinearAlgebra: checksquare, AbstractTriangular
 
 include("base.jl")
 include("kroneckerpowers.jl")

@@ -197,16 +197,23 @@ function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)
 end
 
-function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractMatrix)
-    return mul!(Matrix{promote_type(eltype(v), eltype(K))}(undef, first(size(K)), last(size(v))), K, v)
+# explicit list of types that need to be disambiguated against
+const MulMatTypes = [:Diagonal, :AbstractTriangular]
+
+for T in [MulMatTypes; :AbstractMatrix]
+    @eval function Base.:*(K::GeneralizedKroneckerProduct, M::$T)
+        return mul!(Matrix{promote_type(eltype(M), eltype(K))}(undef, size(K, 1), size(M, 2)), K, M)
+    end
+end
+for T in MulMatTypes
+    @eval function Base.:*(M::$T, K::GeneralizedKroneckerProduct)
+        return mul!(Matrix{promote_type(eltype(K), eltype(M))}(undef, size(M, 1), size(K, 2)), M, K)
+    end
 end
 
-function Base.:*(K::GeneralizedKroneckerProduct, D::Diagonal)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), K, D)
-end
-
-function Base.:*(D::Diagonal, K::GeneralizedKroneckerProduct)
-    return mul!(Matrix{promote_type(eltype(K), eltype(D))}(undef, size(K)...), D, K)
+function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
+    out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
+    return transpose(mul!(out, transpose(K), transpose(v)))
 end
 
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
@@ -219,9 +226,19 @@ function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::GeneralizedKroneck
     return transpose(mul!(out, transpose(K), v.parent))
 end
 
-function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
-    out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
-    return transpose(mul!(out, transpose(K), transpose(v)))
+# special multiplication methods for Kronecker products of Diagonal matrices
+# It's usually better to convert these to Diagonal to use optimized multiplication methods
+# instead of using the vec trick
+const KroneckerDiagonal = Union{KronProdDiagonal, KronPowDiagonal}
+Base.:*(K::KroneckerDiagonal, v::AbstractVector) = Diagonal(K) * v
+Base.:*(K1::KroneckerDiagonal, K2::KroneckerDiagonal) = kronecker(map(*, getallfactors(K1), getallfactors(K2))...)
+for T in [MulMatTypes; :AbstractMatrix]
+    @eval Base.:*(K::KroneckerDiagonal, D::$T) = Diagonal(K) * D
+    @eval Base.:*(D::$T, K::KroneckerDiagonal) = D * Diagonal(K)
+end
+
+for T in [:Adjoint, :Transpose]
+    @eval Base.:*(A::$T{<:Number, <:AbstractVector}, K::KroneckerDiagonal) = A * Diagonal(K)
 end
 
 function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractVector)

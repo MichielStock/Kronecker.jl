@@ -312,6 +312,14 @@ function Base.conj(K::AbstractKroneckerProduct)
     return kronecker(conj(A), conj(B))
 end
 
+function LinearAlgebra.diag(K::KroneckerProduct)
+    A, B = getmatrices(K)
+    if issquare(A) && issquare(B)
+        return kron(diag(K.A), diag(K.B))
+    end
+    return K[diagind(K)]
+end
+
 # COLLECTING
 
 #=
@@ -444,6 +452,14 @@ function Base.:-(A::StridedMatrix, B::AbstractKroneckerProduct)
     @. C = -B
     C .+= A
     return C
+end
+
+const KronProdDiagonal = KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}
+for T in [:Diagonal, :UniformScaling]
+    @eval Base.:+(K::KronProdDiagonal, D::$T) = Diagonal(K) + D
+    @eval Base.:+(D::$T, K::KronProdDiagonal) = D + Diagonal(K)
+    @eval Base.:-(K::KronProdDiagonal, D::$T) = Diagonal(K) - D
+    @eval Base.:-(D::$T, K::KronProdDiagonal) = D - Diagonal(K)
 end
 
 function Base.:-(A::AbstractKroneckerProduct, B::AbstractKroneckerProduct)

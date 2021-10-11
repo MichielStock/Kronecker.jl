@@ -104,6 +104,14 @@ function LinearAlgebra.pinv(K::KroneckerPower)
     return KroneckerPower(pinv(K.A), K.pow)
 end
 
+function LinearAlgebra.diag(K::KroneckerPower)
+    if issquare(K.A)
+        d = reshape(diag(K.A), :, 1)
+        return vec(reduce(kron, fill(d, order(K))))
+    end
+    return K[diagind(K)]
+end
+
 """
     adjoint(K::KroneckerPower)
 
@@ -132,14 +140,28 @@ function Base.conj(K::KroneckerPower)
 end
 
 # mixed-product property
-function Base.:*(K1::KroneckerPower, K2::KroneckerPower)
-    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
+function _mulmixed(K1::KroneckerPower, K2::KroneckerPower)
     if size(K1, 2) != size(K2, 1)
         throw(DimensionMismatch("Mismatch between K1 and K2"))
     end
     return KroneckerPower(K1.A * K2.A, K1.pow)
 end
+function Base.:*(K1::KroneckerPower, K2::KroneckerPower)
+    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
+    _mulmixed(K1, K2)
+end
+const KronPowDiagonal = KroneckerPower{<:Any, <:Diagonal}
+function Base.:*(K1::KronPowDiagonal, K2::KronPowDiagonal)
+    K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
+    _mulmixed(K1, K2)
+end
 
+for T in [:Diagonal, :UniformScaling]
+    @eval Base.:+(K::KronPowDiagonal, D::$T) = Diagonal(K) + D
+    @eval Base.:+(D::$T, K::KronPowDiagonal) = D + Diagonal(K)
+    @eval Base.:-(K::KronPowDiagonal, D::$T) = Diagonal(K) - D
+    @eval Base.:-(D::$T, K::KronPowDiagonal) = D - Diagonal(K)
+end
 
 """
     lmul!(a::Number, K::KroneckerPower)

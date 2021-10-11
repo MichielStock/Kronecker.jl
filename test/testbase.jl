@@ -64,6 +64,7 @@
         @test collect!(similar(M), K) ≈ M
         @test tr(K) ≈ tr(M)
         @test det(K) ≈ 0
+        @test diag(K) ≈ diag(M)
         @test logdet(K) ≈ -Inf
         @test !isposdef(K)
         @test !issymmetric(K)
@@ -91,6 +92,7 @@
         @test conj(K) ≈ conj(X)
         @test K' ≈ X'
         @test inv(K) ≈ inv(X)
+        @test diag(K) ≈ diag(X)
 
         # test on pos def functions
         As = A' * A
@@ -181,6 +183,22 @@
         @test K + zero(K) ≈ Kc + zero(Kc) ≈ X + zero(X)
 
         @test K + L ≈ L + K ≈ collect(K) + collect(L)
+
+        @testset "add/subtract digonal and kronecker product" begin
+            local D1, K, Kc, D2
+            D1 = Diagonal(1:3);
+            K = kronecker(D1, D1);
+            Kc = collect(K);
+            D2 = kron(D1, D1);
+            @test K + D2 == Kc + D2
+            @test D2 + K == D2 + Kc
+            @test K + I == Kc + I
+            @test I + K == I + Kc
+            @test K - D2 == Kc - D2
+            @test D2 - K == D2 - Kc
+            @test I - K == I - Kc
+            @test K - I == Kc - I
+        end
     end
 
     @testset "Scalar multiplication" begin

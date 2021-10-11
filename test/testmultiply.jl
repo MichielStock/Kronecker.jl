@@ -274,4 +274,69 @@ K3 = A ⊗ B ⊗ C
         @test (A ⊗ B ⊗ C) * v ≈ collect(A ⊗ B ⊗ C) * v
         @test (C ⊗ B ⊗ A) * v ≈ collect(C ⊗ B ⊗ A) * v
     end
+
+    @testset "diagonal kronecker product" begin
+        D1 = Diagonal(ones(Int, 3));
+        K = kronecker(D1, D1);
+        K3 = kronecker(D1, 3);
+        Kdense = kron(D1, D1);
+        K3dense = kron(D1, D1, D1);
+        @testset "with kronecker" begin
+            @test K * K == Kdense * Kdense
+            @test K3 * K3 == K3dense * K3dense
+        end
+        @testset "with diagonal" begin
+            D2 = Diagonal(ones(Int, 3).*2);
+            D = kron(D2, D2);
+            D3 = kron(D2, D2, D2);
+            for (_K, _Kdense, _D) in Any[(K, Kdense, D), (K3, K3dense, D3)]
+                _Kcollect = collect(_K)
+                @test _K * _D == _Kdense*_D == _Kcollect * collect(_D)
+                @test _D * _K == _Kdense*_D == collect(_D) * _Kcollect
+            end
+        end
+        @testset "with triangular" begin
+            for (_K, _Kdense) in Any[(K, Kdense), (K3, K3dense)]
+                L = LowerTriangular(reshape(1:length(_K), size(_K)))
+                U = UpperTriangular(reshape(1:length(_K), size(_K)))
+                _Kcollect = collect(_K)
+                for M in [L, U]
+                    @test _K * M == _Kcollect * collect(M) == _Kdense * M
+                    @test M * _K == collect(M) * _Kcollect == M * _Kdense
+                end
+            end
+        end
+        @testset "with vector" begin
+            v = [i for i in axes(K, 2)];
+            @test K*v == Kdense*v
+        end
+        @testset "with adjoint" begin
+            vadj = [i for i in axes(K, 1)]'
+            @test vadj * K == vadj * Kdense
+            vt = transpose([i for i in axes(K, 1)])
+            @test vt * K == vt * Kdense
+        end
+    end
+
+    @testset "multiplication with structured matrices" begin
+        for m in [2, 3]
+            M = reshape([1:2m;], 2, m)
+            K = kronecker(M, M)
+            K3 = kronecker(M, 3)
+            for _K in [K, K3]
+                ML = reshape(1:size(_K, 1)^2, size(_K, 1), size(_K, 1))
+                MR = reshape(1:size(_K, 2)^2, size(_K, 2), size(_K, 2))
+                LL = LowerTriangular(ML)
+                UL = UpperTriangular(ML)
+                for _M in [LL, UL]
+                    @test _M * _K == collect(_M) * collect(_K)
+                end
+                LR = LowerTriangular(MR)
+                UR = UpperTriangular(MR)
+                for _M in [LR, UR]
+                    @test _K * _M == collect(_K) * collect(_M)
+                end
+            end
+        end
+    end
 end

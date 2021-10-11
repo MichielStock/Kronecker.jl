@@ -1,62 +1,62 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Kronecker sums · Kronecker.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../basic/">Kronecker.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../basic/">Basic use</a></li><li><a class="tocitem" href="../types/">Types</a></li><li><a class="tocitem" href="../multiplication/">Multiplication</a></li><li><a class="tocitem" href="../factorization/">Factorization methods</a></li><li><a class="tocitem" href="../indexed/">Indexed Kronecker products</a></li><li class="is-active"><a class="tocitem" href>Kronecker sums</a></li><li><a class="tocitem" href="../kroneckerpowers/">Kronecker powers and graphs</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Kronecker sums</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Kronecker sums</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/MichielStock/Kronecker.jl/blob/master/docs/src/man/kroneckersums.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Kronecker-sums"><a class="docs-heading-anchor" href="#Kronecker-sums">Kronecker sums</a><a id="Kronecker-sums-1"></a><a class="docs-heading-anchor-permalink" href="#Kronecker-sums" title="Permalink"></a></h1><p>A Kronecker sum between two square matrices of the same size is defined as</p><p class="math-container">\[A \oplus B = A ⊗ I + I \oplus B\,.\]</p><p>To construct objects of the <code>KroneckerSum</code> type, one can either use <code>kroneckersum</code> or the binary operator <code>⊕</code>. Lazy Kronecker sums work like lazy Kronecker products, though there are far fewer methods to process these constructs efficiently. The most important property for Kronecker sums relates to matrix exponentiation:</p><p class="math-container">\[\exp(A \oplus B) = \exp(A) \otimes \exp(B)\,.\]</p><p>The function <code>collect</code> can be used to transform a <code>KroneckerSum</code> struct into a sparse array. It is recommended to make it &#39;dense&#39; this way before doing operations such as multiplication with a vector.</p><pre><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A, B = rand(Bool, 5, 5), rand(4, 4);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K = A ⊕ B</code><code class="nohighlight hljs ansi" style="display:block;">20×20 KroneckerSum{Float64,Array{Bool,2},Array{Float64,2}}:
- 0.557246  0.104477    0.449732  0.26735    …  0.0       0.0       0.0
- 0.120553  0.00401628  0.388289  0.0956047     0.0       0.0       0.0
- 0.136004  0.307563    0.880559  0.886995      0.0       0.0       0.0
- 0.501756  0.195521    0.984448  0.503804      0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.0       0.0       0.0
- 0.0       0.0         0.0       0.0        …  0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.0       0.0       0.0
- 1.0       0.0         0.0       0.0           0.0       0.0       0.0
- 0.0       1.0         0.0       0.0           0.0       0.0       0.0
- 0.0       0.0         1.0       0.0        …  0.0       0.0       0.0
- 0.0       0.0         0.0       1.0           0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.0       0.0       0.0
- 0.0       0.0         0.0       0.0        …  0.0       0.0       0.0
- 0.0       0.0         0.0       0.0           0.104477  0.449732  0.26735
- 0.0       0.0         0.0       0.0           1.00402   0.388289  0.0956047
- 0.0       0.0         0.0       0.0           0.307563  1.88056   0.886995
- 0.0       0.0         0.0       0.0           0.195521  0.984448  1.5038</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; exp(K)</code><code class="nohighlight hljs ansi" style="display:block;">20×20 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
- 2.04058   0.368461  1.45785   1.00486   …  0.0       0.0      0.0
- 0.317625  1.15247   0.916584  0.513667     0.0       0.0      0.0
- 0.860921  0.792298  3.76454   2.25083      0.0       0.0      0.0
- 1.22132   0.663822  2.74011   2.82119      0.0       0.0      0.0
- 0.0       0.0       0.0       0.0          0.0       0.0      0.0
- 0.0       0.0       0.0       0.0       …  0.0       0.0      0.0
- 0.0       0.0       0.0       0.0          0.0       0.0      0.0
- 0.0       0.0       0.0       0.0          0.0       0.0      0.0
- 2.51073   0.453355  1.79374   1.23638      0.0       0.0      0.0
- 0.390806  1.418     1.12777   0.632015     0.0       0.0      0.0
- 1.05928   0.974843  4.63188   2.76942   …  0.0       0.0      0.0
- 1.50272   0.816766  3.37143   3.47119      0.0       0.0      0.0
- 1.59966   0.288845  1.14284   0.787735     0.0       0.0      0.0
- 0.248994  0.903451  0.718531  0.402675     0.0       0.0      0.0
- 0.674896  0.621101  2.95111   1.76447      0.0       0.0      0.0
- 0.957424  0.520385  2.14804   2.21159   …  0.0       0.0      0.0
- 2.20376   0.397925  1.57442   1.08522      1.00158   3.96285  2.7315
- 0.343023  1.24463   0.989878  0.554742     3.13275   2.49153  1.39629
- 0.929763  0.855653  4.06556   2.43081      2.15369  10.2331   6.11838
- 1.31899   0.716904  2.95922   3.04678      1.80446   7.4484   7.66878</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; collect(K)</code><code class="nohighlight hljs ansi" style="display:block;">20×20 SparseArrays.SparseMatrixCSC{Float64,Int64} with 104 stored entries:
-  [1 ,  1]  =  0.557246
-  [2 ,  1]  =  0.120553
-  [3 ,  1]  =  0.136004
-  [4 ,  1]  =  0.501756
-  [9 ,  1]  =  1.0
-  [1 ,  2]  =  0.104477
-  [2 ,  2]  =  0.00401628
-  [3 ,  2]  =  0.307563
-  [4 ,  2]  =  0.195521
+ 0.145667  0.110896  0.267066  0.432688  …  0.0       0.0       0.0
+ 0.649959  0.323683  0.966107  0.926074     0.0       0.0       0.0
+ 0.997382  0.514104  0.903217  0.872442     0.0       0.0       0.0
+ 0.959926  0.401125  0.159289  0.501441     0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0       …  0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0       …  0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 1.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       1.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       1.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       1.0       …  0.0       0.0       0.0
+ 1.0       0.0       0.0       0.0          0.110896  0.267066  0.432688
+ 0.0       1.0       0.0       0.0          1.32368   0.966107  0.926074
+ 0.0       0.0       1.0       0.0          0.514104  1.90322   0.872442
+ 0.0       0.0       0.0       1.0          0.401125  0.159289  1.50144</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; exp(K)</code><code class="nohighlight hljs ansi" style="display:block;">20×20 Kronecker.KroneckerProduct{Float64,Array{Float64,2},Array{Float64,2}}:
+ 2.07368   0.533027  0.866759  …  0.0      0.0       0.0      0.0
+ 3.23291   2.6331    2.86285      0.0      0.0       0.0      0.0
+ 3.77805   1.87682   4.05851      0.0      0.0       0.0      0.0
+ 2.35624   1.08316   1.19988      0.0      0.0       0.0      0.0
+ 1.44307   0.370933  0.603177     0.0      0.0       0.0      0.0
+ 2.24978   1.83237   1.99226   …  0.0      0.0       0.0      0.0
+ 2.62914   1.30608   2.82431      0.0      0.0       0.0      0.0
+ 1.6397    0.753768  0.834996     0.0      0.0       0.0      0.0
+ 0.43452   0.111691  0.181621     0.0      0.0       0.0      0.0
+ 0.677426  0.551741  0.599884     0.0      0.0       0.0      0.0
+ 0.791654  0.393271  0.850422  …  0.0      0.0       0.0      0.0
+ 0.493727  0.226966  0.251424     0.0      0.0       0.0      0.0
+ 2.09336   0.538086  0.874985     0.0      0.0       0.0      0.0
+ 3.2636    2.65809   2.89002      0.0      0.0       0.0      0.0
+ 3.8139    1.89464   4.09702      0.0      0.0       0.0      0.0
+ 2.3786    1.09344   1.21127   …  0.0      0.0       0.0      0.0
+ 4.8538    1.24764   2.0288       5.35871  1.37742   2.23984  3.16605
+ 7.56718   6.16321   6.701        8.35434  6.80433   7.39805  8.58381
+ 8.84316   4.39303   9.49962      9.76305  4.85     10.4878   9.09989
+ 5.51517   2.53532   2.80853      6.08887  2.79905   3.10068  7.60963</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; collect(K)</code><code class="nohighlight hljs ansi" style="display:block;">20×20 SparseArrays.SparseMatrixCSC{Float64,Int64} with 108 stored entries:
+  [1 ,  1]  =  0.145667
+  [2 ,  1]  =  0.649959
+  [3 ,  1]  =  0.997382
+  [4 ,  1]  =  0.959926
+  [13,  1]  =  1.0
+  [17,  1]  =  1.0
+  [1 ,  2]  =  0.110896
+  [2 ,  2]  =  0.323683
+  [3 ,  2]  =  0.514104
   ⋮
-  [19, 18]  =  0.307563
-  [20, 18]  =  0.195521
-  [17, 19]  =  0.449732
-  [18, 19]  =  0.388289
-  [19, 19]  =  1.88056
-  [20, 19]  =  0.984448
-  [17, 20]  =  0.26735
-  [18, 20]  =  0.0956047
-  [19, 20]  =  0.886995
-  [20, 20]  =  1.5038</code></pre><article class="docstring"><header><a class="docstring-binding" id="Kronecker.kroneckersum" href="#Kronecker.kroneckersum"><code>Kronecker.kroneckersum</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">kroneckersum(A::AbstractMatrix, B::AbstractMatrix)</code></pre><p>Construct a sum of Kronecker products between two square matrices and their respective identity matrices. Does not evaluate the Kronecker products explicitly.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/d6e82e9a67ecd8f0ca683e648d6c3cc245c4a7fc/src/kroneckersum.jl#L17-L23">source</a></section><section><div><pre><code class="nohighlight hljs">kroneckersum(A::AbstractMatrix, B::AbstractMatrix...)</code></pre><p>Higher-order lazy kronecker sum, e.g.</p><pre><code class="nohighlight hljs">kroneckersum(A,B,C,D)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/d6e82e9a67ecd8f0ca683e648d6c3cc245c4a7fc/src/kroneckersum.jl#L26-L33">source</a></section><section><div><pre><code class="nohighlight hljs">kroneckersum(A::AbstractMatrix, pow::Int)</code></pre><p>Kronecker-sum power, computes <code>A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/d6e82e9a67ecd8f0ca683e648d6c3cc245c4a7fc/src/kroneckersum.jl#L36-L41">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.:⊕" href="#Kronecker.:⊕"><code>Kronecker.:⊕</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">⊕(A::AbstractMatrix, B::AbstractMatrix)</code></pre><p>Binary operator for <code>kroneckersum</code>, computes as Lazy Kronecker sum. See <code>kroneckersum</code> for documentation.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/d6e82e9a67ecd8f0ca683e648d6c3cc245c4a7fc/src/kroneckersum.jl#L52-L57">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.collect-Tuple{AbstractKroneckerSum}" href="#Base.collect-Tuple{AbstractKroneckerSum}"><code>Base.collect</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">collect(K::AbstractKroneckerSum)</code></pre><p>Collects a lazy instance of the <code>AbstractKroneckerSum</code> type into a full, native matrix. Returns the result as a sparse matrix.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/d6e82e9a67ecd8f0ca683e648d6c3cc245c4a7fc/src/kroneckersum.jl#L129-L134">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.exp" href="#Base.exp"><code>Base.exp</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">exp(K::AbstractKroneckerSum)</code></pre><p>Computes the matrix exponential of an <code>AbstractKroneckerSum</code> <code>K</code>. Returns an instance of <code>KroneckerProduct</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/d6e82e9a67ecd8f0ca683e648d6c3cc245c4a7fc/src/kroneckersum.jl#L191-L196">source</a></section></article><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)</code>. Check Documenter&#39;s build log for details.</p></div></div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../indexed/">« Indexed Kronecker products</a><a class="docs-footer-nextpage" href="../kroneckerpowers/">Kronecker powers and graphs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.6 on <span class="colophon-date" title="Sunday 19 September 2021 13:47">Sunday 19 September 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  [19, 18]  =  0.514104
+  [20, 18]  =  0.401125
+  [17, 19]  =  0.267066
+  [18, 19]  =  0.966107
+  [19, 19]  =  1.90322
+  [20, 19]  =  0.159289
+  [17, 20]  =  0.432688
+  [18, 20]  =  0.926074
+  [19, 20]  =  0.872442
+  [20, 20]  =  1.50144</code></pre><article class="docstring"><header><a class="docstring-binding" id="Kronecker.kroneckersum" href="#Kronecker.kroneckersum"><code>Kronecker.kroneckersum</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">kroneckersum(A::AbstractMatrix, B::AbstractMatrix)</code></pre><p>Construct a sum of Kronecker products between two square matrices and their respective identity matrices. Does not evaluate the Kronecker products explicitly.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/720596a08aaa4843a18b8e1bc79dadff983b674a/src/kroneckersum.jl#L17-L23">source</a></section><section><div><pre><code class="nohighlight hljs">kroneckersum(A::AbstractMatrix, B::AbstractMatrix...)</code></pre><p>Higher-order lazy kronecker sum, e.g.</p><pre><code class="nohighlight hljs">kroneckersum(A,B,C,D)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/720596a08aaa4843a18b8e1bc79dadff983b674a/src/kroneckersum.jl#L26-L33">source</a></section><section><div><pre><code class="nohighlight hljs">kroneckersum(A::AbstractMatrix, pow::Int)</code></pre><p>Kronecker-sum power, computes <code>A ⊕ A ⊕ ... ⊕ A = (A ⊗ I ⊗ ... ⊗ I) + (I ⊗ A ⊗ ... ⊗ I) + ... (I ⊗ I ⊗ ... A)</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/720596a08aaa4843a18b8e1bc79dadff983b674a/src/kroneckersum.jl#L36-L41">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.:⊕" href="#Kronecker.:⊕"><code>Kronecker.:⊕</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">⊕(A::AbstractMatrix, B::AbstractMatrix)</code></pre><p>Binary operator for <code>kroneckersum</code>, computes as Lazy Kronecker sum. See <code>kroneckersum</code> for documentation.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/720596a08aaa4843a18b8e1bc79dadff983b674a/src/kroneckersum.jl#L52-L57">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.collect-Tuple{AbstractKroneckerSum}" href="#Base.collect-Tuple{AbstractKroneckerSum}"><code>Base.collect</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">collect(K::AbstractKroneckerSum)</code></pre><p>Collects a lazy instance of the <code>AbstractKroneckerSum</code> type into a full, native matrix. Returns the result as a sparse matrix.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/720596a08aaa4843a18b8e1bc79dadff983b674a/src/kroneckersum.jl#L129-L134">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.exp" href="#Base.exp"><code>Base.exp</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">exp(K::AbstractKroneckerSum)</code></pre><p>Computes the matrix exponential of an <code>AbstractKroneckerSum</code> <code>K</code>. Returns an instance of <code>KroneckerProduct</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/720596a08aaa4843a18b8e1bc79dadff983b674a/src/kroneckersum.jl#L191-L196">source</a></section></article><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)</code>. Check Documenter&#39;s build log for details.</p></div></div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../indexed/">« Indexed Kronecker products</a><a class="docs-footer-nextpage" href="../kroneckerpowers/">Kronecker powers and graphs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.7 on <span class="colophon-date" title="Monday 11 October 2021 13:24">Monday 11 October 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

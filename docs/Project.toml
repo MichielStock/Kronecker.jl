@@ -5,3 +5,4 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [compat]
 Documenter = "0.25, 0.26, 0.27"
+Kronecker = "0.5"

@@ -37,7 +37,7 @@ for N in (1, 2)
         end
 
         square_func! = Symbol("_kron_", op, "_fast_square!")
-        @eval function $square_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2,M}
+        @eval function $square_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2}
             ns::Vector{Int} = [size(m, 1) for m in matrices]
             i_left::Int = 1
             i_right::Int = prod(ns)
@@ -105,7 +105,7 @@ for N in (1, 2)
         rect_func! = Symbol("_kron_", op, "_fast_rect!")
         ri = (op == :mul) ? 1 : 2
         ci = (op == :mul) ? 2 : 1
-        @eval function $rect_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2,M}
+        @eval function $rect_func!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2}
             r::Vector{Int} = [size(m, $ri) for m in matrices]
             c::Vector{Int} = [size(m, $ci) for m in matrices]
             i_left::Int = 1
@@ -130,7 +130,7 @@ for N in (1, 2)
         end
     end
 
-    @eval function _kronsum_mul_fast!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2,M}
+    @eval function _kronsum_mul_fast!(out::AbstractArray{T1, $N}, x::AbstractArray{T2, $N}, matrices) where {T1,T2}
         ns::Vector{Int} = [size(m, 1) for m in matrices]
         i_left::Int = 1
         i_right::Int = prod(ns)

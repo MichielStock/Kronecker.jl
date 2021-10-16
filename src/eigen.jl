@@ -1,5 +1,5 @@
 using LinearAlgebra: Eigen
-import LinearAlgebra: eigen, \, det, logdet, inv
+import LinearAlgebra: eigen, eigvals, \, det, logdet, inv
 import Base: +
 
 """
@@ -12,15 +12,33 @@ Otherwise, it collects the instance and runs eigen on the full matrix.
 The functions, `\\`, `inv`, and `logdet` are overloaded to efficiently work
 with this type.
 """
-function eigen(K::AbstractKroneckerProduct)
+function eigen(K::AbstractKroneckerProduct; kw...)
     checksquare(K)
     A, B = getmatrices(K)
     if issquare(A) && issquare(B)
-        A_λ, A_Γ = eigen(A)
-        B_λ, B_Γ = eigen(B)
+        A_λ, A_Γ = eigen(A; kw...)
+        B_λ, B_Γ = eigen(B; kw...)
         return Eigen(kron(A_λ, B_λ), kronecker(A_Γ, B_Γ))
     else
-        return eigen(Matrix(K))
+        return eigen(Matrix(K); kw...)
+    end
+end
+
+function LinearAlgebra.eigvals(K::AbstractKroneckerProduct; kw...)
+    checksquare(K)
+    A, B = getmatrices(K)
+    if issquare(A) && issquare(B)
+        λA = eigvals(A; kw...)
+        λB = eigvals(B; kw...)
+        λ = kron(λA, λB)
+        # sort in lexicographic order by default
+        sortby = get(kw, :sortby, x -> (real(x), imag(x)))
+        if sortby !== nothing
+            sort!(λ, by = sortby)
+        end
+        return λ
+    else
+        return eigvals(Matrix(K); kw...)
     end
 end
 
@@ -28,7 +46,7 @@ end
 +(A::UniformScaling, E::Eigen) = E + A
 
 """
-    function collect(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
+    collect(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
 
 Collects eigenvalue decomposition of a `AbstractKroneckerProduct` type into a
 matrix.
@@ -46,7 +64,7 @@ end
 """
     logdet(K::Eigen)
 
-Compute the logarithm of the determinant of the eigenvalue decomp of aKronecker
+Compute the logarithm of the determinant of the eigenvalue decomp of a Kronecker
 product.
 """
 logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = sum(log, E.values)
@@ -54,7 +72,7 @@ logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = sum(log, E.va
 """
     inv(K::Eigen)
 
-Compute the inverse of the eigenvalue decomp of aKronecker product. Returns
+Compute the inverse of the eigenvalue decomp of a Kronecker product. Returns
 another type of `Eigen`.
 """
 inv(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = Eigen(inv.(E.values), E.vectors)

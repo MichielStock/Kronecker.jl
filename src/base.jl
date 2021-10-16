@@ -547,6 +547,18 @@ function LinearAlgebra.power_by_squaring(K::KroneckerProduct, p::Integer)
     kronecker(A^p, B^p)
 end
 
+function LinearAlgebra.svdvals(K::KroneckerProduct)
+    A, B = getmatrices(K)
+    σA = svdvals(A)
+    σB = svdvals(B)
+    σ = sort!(kron(σA, σB), rev = true)
+    n = minimum(size(K))
+    if length(σ) < n
+        append!(σ, zeros(eltype(σ), n - length(σ)))
+    end
+    return σ
+end
+
 # Broadcasting machinery
 
 Base.copyto!(dest::AbstractMatrix, K::AbstractKroneckerProduct) = collect!(dest, K)

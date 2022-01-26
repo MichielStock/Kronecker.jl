@@ -1,4 +1,4 @@
-Index = AbstractVector{I} where I <: Integer
+Index = AbstractVector{I} where {I<:Integer}
 
 struct IndexedKroneckerProduct{T<:Any,TK<:AbstractKroneckerProduct} <: GeneralizedKroneckerProduct{T}
     K::TK
@@ -7,7 +7,7 @@ struct IndexedKroneckerProduct{T<:Any,TK<:AbstractKroneckerProduct} <: Generaliz
     r
     t
     function IndexedKroneckerProduct(K::AbstractKroneckerProduct, p::Index, q::Index, r::Index,
-                            t::Index)
+        t::Index)
         if order(K) != 2
             throw(DimensionMismatch(
                 "Indexed Kronecker only implemented for second order Kronecker systems"
@@ -44,13 +44,10 @@ Base.size(K::IndexedKroneckerProduct) = (length(K.p), length(K.t))
 function Base.getindex(K::IndexedKroneckerProduct, i::Int, j::Int)
     A, B = getmatrices(K)
     p, q, r, t = getindices(K)
-    return B[p[i],r[j]] * A[q[i],t[j]]
+    return B[p[i], r[j]] * A[q[i], t[j]]
 end
 
 function Base.getindex(K::AbstractKroneckerProduct, p::Index, q::Index, r::Index, t::Index)
-    N, M = getmatrices(K)
-    a, b = size(M)
-    c, d = size(N)
     return IndexedKroneckerProduct(K, p, q, r, t)
 end
 
@@ -81,19 +78,19 @@ function genvectrick!(M, N, v, u, p, q, r, t)
     @assert maximum(p) ≤ a && maximum(q) ≤ c
     @assert maximum(r) ≤ b && maximum(t) ≤ d
     u .= 0  # reset for inplace
-    if a * e + d * f < c * e + b *f
+    if a * e + d * f < c * e + b * f
         # compute T = VM'
         T = zeros(eltype(v), d, a)
         @simd for h in 1:e
             i, j = r[h], t[h]
             @simd for k in 1:a
-                @inbounds T[j,k] += v[h] * M[k,i]
+                @inbounds T[j, k] += v[h] * M[k, i]
             end
         end
         @simd for h in 1:f
             i, j = p[h], q[h]
             @simd for k in 1:d
-                @inbounds u[h] += N[j,k] * T[k,i]
+                @inbounds u[h] += N[j, k] * T[k, i]
             end
         end
     else
@@ -102,13 +99,13 @@ function genvectrick!(M, N, v, u, p, q, r, t)
         @simd for h in 1:e
             i, j = r[h], t[h]
             @simd for k in 1:c
-                @inbounds S[k,j] += v[h] * N[k,j]
+                @inbounds S[k, j] += v[h] * N[k, j]
             end
         end
         @simd for h in 1:f
             i, j = p[h], q[h]
             @simd for k in 1:b
-                @inbounds u[h] += S[j,k] * M[i,k]
+                @inbounds u[h] += S[j, k] * M[i, k]
             end
         end
     end

@@ -51,12 +51,12 @@ end
 Collects eigenvalue decomposition of a `AbstractKroneckerProduct` type into a
 matrix.
 """
-function collect(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
+function collect(E::Eigen{<:Number,<:Number,<:AbstractKroneckerProduct})
     λ, Γ = E
     return Γ * Diagonal(λ) * Γ'
 end
 
-function \(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}, v::AbstractVector{<:Number})
+function \(E::Eigen{<:Number,<:Number,<:AbstractKroneckerProduct}, v::AbstractVector{<:Number})
     λ, Γ = E
     return Γ * (Diagonal(λ) \ (Γ' * v))
 end
@@ -67,7 +67,7 @@ end
 Compute the logarithm of the determinant of the eigenvalue decomp of a Kronecker
 product.
 """
-logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = sum(log, E.values)
+logdet(E::Eigen{<:Number,<:Number,<:AbstractKroneckerProduct}) = sum(log, E.values)
 
 """
     inv(K::Eigen)
@@ -75,4 +75,4 @@ logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = sum(log, E.va
 Compute the inverse of the eigenvalue decomp of a Kronecker product. Returns
 another type of `Eigen`.
 """
-inv(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct}) = Eigen(inv.(E.values), E.vectors)
+inv(E::Eigen{<:Number,<:Number,<:AbstractKroneckerProduct}) = Eigen(inv.(E.values), E.vectors)

@@ -44,7 +44,7 @@ product (but is still light in memory use). Consider using `fastsample`.
 """
 function naivesample(P::AbstractKroneckerProduct)
     @assert isprob(P) throw(DomainError(
-                            "All values of K should be between 0 and 1"))
+        "All values of K should be between 0 and 1"))
     G = spzeros(Bool, size(P)...)
     for I in CartesianIndices(P)
         if P[I] > rand()  # QUESTION: is this the most efficient way?
@@ -61,8 +61,8 @@ Samples the indices from an `AbstractMatrix`. Probability of sampling indices is
 proportional to the size of the corresponding value. Does not do any checks on A.
 """
 sampleindices(A::AbstractMatrix, s::Int) = Tuple.(sample(CartesianIndices(A),
-                                                    Weights(vec(A), sum(A)), s,
-                                                    replace=true))
+    Weights(vec(A), sum(A)), s,
+    replace = true))
 
 """
 sampleindices(K::AbstractKroneckerProduct, s::Int)
@@ -92,11 +92,11 @@ Kronecker graph.
 """
 function fastsample(P::AbstractKroneckerProduct)
     @assert isprob(P) throw(DomainError(
-                            "All values of K should be between 0 and 1"))
+        "All values of K should be between 0 and 1"))
     G = spzeros(Bool, size(P)...)
     n = Int(round(sum(P)))  # expected number of edges
     for (i, j) in sampleindices(P, n)
-        @inbounds G[i,j] = true
+        @inbounds G[i, j] = true
     end
     return G
 end

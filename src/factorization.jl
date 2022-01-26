@@ -34,7 +34,8 @@ function Base.getproperty(C::CholeskyKronecker, d::Symbol)
 end
 
 function Base.show(io::IO, mime::MIME{Symbol("text/plain")}, C::CholeskyKronecker)
-    summary(io, C); println(io)
+    summary(io, C)
+    println(io)
     println(io, "U factor:")
     show(io, mime, getproperty(C, :U))
 end
@@ -50,6 +51,6 @@ and `logdet` are overloaded to efficiently work with this type.
 function cholesky(K::AbstractKroneckerProduct; check = true)
     checksquare(K)
     A, B = getmatrices(K)
-    return CholeskyKronecker(cholesky(A, check=check),
-                            cholesky(B, check=check))
+    return CholeskyKronecker(cholesky(A, check = check),
+        cholesky(B, check = check))
 end

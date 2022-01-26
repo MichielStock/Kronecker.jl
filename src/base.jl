@@ -413,8 +413,7 @@ Base.Matrix(K::GeneralizedKroneckerProduct) = collect(K)
 
 function Base.:+(A::AbstractKroneckerProduct, B::StridedMatrix)
     T = promote_type(eltype(A), eltype(B))
-    C = similar(Array{T}, size(A))
-    C .= A
+    C = convert(Matrix{T}, collect(A))
     C .+= B
     return C
 end
@@ -441,13 +440,14 @@ function Base.:+(A::AbstractKroneckerProduct, B1::AbstractKroneckerProduct, Bres
         return broadcast(+, A, Bs...)
     end
     # collect the arrrays before adding to avoid indexing into the kronecker products
-    return +(collect(A), map(collect, Bs)...)
+    Ac = collect(A)
+    broadcast!(+, Ac, Ac, map(collect, Bs)...)
+    return Ac
 end
 
 function Base.:-(A::AbstractKroneckerProduct, B::StridedMatrix)
     T = promote_type(eltype(A), eltype(B))
-    C = similar(Array{T}, size(A))
-    C .= A
+    C = convert(Matrix{T}, collect(A))
     C .-= B
     return C
 end
@@ -457,6 +457,17 @@ function Base.:-(A::StridedMatrix, B::AbstractKroneckerProduct)
     @. C = -B
     C .+= A
     return C
+end
+
+# some tricks to preferentially negate structured matrices
+supportsfastnegation(::AbstractMatrix) = false
+supportsfastnegation(::Union{Diagonal, Bidiagonal, Tridiagonal, SymTridiagonal}) = true
+supportsfastnegation(A::AbstractKroneckerProduct) = all(supportsfastnegation, getmatrices(A))
+
+function Base.:-(K::AbstractKroneckerProduct)
+    B = lastmatrix(K)
+    supportsfastnegation(B) && return kronecker(firstmatrix(K), -B)
+    return kronecker(-firstmatrix(K), B)
 end
 
 const KronProdDiagonal = KroneckerProduct{<:Any,<:Diagonal,<:Diagonal}
@@ -483,7 +494,9 @@ function Base.:-(A::AbstractKroneckerProduct, B::AbstractKroneckerProduct)
         return A .- B
     end
     # collect the arrrays before subtracting to avoid indexing into the kronecker products
-    return collect(A) - collect(B)
+    Ac = collect(A)
+    Ac .-= collect(B)
+    return Ac
 end
 
 function Base.kron(K::AbstractKroneckerProduct, C::AbstractMatrix)

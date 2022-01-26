@@ -1,13 +1,13 @@
 abstract type AbstractKroneckerSum{T} <: GeneralizedKroneckerProduct{T} end
 
-struct KroneckerSum{T<:Any, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerSum{T}
+struct KroneckerSum{T<:Any,TA<:AbstractMatrix,TB<:AbstractMatrix} <: AbstractKroneckerSum{T}
     A::TA
     B::TB
     function KroneckerSum(A::AbstractMatrix{T},
-                            B::AbstractMatrix{V}) where {T, V}
+        B::AbstractMatrix{V}) where {T,V}
         (issquare(A) && issquare(B)) || throw(DimensionMismatch(
-                                "KroneckerSum only applies to square matrices"))
-        return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
+            "KroneckerSum only applies to square matrices"))
+        return new{promote_type(T, V),typeof(A),typeof(B)}(A, B)
     end
 end
 
@@ -21,7 +21,7 @@ Construct a sum of Kronecker products between two square matrices and their
 respective identity matrices. Does not evaluate the Kronecker products
 explicitly.
 """
-kroneckersum(A::AbstractMatrix, B::AbstractMatrix) = KroneckerSum(A,B)
+kroneckersum(A::AbstractMatrix, B::AbstractMatrix) = KroneckerSum(A, B)
 
 """
     kroneckersum(A::AbstractMatrix, B::AbstractMatrix...)
@@ -31,7 +31,7 @@ Higher-order lazy kronecker sum, e.g.
 kroneckersum(A,B,C,D)
 ```
 """
-kroneckersum(A::AbstractMatrix, B::AbstractMatrix...) = kroneckersum(A,kroneckersum(B...))
+kroneckersum(A::AbstractMatrix, B::AbstractMatrix...) = kroneckersum(A, kroneckersum(B...))
 
 """
     kroneckersum(A::AbstractMatrix, pow::Int)
@@ -44,7 +44,7 @@ function kroneckersum(A::AbstractMatrix, pow::Int)
     if pow == 1
         return A
     else
-        return A ⊕ kroneckersum(A, pow-1)
+        return A ⊕ kroneckersum(A, pow - 1)
     end
 end
 
@@ -86,16 +86,15 @@ Base.size(K::AbstractKroneckerSum, dim::Int) = size(K)[dim]
 
 function Base.getindex(K::AbstractKroneckerSum, i1::Int, i2::Int)
     A, B = getmatrices(K)
-    m, n = size(A)
     k, l = size(B)
     i₁, j₁ = cld(i1, k), cld(i2, l)
     i₂, j₂ = (i1 - 1) % k + 1, (i2 - 1) % l + 1
     v = zero(eltype(K))
     if i₁ == j₁
-        v += B[i₂,j₂]
+        v += B[i₂, j₂]
     end
     if i₂ == j₂
-        v += A[i₁,j₁]
+        v += A[i₁, j₁]
     end
     return v
 end
@@ -144,11 +143,11 @@ end
 Creates a lazy instance of a `KroneckerSum` type with sparse
 matrices. If the matrices are already sparse, `K` is returned.
 """
-function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: AbstractSparseMatrix, TB <: AbstractSparseMatrix}
+function SparseArrays.sparse(K::KroneckerSum{T,TA,TB}) where {T,TA<:AbstractSparseMatrix,TB<:AbstractSparseMatrix}
     return K
 end
 
-function SparseArrays.sparse(K::KroneckerSum{T, TA, TB}) where {T, TA <: AbstractMatrix, TB <: AbstractMatrix}
+function SparseArrays.sparse(K::KroneckerSum{T,TA,TB}) where {T,TA<:AbstractMatrix,TB<:AbstractMatrix}
     return sparse(K.A) ⊕ sparse(K.B)
 end
 
@@ -169,7 +168,7 @@ function Base.kron(A::AbstractMatrix, K::AbstractKroneckerSum)
     return kron(A, collect(K))
 end
 
-function Base.kron(K1::AbstractKroneckerSum, K2:: AbstractKroneckerSum)
+function Base.kron(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
     return kron(collect(K1), collect(K2))
 end
 
@@ -180,7 +179,7 @@ end
 
 function Base.transpose(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
-    return kroneckersum(transpose(A),transpose(B))
+    return kroneckersum(transpose(A), transpose(B))
 end
 
 function Base.conj(K::AbstractKroneckerSum)
@@ -199,13 +198,13 @@ function Base.exp(K::AbstractKroneckerSum)
     return kronecker(exp(A), exp(B))
 end
 
-function Base.sum(K::KroneckerSum; dims::Union{Int,Nothing}=nothing)
+function Base.sum(K::KroneckerSum; dims::Union{Int,Nothing} = nothing)
     A, B = getmatrices(K)
     n, m = size(A, 1), size(B, 1)
-    if dims==1
-        return kron(sum(A, dims=1), ones(1, m)) .+ kron(ones(1, n), sum(B, dims=1))
-    elseif dims==2
-        return kron(sum(A, dims=2), ones(m, 1)) .+ kron(ones(n, 1), sum(B, dims=2))
+    if dims == 1
+        return kron(sum(A, dims = 1), ones(1, m)) .+ kron(ones(1, n), sum(B, dims = 1))
+    elseif dims == 2
+        return kron(sum(A, dims = 2), ones(m, 1)) .+ kron(ones(n, 1), sum(B, dims = 2))
     elseif dims isa Nothing
         m * sum(A) + n * sum(B)
     else

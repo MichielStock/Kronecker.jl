@@ -20,4 +20,4 @@ _join(i::Symbol, j::Symbol) = _join(Val(i), Val(j))
 @generated _join(::Val{i}, ::Val{j}) where {i,j} = QuoteNode(Symbol(i, :ᵡ, j))
 
 kron_names(L::Tuple, ::Val{1}) = L
-kron_names(L::Tuple, ::Val{p}) where {p} = kron_names(kron_names(L,L), Val(p-1))
+kron_names(L::Tuple, ::Val{p}) where {p} = kron_names(kron_names(L, L), Val(p - 1))

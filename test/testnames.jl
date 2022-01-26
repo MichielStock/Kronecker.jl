@@ -1,7 +1,7 @@
 using NamedDims
 @testset "named" begin
-    A = rand(Int8, 2,2)
-    B = rand(Int8, 3,3)
+    A = rand(Int8, 2, 2)
+    B = rand(Int8, 3, 3)
     ndA = NamedDimsArray(A, (:ia, :ja))
     ndB = NamedDimsArray(B, (:ib, :jb))
 

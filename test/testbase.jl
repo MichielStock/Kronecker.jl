@@ -1,9 +1,9 @@
 @testset "Kronecker products" begin
 
     A = randn(4, 4)
-    B = Array{Float64, 2}([1 2 3;
-         4 5 6;
-         7 -2 9])
+    B = Array{Float64,2}([1 2 3
+        4 5 6
+        7 -2 9])
     C = rand(5, 6)
     D = rand(4, 4)
 
@@ -104,12 +104,23 @@
         # test power_by_squaring
         local _m
         local K2
-        _m = reshape(1:4, 2,2)
+        _m = reshape(1:4, 2, 2)
         K2 = kronecker(_m, _m)
-        @test (@inferred K2^2) == K2*K2 == collect(K2)^2
+        @test (@inferred K2^2) == K2 * K2 == collect(K2)^2
 
         @test svdvals(K) ≈ svdvals(Kc) ≈ svdvals(X)
         @test rank(K) == rank(Kc) == rank(X)
+
+        # multiplication of kronecker product of Diagonal
+        Kd = Diagonal(A) ⊗ Diagonal(B)
+        DKd = Diagonal(Kd)
+        Kd2 = Diagonal(B) ⊗ Diagonal(A)
+        DKd2 = Diagonal(Kd2)
+        @test K * Kd ≈ X * DKd
+        @test Kd * K ≈ DKd * X
+        @test Kd * Kd ≈ DKd * DKd
+        @test Kd * Kd2 ≈ DKd * DKd2
+        @test Kd2 * Kd ≈ DKd2 * DKd
     end
 
     @testset "Mismatch errors" begin
@@ -132,7 +143,7 @@
         Kpow = ⊗(A, 5)
         @test order(Kpow) == 5
         @test size(Kpow, 1) == 4^5
-        @test Kpow[1,1] ≈ A[1,1]^5
+        @test Kpow[1, 1] ≈ A[1, 1]^5
     end
 
     @testset "kron" begin
@@ -140,8 +151,8 @@
         @test kron(A, B ⊗ C) ≈ kron(A, B, C)
         @test kron(A ⊗ B, C ⊗ D) ≈ kron(A, B, C, D)
         M = kron(A, B, C, D)
-        @test collect((A⊗B) ⊗ (C⊗D)) ≈ M
-        @test collect!(similar(M), (A⊗B) ⊗ (C⊗D)) ≈ M
+        @test collect((A ⊗ B) ⊗ (C ⊗ D)) ≈ M
+        @test collect!(similar(M), (A ⊗ B) ⊗ (C ⊗ D)) ≈ M
     end
 
     @testset "Mixed product" begin
@@ -189,10 +200,10 @@
 
         @testset "add/subtract digonal and kronecker product" begin
             local D1, K, Kc, D2
-            D1 = Diagonal(1:3);
-            K = kronecker(D1, D1);
-            Kc = collect(K);
-            D2 = kron(D1, D1);
+            D1 = Diagonal(1:3)
+            K = kronecker(D1, D1)
+            Kc = collect(K)
+            D2 = kron(D1, D1)
             @test K + D2 == Kc + D2
             @test D2 + K == D2 + Kc
             @test K + I == Kc + I
@@ -221,7 +232,7 @@
         Kc .= K
         @test all(Kc .== K)
         @test K .+ Kc .- K == K
-        Kv = @view K[:,:]
+        Kv = @view K[:, :]
         @test K .+ Kv == 2K
     end
 
@@ -245,9 +256,9 @@
         B = randn(m, m)
         K = A ⊗ B
         x = randn(n * m)
-        b = K*x
-        @test K\b ≈ x
-        @test (x'*K)/K ≈ x'
+        b = K * x
+        @test K \ b ≈ x
+        @test (x' * K) / K ≈ x'
 
         # testing least squares solution
         function test_ls_solve(size_A, size_B)
@@ -255,10 +266,10 @@
             B = randn(size_B)
             x = randn(size(A, 2) * size(B, 2))
             K = kronecker(A, B)
-            b = K*x
+            b = K * x
             b .+= randn(size(b)) # this moves b out of range(K), necessitating least-squares
-            xls = K\b
-            return K'*(K*xls) ≈ K'b # test via normal equations
+            xls = K \ b
+            return K' * (K * xls) ≈ K'b # test via normal equations
         end
 
         # 2) kronecker product is square, but A, B aren't

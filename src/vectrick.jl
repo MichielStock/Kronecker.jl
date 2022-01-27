@@ -223,7 +223,6 @@ end
 # special multiplication methods for Kronecker products of Diagonal matrices
 # It's usually better to convert these to Diagonal to use optimized multiplication methods
 # instead of using the vec trick
-const KroneckerDiagonal = Union{KronProdDiagonal,KronPowDiagonal}
 Base.:*(K::KroneckerDiagonal, v::AbstractVector) = Diagonal(K) * v
 for T in [MulMatTypes; :AbstractMatrix; :AbstractKroneckerProduct]
     @eval Base.:*(K::KroneckerDiagonal, D::$T) = Diagonal(K) * D

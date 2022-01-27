@@ -1,5 +1,5 @@
-A = rand(3, 3)
-B = ones(Int, 4, 4)
+A = rand(3, 3) + 1e-2I
+B = ones(Int, 4, 4) + I
 C = randn(5, 6)
 K = A ⊗ B
 X = collect(K)

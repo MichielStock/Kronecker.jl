@@ -213,7 +213,7 @@ end
 
 function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
     out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
-    return transpose(mul!(out, transpose(K), transpose(v)))
+    return transpose(mul!(out, transpose(K), collect(transpose(v))))
 end
 
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)

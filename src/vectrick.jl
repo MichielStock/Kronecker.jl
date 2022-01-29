@@ -27,8 +27,6 @@ function mul_vec_trick!(x::AbstractVector, A::AbstractKroneckerProduct, v::Abstr
     M, N = getmatrices(A)
     a, b = size(M)
     c, d = size(N)
-    e = length(v)
-    f = length(x)
 
     V = vectrick_reshape(v, d, b)
     X = vectrick_reshape(x, c, a)
@@ -40,37 +38,33 @@ function mul_vec_trick!(x::AbstractVector, A::AbstractKroneckerProduct, v::Abstr
     return x
 end
 
+function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
+    A, B = getmatrices(K)
+    a, b = size(A)
+    c, d = size(B)
+
+    V = reshape(v, d, b)
+    X = reshape(x, c, a)
+    mul!(X, V, transpose(A))
+    _mul5!(X, B, V, true, true)
+    return x
+end
 
 if VERSION < v"1.3.0-alpha.115"
-    function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
-        A, B = getmatrices(K)
-        a, b = size(A)
-        c, d = size(B)
-        e = length(v)
-        f = length(x)
-
-        V = reshape(v, d, b)
-        X = reshape(x, c, a)
-        mul!(X, V, transpose(A))
-        X .+= B * V
-        return x
+    function _mul5!(X, B, V, α, β)
+        if β && α
+            X .= (B * V) .* α .+ X .* β
+        elseif α
+            X .= (B * V) .* α
+        elseif β
+            X .*= β
+        else
+            X .= zero(eltype(X))
+        end
     end
 else # 5-arg mul! is available
-    function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
-        A, B = getmatrices(K)
-        a, b = size(A)
-        c, d = size(B)
-        e = length(v)
-        f = length(x)
-
-        V = reshape(v, d, b)
-        X = reshape(x, c, a)
-        mul!(X, V, transpose(A))
-        mul!(X, B, V, true, true)
-        return x
-    end
+    _mul5! = mul!
 end # VERSION
-
 
 function mul_vec_trick!(X::AbstractMatrix, A::GeneralizedKroneckerProduct, V::AbstractMatrix)
     @inbounds for i in eachindex(axes(X, 2), axes(V, 2))
@@ -213,7 +207,7 @@ end
 
 function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
     out = Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), first(size(v)))
-    return transpose(mul!(out, transpose(K), transpose(v)))
+    return transpose(mul!(out, transpose(K), collect(transpose(v))))
 end
 
 function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)

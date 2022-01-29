@@ -89,6 +89,7 @@
         @test det(K) ≈ det(X)
         @test !isposdef(K)
         @test transpose(K) ≈ transpose(X)
+        @test permutedims(K) ≈ permutedims(X)
         @test conj(K) ≈ conj(X)
         @test K' ≈ X'
         @test inv(K) ≈ inv(X)

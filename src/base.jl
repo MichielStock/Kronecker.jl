@@ -307,6 +307,11 @@ function Base.transpose(K::AbstractKroneckerProduct)
     return kronecker(transpose(A), transpose(B))
 end
 
+function Base.permutedims(K::AbstractKroneckerProduct)
+    A, B = getmatrices(K)
+    return kronecker(permutedims(A), permutedims(B))
+end
+
 function Base.conj(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(conj(A), conj(B))

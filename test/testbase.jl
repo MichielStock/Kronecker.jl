@@ -170,6 +170,16 @@
         @test_throws DimensionMismatch (A ⊗ D) * (C ⊗ B)
     end
 
+    @testset "diagonal" begin
+        local A = rand(2, 2) ⊗ rand(3, 3)
+        local AD = Kronecker.diagonal(A)
+        @test AD isa Kronecker.KroneckerProduct
+        @test AD == Diagonal(A) == Diagonal(collect(A))
+        @test Kronecker.diagonal(collect(A)) == Diagonal(A)
+        local B = rand(1, 2) ⊗ rand(1, 3)
+        @test_throws ArgumentError Kronecker.diagonal(B)
+    end
+
     @testset "Add to dense" begin
         @test K + X ≈ Matrix(K) + X
         @test X + K ≈ X + Matrix(K)

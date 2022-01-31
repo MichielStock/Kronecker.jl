@@ -14,11 +14,11 @@ Efficient way of storing Kronecker powers, e.g.
 K = A ⊗ A ⊗ ... ⊗ A.
 """
 struct KroneckerPower{T,TA<:AbstractMatrix{T}} <: AbstractKroneckerProduct{T}
-   A::TA
-   pow::Int
-   function KroneckerPower(A::AbstractMatrix, pow::Integer)
-      @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
-      return new{eltype(A), typeof(A)}(A, Int(pow))
+    A::TA
+    pow::Int
+    function KroneckerPower(A::AbstractMatrix, pow::Integer)
+        @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
+        return new{eltype(A),typeof(A)}(A, Int(pow))
     end
 end
 
@@ -40,10 +40,11 @@ type.
 
 getallfactors(K::KroneckerPower) = ntuple(_ -> K.A, K.pow)
 
-getmatrices(K::KroneckerPower) = (K.pow == 2 ? K.A : KroneckerPower(K.A, K.pow-1), K.A)
+getmatrices(K::KroneckerPower) = (K.pow == 2 ? K.A : KroneckerPower(K.A, K.pow - 1), K.A)
+lastmatrix(K::KroneckerPower) = K.A
 
 order(K::KroneckerPower) = K.pow
-Base.size(K::KroneckerPower) = size(K.A).^K.pow
+Base.size(K::KroneckerPower) = size(K.A) .^ K.pow
 issquare(K::KroneckerPower) = issquare(K.A)
 
 # SCALAR EQUIVALENTS FOR AbstractKroneckerProduct
@@ -150,7 +151,7 @@ function Base.:*(K1::KroneckerPower, K2::KroneckerPower)
     K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
     _mulmixed(K1, K2)
 end
-const KronPowDiagonal = KroneckerPower{<:Any, <:Diagonal}
+const KronPowDiagonal = KroneckerPower{<:Any,<:Diagonal}
 function Base.:*(K1::KronPowDiagonal, K2::KronPowDiagonal)
     K1.pow == K2.pow || throw(ArgumentError("multiplication is only defined if all terms have the same exponent"))
     _mulmixed(K1, K2)

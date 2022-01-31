@@ -36,7 +36,7 @@ K3 = A ⊗ B ⊗ C
         D = randn(3, 2)
         C_pow = kronecker(C, 3)
         D_pow = kronecker(D, 3)
-        @test collect(C_pow * D_pow) ≈ collect(kronecker(C*D, 3))
+        @test collect(C_pow * D_pow) ≈ collect(kronecker(C * D, 3))
 
         @test_throws DimensionMismatch (D_pow * C_pow)
     end
@@ -64,7 +64,7 @@ K3 = A ⊗ B ⊗ C
         @test_throws DimensionMismatch K * V
         @test_throws DimensionMismatch K * reshape(V, 2, 6)
         K3 = A ⊗ B ⊗ C
-        v3 = sprand(size(K3, 2),1.0)
+        v3 = sprand(size(K3, 2), 1.0)
         @test K3 * vec(v3) ≈ collect(K3) * v3
         u = similar(v)
         @test mul!(u, K, v) ≈ X * v
@@ -84,9 +84,9 @@ K3 = A ⊗ B ⊗ C
         @test sum(K) ≈ sum(X)
         @test sum(K3) ≈ sum(collect(K3))
 
-        @test sum(K, dims=1) ≈ sum(X, dims=1)
-        @test sum(K3, dims=2) ≈ sum(collect(K3), dims=2)
-        @test sum(K3, dims=2) isa AbstractKroneckerProduct
+        @test sum(K, dims = 1) ≈ sum(X, dims = 1)
+        @test sum(K3, dims = 2) ≈ sum(collect(K3), dims = 2)
+        @test sum(K3, dims = 2) isa AbstractKroneckerProduct
 
         @test sum(kronecker(A, 3)) ≈ sum(kron(A, A, A))
     end
@@ -196,7 +196,7 @@ K3 = A ⊗ B ⊗ C
 
 
     @testset "10-factor square KroneckerProduct" begin
-        matrices = [randn(2,2) for i in 1:10]
+        matrices = [randn(2, 2) for i in 1:10]
         v = randn(2^10)
         V = randn(2^10, 5)
 
@@ -213,7 +213,7 @@ K3 = A ⊗ B ⊗ C
     @testset "10-factor square KroneckerPower" begin
         # reduce condition number of the matrix to avoid accidentally triggering a
         #  test failure
-        A = randn(2,2) + 20I
+        A = randn(2, 2) + 20I
         A /= opnorm(A)
 
         v = randn(2^10)
@@ -226,7 +226,7 @@ K3 = A ⊗ B ⊗ C
     end
 
     @testset "10-factor rectangular KroneckerProduct" begin
-        matrices = [randn(3,2) for i in 1:10]
+        matrices = [randn(3, 2) for i in 1:10]
         x = randn(2^10)
         X = randn(2^10, 5)
         y = randn(3^10)
@@ -239,8 +239,8 @@ K3 = A ⊗ B ⊗ C
     end
 
     @testset "10-factor mixed KroneckerProduct" begin
-        matrices1 = [randn(2,2) for i in 1:5]
-        matrices2 = [randn(3,2) for i in 1:5]
+        matrices1 = [randn(2, 2) for i in 1:5]
+        matrices2 = [randn(3, 2) for i in 1:5]
         x = randn(2^10)
         X = randn(2^10, 5)
         y = randn(2^5 * 3^5)
@@ -270,29 +270,29 @@ K3 = A ⊗ B ⊗ C
         A = rand(5, 5)
         B = rand(Bool, 4, 5)
         C = rand(-10:10, 5, 3)
-        v = randn(5*5*3)
+        v = randn(5 * 5 * 3)
         @test (A ⊗ B ⊗ C) * v ≈ collect(A ⊗ B ⊗ C) * v
         @test (C ⊗ B ⊗ A) * v ≈ collect(C ⊗ B ⊗ A) * v
     end
 
     @testset "diagonal kronecker product" begin
-        D1 = Diagonal(ones(Int, 3));
-        K = kronecker(D1, D1);
-        K3 = kronecker(D1, 3);
-        Kdense = kron(D1, D1);
-        K3dense = kron(D1, D1, D1);
+        D1 = Diagonal(ones(Int, 3))
+        K = kronecker(D1, D1)
+        K3 = kronecker(D1, 3)
+        Kdense = kron(D1, D1)
+        K3dense = kron(D1, D1, D1)
         @testset "with kronecker" begin
             @test K * K == Kdense * Kdense
             @test K3 * K3 == K3dense * K3dense
         end
         @testset "with diagonal" begin
-            D2 = Diagonal(ones(Int, 3).*2);
-            D = kron(D2, D2);
-            D3 = kron(D2, D2, D2);
+            D2 = Diagonal(ones(Int, 3) .* 2)
+            D = kron(D2, D2)
+            D3 = kron(D2, D2, D2)
             for (_K, _Kdense, _D) in Any[(K, Kdense, D), (K3, K3dense, D3)]
                 _Kcollect = collect(_K)
-                @test _K * _D == _Kdense*_D == _Kcollect * collect(_D)
-                @test _D * _K == _Kdense*_D == collect(_D) * _Kcollect
+                @test _K * _D == _Kdense * _D == _Kcollect * collect(_D)
+                @test _D * _K == _Kdense * _D == collect(_D) * _Kcollect
             end
         end
         @testset "with triangular" begin
@@ -307,8 +307,8 @@ K3 = A ⊗ B ⊗ C
             end
         end
         @testset "with vector" begin
-            v = [i for i in axes(K, 2)];
-            @test K*v == Kdense*v
+            v = [i for i in axes(K, 2)]
+            @test K * v == Kdense * v
         end
         @testset "with adjoint" begin
             vadj = [i for i in axes(K, 1)]'

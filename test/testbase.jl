@@ -207,7 +207,22 @@
 
         @test K + zero(K) ≈ Kc + zero(Kc) ≈ X + zero(X)
 
-        @test K + L ≈ L + K ≈ collect(K) + collect(L)
+        @test K + L ≈ L + K ≈ Kc + collect(L)
+
+        @test -K ≈ collect(-K) ≈ -Kc
+        @test -K3 ≈ collect(-K3) ≈ -K3c
+
+        local Kd, Kd2, Ktd, K34, K43
+        Kd = rand(2, 2) ⊗ Diagonal(rand(2))
+        @test -Kd ≈ collect(-Kd) ≈ -collect(Kd)
+        Kd2 = Diagonal(rand(2)) ⊗ rand(2, 2)
+        @test -Kd2 ≈ collect(-Kd2) ≈ -collect(Kd2)
+        Ktd = rand(2, 2) ⊗ Tridiagonal(ones(3), zeros(4), ones(3))
+        @test -Ktd ≈ collect(-Ktd) ≈ -collect(Ktd)
+        K34 = rand(3, 3) ⊗ rand(4, 4)
+        K43 = rand(4, 4) ⊗ rand(3, 3)
+        @test K34 + K43 ≈ collect(K34) + collect(K43)
+        @test K34 - K43 ≈ collect(K34) - collect(K43)
 
         @testset "add/subtract digonal and kronecker product" begin
             local D1, K, Kc, D2

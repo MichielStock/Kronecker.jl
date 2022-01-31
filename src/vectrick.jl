@@ -12,7 +12,7 @@ Vec trick: multiplying vectors with Kronecker systems.
 import Base.ReshapedArray
 
 vectrick_reshape(v::AbstractVector, d::Int, b::Int) = reshape(v, d, b)
-function vectrick_reshape(v::ReshapedArray{<:Any, 1}, d::Int, b::Int)
+function vectrick_reshape(v::ReshapedArray{<:Any,1}, d::Int, b::Int)
     return size(v.parent) == (d, b) ? v.parent : reshape(v, d, b)
 end
 
@@ -106,7 +106,7 @@ function ldiv_vec_trick!(X::AbstractMatrix, A::AbstractKroneckerProduct, V::Abst
 end
 
 
-function check_compatible_sizes(C::AbstractVecOrMat, A::AbstractMatrix, B::AbstractVecOrMat, mul=true)
+function check_compatible_sizes(C::AbstractVecOrMat, A::AbstractMatrix, B::AbstractVecOrMat, mul = true)
     # when performing a division (mul=false), A acts as a matrix with reversed dimensions
     m, n = mul ? size(A) : reverse(size(A))
 
@@ -137,7 +137,7 @@ function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
 end
 
 for TC in [:AbstractVector, :AbstractMatrix],
-    TB in [:($TC), :(Transpose{T, <:$TC{T}} where T), :(Adjoint{T, <:$TC{T}} where T)]
+    TB in [:($TC), :(Transpose{T,<:$TC{T}} where {T}), :(Adjoint{T,<:$TC{T}} where {T})]
 
     @eval function mul!(C::$TC, A::AbstractKroneckerProduct, B::$TB)
         check_compatible_sizes(C, A, B)
@@ -210,12 +210,12 @@ function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
     return transpose(mul!(out, transpose(K), collect(transpose(v))))
 end
 
-function Base.:*(v::Adjoint{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
+function Base.:*(v::Adjoint{<:Number,<:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return mul!(out, K', v.parent)'
 end
 
-function Base.:*(v::Transpose{<:Number, <:AbstractVector}, K::GeneralizedKroneckerProduct)
+function Base.:*(v::Transpose{<:Number,<:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return transpose(mul!(out, transpose(K), v.parent))
 end
@@ -223,16 +223,17 @@ end
 # special multiplication methods for Kronecker products of Diagonal matrices
 # It's usually better to convert these to Diagonal to use optimized multiplication methods
 # instead of using the vec trick
-const KroneckerDiagonal = Union{KronProdDiagonal, KronPowDiagonal}
+const KroneckerDiagonal = Union{KronProdDiagonal,KronPowDiagonal}
 Base.:*(K::KroneckerDiagonal, v::AbstractVector) = Diagonal(K) * v
-Base.:*(K1::KroneckerDiagonal, K2::KroneckerDiagonal) = kronecker(map(*, getallfactors(K1), getallfactors(K2))...)
-for T in [MulMatTypes; :AbstractMatrix]
+for T in [MulMatTypes; :AbstractMatrix; :AbstractKroneckerProduct]
     @eval Base.:*(K::KroneckerDiagonal, D::$T) = Diagonal(K) * D
     @eval Base.:*(D::$T, K::KroneckerDiagonal) = D * Diagonal(K)
 end
+# ambiguity fix
+Base.:*(K1::KroneckerDiagonal, K2::KroneckerDiagonal) = Diagonal(K1) * Diagonal(K2)
 
 for T in [:Adjoint, :Transpose]
-    @eval Base.:*(A::$T{<:Number, <:AbstractVector}, K::KroneckerDiagonal) = A * Diagonal(K)
+    @eval Base.:*(A::$T{<:Number,<:AbstractVector}, K::KroneckerDiagonal) = A * Diagonal(K)
 end
 
 function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractVector)
@@ -243,13 +244,13 @@ function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractMatrix)
     return ldiv!(Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), last(size(v))), K, v)
 end
 
-function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int}=nothing)
+function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int} = nothing)
     A, B = getmatrices(K)
     if dims === nothing
         s = zero(eltype(K))
         sumB = sum(B)
         return sum(sumB * A)
     else
-        return kronecker(sum(A, dims=dims), sum(B, dims=dims))
+        return kronecker(sum(A, dims = dims), sum(B, dims = dims))
     end
 end

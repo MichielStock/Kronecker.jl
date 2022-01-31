@@ -41,11 +41,11 @@ end
 
 Concrete Kronecker product between two matrices `A` and `B`.
 """
-struct KroneckerProduct{T<:Any, TA<:AbstractMatrix, TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
+struct KroneckerProduct{T<:Any,TA<:AbstractMatrix,TB<:AbstractMatrix} <: AbstractKroneckerProduct{T}
     A::TA
     B::TB
-    function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T, V}
-        return new{promote_type(T, V), typeof(A), typeof(B)}(A, B)
+    function KroneckerProduct(A::AbstractMatrix{T}, B::AbstractMatrix{V}) where {T,V}
+        return new{promote_type(T, V),typeof(A),typeof(B)}(A, B)
     end
 end
 
@@ -65,9 +65,9 @@ Kronecker product explictly.
 kronecker(A::AbstractMatrix, B::AbstractMatrix) = KroneckerProduct(A, B)
 
 # version that have a vector as input reshape to matrices
-kronecker(A::AbstractVector, B::AbstractMatrix) = KroneckerProduct(reshape(A,:,1), B)
-kronecker(A::AbstractMatrix, B::AbstractVector) = KroneckerProduct(A, reshape(B,:,1))
-kronecker(A::AbstractVector, B::AbstractVector) = KroneckerProduct(reshape(A,:,1), reshape(B,:,1))
+kronecker(A::AbstractVector, B::AbstractMatrix) = KroneckerProduct(reshape(A, :, 1), B)
+kronecker(A::AbstractMatrix, B::AbstractVector) = KroneckerProduct(A, reshape(B, :, 1))
+kronecker(A::AbstractVector, B::AbstractVector) = KroneckerProduct(reshape(A, :, 1), reshape(B, :, 1))
 
 """
     kronecker(A::AbstractMatrix, B::AbstractMatrix)
@@ -78,7 +78,7 @@ kronecker(A, B, C, D)
 ```
 """
 kronecker(A::AbstractVecOrMat, B::AbstractVecOrMat...) = kronecker(A,
-                                                            kronecker(B...))
+    kronecker(B...))
 
 """
     ⊗(A::AbstractMatrix, B::AbstractMatrix)
@@ -98,7 +98,7 @@ Uses recursion if `K` is of an order greater than two.
 function getindex(K::AbstractKroneckerProduct, i1::Integer, i2::Integer)
     A, B = getmatrices(K)
     k, l = size(B)
-    return (A[cld(i1, k), cld(i2, l)]::eltype(A)) * (B[(i1 - 1) % k + 1, (i2 - 1) % l + 1]::eltype(B))
+    return (A[cld(i1, k), cld(i2, l)]::eltype(A)) * (B[(i1-1)%k+1, (i2-1)%l+1]::eltype(B))
 end
 
 
@@ -346,10 +346,10 @@ _maybecollect(A::AbstractArray) = A
 # function for in-place Kronecker product
 function _kron!(C::AbstractArray, A::AbstractArray, B::AbstractArray)
     m = first(LinearIndices(C)) - 1
-    @inbounds for j = axes(A,2), l = axes(B,2), i = axes(A,1)
-        Aij = A[i,j]
-        for k = axes(B,1)
-            C[m += 1] = Aij * B[k,l]
+    @inbounds for j = axes(A, 2), l = axes(B, 2), i = axes(A, 1)
+        Aij = A[i, j]
+        for k = axes(B, 1)
+            C[m+=1] = Aij * B[k, l]
         end
     end
     return C
@@ -359,16 +359,16 @@ _kron!(C::AbstractArray, A::GeneralizedKroneckerProduct, B::AbstractArray) = _kr
 _kron!(C::AbstractArray, A::AbstractArray, B::GeneralizedKroneckerProduct) = _kron!(C, A, collect(B))
 _kron!(C::AbstractArray, A::GeneralizedKroneckerProduct, B::GeneralizedKroneckerProduct) = _kron!(C, collect(A), collect(B))
 
-@inline function _kron!(C::AbstractArray, As::Tuple{AbstractArray, Vararg{AbstractArray}}, Bs::Tuple{AbstractArray, Vararg{AbstractArray}}, f = identity)
+@inline function _kron!(C::AbstractArray, As::Tuple{AbstractArray,Vararg{AbstractArray}}, Bs::Tuple{AbstractArray,Vararg{AbstractArray}}, f = identity)
     m = first(LinearIndices(C)) - 1
     A1 = first(As)
     B1 = first(Bs)
-    for j = axes(A1,2), l = axes(B1,2), i = axes(A1,1)
-        Aijs = map(A -> A[i,j], As)
-        for k = 1:size(Bs[1],1)
-            Bkls = map(B -> B[k,l], Bs)
+    for j = axes(A1, 2), l = axes(B1, 2), i = axes(A1, 1)
+        Aijs = map(A -> A[i, j], As)
+        for k = 1:size(Bs[1], 1)
+            Bkls = map(B -> B[k, l], Bs)
             Aijs_times_Bkls = map(*, Aijs, Bkls)
-            C[m += 1] = f(Aijs_times_Bkls...)
+            C[m+=1] = f(Aijs_times_Bkls...)
         end
     end
     return C
@@ -459,7 +459,7 @@ function Base.:-(A::StridedMatrix, B::AbstractKroneckerProduct)
     return C
 end
 
-const KronProdDiagonal = KroneckerProduct{<:Any, <:Diagonal, <:Diagonal}
+const KronProdDiagonal = KroneckerProduct{<:Any,<:Diagonal,<:Diagonal}
 for T in [:Diagonal, :UniformScaling]
     @eval Base.:+(K::KronProdDiagonal, D::$T) = Diagonal(K) + D
     @eval Base.:+(D::$T, K::KronProdDiagonal) = D + Diagonal(K)
@@ -497,7 +497,7 @@ function Base.kron(A::AbstractMatrix, K::AbstractKroneckerProduct)
 end
 
 Base.kron(K1::AbstractKroneckerProduct,
-            K2::AbstractKroneckerProduct) = kron(collect(K1), collect(K2))
+    K2::AbstractKroneckerProduct) = kron(collect(K1), collect(K2))
 
 # mixed-product property
 function Base.:*(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct)
@@ -564,6 +564,24 @@ function LinearAlgebra.svdvals(K::KroneckerProduct)
     return σ
 end
 
+# Special method to construct a kronecker product of Diagonals
+# See https://github.com/MichielStock/Kronecker.jl/pull/113#issuecomment-1024920775
+"""
+    diagonal(A::AbstractMatrix)
+
+Construct a diagonal matrix with the principal diagonal being `diag(A)`.
+"""
+diagonal(A::AbstractMatrix) = Diagonal(A)
+function diagonal(K::AbstractKroneckerProduct)
+    mats = getmatrices(K)
+    if !all(issquare, mats)
+        throw(ArgumentError(
+            "Kronecker product of non-square matrices provided, " *
+            "consider using LinearAlgbera.Diagonal instead"))
+    end
+    mapreduce(diagonal, ⊗, mats)
+end
+
 # Broadcasting machinery
 
 Base.copyto!(dest::AbstractMatrix, K::AbstractKroneckerProduct) = collect!(dest, K)
@@ -588,17 +606,21 @@ end
         A = bc.args[1]
         collect!(bc.f, dest, A)
         return dest
-    # Case 2, example: 2 .* B
-    elseif bc.args isa Tuple{Number, AbstractKroneckerProduct}
+        # Case 2, example: 2 .* B
+    elseif bc.args isa Tuple{Number,AbstractKroneckerProduct}
         A = last(bc.args)
         n = first(bc.args)
-        collect!(let n = n; x -> bc.f(n, x); end, dest, A)
+        collect!(let n = n
+            x -> bc.f(n, x)
+        end, dest, A)
         return dest
-    # Case 3, example: B .* 2
-    elseif bc.args isa Tuple{AbstractKroneckerProduct, Number}
+        # Case 3, example: B .* 2
+    elseif bc.args isa Tuple{AbstractKroneckerProduct,Number}
         A = first(bc.args)
         n = last(bc.args)
-        collect!(let n = n; x -> bc.f(x, n); end, dest, A)
+        collect!(let n = n
+            x -> bc.f(x, n)
+        end, dest, A)
         return dest
     end
     # An operation like K1 .+ K2 may be short-circuited if the component matrices
@@ -610,7 +632,7 @@ end
             collect!(bcf.f, dest, bcf.args...)
             return dest
         end
-    elseif all(x -> x isa Union{AbstractKroneckerProduct, StridedArray}, bcf.args)
+    elseif all(x -> x isa Union{AbstractKroneckerProduct,StridedArray}, bcf.args)
         # Performance is better if the kronecker products are collected before the
         # broadcasted operation is performed, although this incurs allocations
         broadcast!(bcf.f, dest, map(_maybecollect, bcf.args)...)

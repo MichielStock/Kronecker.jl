@@ -262,6 +262,11 @@
             @test D2 - K == D2 - Kc
             @test I - K == I - Kc
             @test K - I == Kc - I
+
+            local K3
+            K3 = kronecker(D1, 3)
+            @test K3 + Diagonal(K3) == Diagonal(K3) + K3 == 2Diagonal(K3)
+            @test K3 - Diagonal(K3) == Diagonal(K3) - K3 == K3 - K3 == zero(Diagonal(K3))
         end
     end
 

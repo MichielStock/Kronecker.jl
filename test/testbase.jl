@@ -225,6 +225,30 @@
         @test K34 - K43 ≈ collect(K34) - collect(K43)
 
         @testset "add/subtract digonal and kronecker product" begin
+            local D3, D4, K33, K34, K43, M33, M34, D33, D34
+            D3 = Diagonal(1:3)
+            D4 = Diagonal(1:4)
+            K33 = kronecker(D3, D3)
+            K34 = kronecker(D3, D4)
+            K43 = kronecker(D4, D3)
+            M33 = collect(K33)
+            M34 = collect(K34)
+            D33 = kron(D3, D3)
+            D34 = kron(D3, D4)
+            @test K33 + D33 == M33 + D33
+            @test D33 + K33 == D33 + M33
+            @test D34 + K34 == D34 + M34
+            @test K33 + I == I + K33 == D33 + I
+            @test K34 + I == I + K34 == D34 + I
+            @test K33 - D33 == M33 - D33
+            @test D33 - K33 == D33 - M33
+            @test I - K33 == I - D33
+            @test I - K34 == I - D34
+            @test K33 - I == D33 - I
+            @test K34 + K43 == K43 + K34 == Diagonal(K34) + Diagonal(K43)
+            @test K33 + K33 == 2K33 == 2Diagonal(K33)
+            @test K34 + K34 == 2K34 == 2Diagonal(K34)
+
             local D1, K, Kc, D2
             D1 = Diagonal(1:3)
             K = kronecker(D1, D1)
@@ -238,6 +262,11 @@
             @test D2 - K == D2 - Kc
             @test I - K == I - Kc
             @test K - I == Kc - I
+
+            local K3
+            K3 = kronecker(D1, 3)
+            @test K3 + Diagonal(K3) == Diagonal(K3) + K3 == 2Diagonal(K3)
+            @test K3 - Diagonal(K3) == Diagonal(K3) - K3 == K3 - K3 == zero(Diagonal(K3))
         end
     end
 

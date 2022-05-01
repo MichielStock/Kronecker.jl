@@ -31,7 +31,7 @@
 
         kronsum3 = kron(A, IB, IC) + kron(IA, B, IC) + kron(IA, IB, C)
 
-        for ks3 in [KS3, KS3AB, KS3BC]
+        for ks3 in (KS3, KS3AB, KS3BC)
             @test collect(ks3) ≈ kronsum3
             @test collect(ks3) isa AbstractSparseMatrix
             @test order(ks3) == 3

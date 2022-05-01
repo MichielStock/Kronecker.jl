@@ -461,7 +461,7 @@ end
 
 # some tricks to preferentially negate structured matrices
 supportsfastnegation(::AbstractMatrix) = false
-supportsfastnegation(::Union{Diagonal, Bidiagonal, Tridiagonal, SymTridiagonal}) = true
+supportsfastnegation(::Union{Diagonal,Bidiagonal,Tridiagonal,SymTridiagonal}) = true
 supportsfastnegation(A::AbstractKroneckerProduct) = all(supportsfastnegation, getmatrices(A))
 
 function Base.:-(K::AbstractKroneckerProduct)
@@ -619,7 +619,7 @@ end
         A = bc.args[1]
         collect!(bc.f, dest, A)
         return dest
-        # Case 2, example: 2 .* B
+    # Case 2, example: 2 .* B
     elseif bc.args isa Tuple{Number,AbstractKroneckerProduct}
         A = last(bc.args)
         n = first(bc.args)
@@ -627,7 +627,7 @@ end
             x -> bc.f(n, x)
         end, dest, A)
         return dest
-        # Case 3, example: B .* 2
+    # Case 3, example: B .* 2
     elseif bc.args isa Tuple{AbstractKroneckerProduct,Number}
         A = first(bc.args)
         n = last(bc.args)

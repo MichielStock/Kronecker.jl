@@ -80,6 +80,9 @@ kronecker(A, B, C, D)
 kronecker(A::AbstractVecOrMat, B::AbstractVecOrMat...) = kronecker(A,
     kronecker(B...))
 
+
+kronecker(A::AbstractVecOrMat) = A
+
 """
     ⊗(A::AbstractMatrix, B::AbstractMatrix)
 

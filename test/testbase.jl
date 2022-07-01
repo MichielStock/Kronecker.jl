@@ -51,6 +51,13 @@
         @test all(c ⊗ v .≈ kron(c, v))
     end
 
+    @testset "Trivial case" begin
+        @test kronecker(A) isa Matrix
+        @test ⊗(B) isa Matrix
+        @test kronecker(v) isa Vector
+        @test kronecker(K) isa AbstractKroneckerProduct
+    end
+
     # testing all linear algebra functions' behavior on square and non-square matrices
     function test_non_square_extensions()
         local n, m, A, B, K, M

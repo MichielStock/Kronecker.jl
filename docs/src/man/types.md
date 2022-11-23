@@ -1,6 +1,6 @@
 # Types
 
-The abstract type at the top of the hierarchy of `Kronecker.jl`'s type system is `GeneralizedKroneckerProduct` a subtype `AbstractMatrix`. `GeneralizedKroneckerProduct` contains all subtypes which contain a Kronecker product.
+The abstract type at the top of the hierarchy of `Kronecker.jl`'s type system is `GeneralizedKroneckerProduct` a subtype of `AbstractMatrix`. `GeneralizedKroneckerProduct` contains all subtypes which contain a Kronecker product.
 
 Pure Kronecker products, i.e., all expressions that one can write as `A ⊗ B`, with `A` and `B` `AbstractMatix` types are part of the abstract type `AbstractKroneckerProduct <: GeneralizedKroneckerProduct`. Concrete instantiations are stored in the structure `KroneckerProduct <: AbstractKroneckerProduct`, a container for `A` and `B`. Instances of `KroneckerProduct` structs are annotated with the element type of the Kronecker product (promoted from the element types of `A` and `B`) and the types of `A` and `B`.
 

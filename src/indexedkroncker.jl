@@ -15,7 +15,7 @@ struct IndexedKroneckerProduct{T<:Any,TK<:AbstractKroneckerProduct} <: Generaliz
         elseif !(length(p) == length(q) && length(r) == length(t))
             throw(DimensionMismatch("Indices should have matching lengths"))
         elseif minimum((minimum.((p, q, r, t)))) <= 0
-            throw(BoundsError("Negative indices not allowed"))
+            throw(BoundsError("Nonpositive indices not allowed"))
         end
         A, B = getmatrices(K)
         (m, n) = size(B)

@@ -1,5 +1,5 @@
-@inline _alloc_temp_array(size_1::Int, x::AbstractVector{T}) where {T} = zeros(T, size_1)
-@inline _alloc_temp_array(size_1::Int, x::AbstractMatrix{T}) where {T} = zeros(T, size_1, size(x, 2))
+@inline _alloc_temp_array(size_1::Int, x::AbstractVector{T}) where {T} = similar(x, (size_1))
+@inline _alloc_temp_array(size_1::Int, x::AbstractMatrix{T}) where {T} = similar(x, (size_1, size(x, 2)))
 
 const MatrixOrFactorization{T} = Union{AbstractMatrix{T},Factorization{T}}
 

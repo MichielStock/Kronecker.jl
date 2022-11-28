@@ -80,7 +80,7 @@ function genvectrick!(M, N, v, u, p, q, r, t)
     u .= 0  # reset for inplace
     if a * e + d * f < c * e + b * f
         # compute T = VM'
-        T = zeros(eltype(v), d, a)
+        T = similar(v, (d, a))
         @simd for h in 1:e
             i, j = r[h], t[h]
             @simd for k in 1:a
@@ -95,7 +95,7 @@ function genvectrick!(M, N, v, u, p, q, r, t)
         end
     else
         # compute S = NV
-        S = zeros(eltype(v), d, a)
+        S = similar(v, (d, a))
         @simd for h in 1:e
             i, j = r[h], t[h]
             @simd for k in 1:c
@@ -115,7 +115,7 @@ end
 function genvectrick(M, N, v, p, q, r, t)
     # computes N ⊗ M
     f = length(p)
-    u = zeros(eltype(v), f)
+    u = similar(v, (f))
     return genvectrick!(M, N, v, u, p, q, r, t)
 end
 

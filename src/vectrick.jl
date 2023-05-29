@@ -135,6 +135,9 @@ function mul!(C::AbstractMatrix, D::Diagonal, A::AbstractKroneckerProduct)
     end
     return C
 end
+# disambiguation
+mul!(C::AbstractMatrix, A::AbstractKroneckerProduct, B::LinearAlgebra.AbstractTriangular) =
+    invoke(mul!, Tuple{AbstractMatrix, AbstractKroneckerProduct, AbstractMatrix}, C, A, B)
 
 for TC in [:AbstractVector, :AbstractMatrix],
     TB in [:($TC), :(Transpose{T,<:$TC{T}} where {T}), :(Adjoint{T,<:$TC{T}} where {T})]

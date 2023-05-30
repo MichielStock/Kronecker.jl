@@ -1,94 +1,94 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Kronecker powers and graphs · Kronecker.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../basic/">Kronecker.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../basic/">Basic use</a></li><li><a class="tocitem" href="../types/">Types</a></li><li><a class="tocitem" href="../multiplication/">Multiplication</a></li><li><a class="tocitem" href="../factorization/">Factorization methods</a></li><li><a class="tocitem" href="../indexed/">Indexed Kronecker products</a></li><li><a class="tocitem" href="../kroneckersums/">Kronecker sums</a></li><li class="is-active"><a class="tocitem" href>Kronecker powers and graphs</a><ul class="internal"><li><a class="tocitem" href="#Kronecker-powers"><span>Kronecker powers</span></a></li><li><a class="tocitem" href="#Kronecker-graphs"><span>Kronecker graphs</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Kronecker powers and graphs</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Kronecker powers and graphs</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/MichielStock/Kronecker.jl/blob/master/docs/src/man/kroneckerpowers.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Kronecker-powers-and-graphs"><a class="docs-heading-anchor" href="#Kronecker-powers-and-graphs">Kronecker powers and graphs</a><a id="Kronecker-powers-and-graphs-1"></a><a class="docs-heading-anchor-permalink" href="#Kronecker-powers-and-graphs" title="Permalink"></a></h1><h2 id="Kronecker-powers"><a class="docs-heading-anchor" href="#Kronecker-powers">Kronecker powers</a><a id="Kronecker-powers-1"></a><a class="docs-heading-anchor-permalink" href="#Kronecker-powers" title="Permalink"></a></h2><p>Repeated Kronecker multiplications of the same matrix, i.e.</p><p class="math-container">\[A^{\otimes n}=\otimes_{i=1}^n A = \underbrace{A \otimes A \otimes \ldots \otimes A}_{n\text{ times}}\,.\]</p><p>Kronecker powers are supported using <code>kronecker(A, n)</code> or, equivalently, <code>⊗(A, n)</code>. These functions yield an instance of <code>KroneckerPower</code>, as struct which holds the matrix and the power. It works just like instances of <code>KroneckerProduct</code>, but more efficient since only a single matrix has to be stored and manipulated. These products work as expected.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Kronecker</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = rand(2, 2)</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Array{Float64,2}:
- 0.0243958  0.424959
- 0.620303   0.565203</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K2 = A ⊗ 2</code><code class="nohighlight hljs ansi" style="display:block;">4×4 KroneckerPower{Float64,Array{Float64,2}}:
- 0.000595156  0.0103672  0.0103672  0.180591
- 0.0151328    0.0137886  0.263603   0.240188
- 0.0151328    0.263603   0.0137886  0.240188
- 0.384775     0.350597   0.350597   0.319454</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; inv(K2)</code><code class="nohighlight hljs ansi" style="display:block;">4×4 KroneckerPower{Float64,Array{Float64,2}}:
-  5.11884  -3.84871   -3.84871    2.89373
- -5.61786   0.220944   4.22391   -0.166122
- -5.61786   4.22391    0.220944  -0.166122
-  6.16553  -0.242484  -0.242484   0.00953662</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K12 = K2 ⊗ 6  # works recursively</code><code class="nohighlight hljs ansi" style="display:block;">4096×4096 KroneckerPower{Float64,KroneckerPower{Float64,Array{Float64,2}}}:
- 4.44413e-20  7.74138e-19  7.74138e-19  …  1.99131e-6   3.46873e-5
- 1.12999e-18  1.02962e-18  1.96837e-17     5.06322e-5   4.61346e-5
- 1.12999e-18  1.96837e-17  1.02962e-18     2.64847e-6   4.61346e-5
- 2.87318e-17  2.61796e-17  2.61796e-17     6.73416e-5   6.13598e-5
- 1.12999e-18  1.96837e-17  1.96837e-17     2.64847e-6   4.61346e-5
- 2.87318e-17  2.61796e-17  5.00489e-16  …  6.73416e-5   6.13598e-5
- 2.87318e-17  5.00489e-16  2.61796e-17     3.52251e-6   6.13598e-5
- 7.30551e-16  6.65658e-16  6.65658e-16     8.95653e-5   8.16094e-5
- 1.12999e-18  1.96837e-17  1.96837e-17     2.64847e-6   4.61346e-5
- 2.87318e-17  2.61796e-17  5.00489e-16     6.73416e-5   6.13598e-5
- ⋮                                      ⋱               ⋮
- 0.000127631  0.000116294  0.000116294     0.000876987  0.000799086
- 1.97414e-7   3.43883e-6   3.43883e-6      2.59327e-5   0.000451731
- 5.01958e-6   4.5737e-6    8.74378e-5      0.000659381  0.00060081
- 5.01958e-6   8.74378e-5   4.5737e-6    …  3.44909e-5   0.00060081
- 0.000127631  0.000116294  0.000116294     0.000876987  0.000799086
- 5.01958e-6   8.74378e-5   8.74378e-5      3.44909e-5   0.00060081
- 0.000127631  0.000116294  0.00222324      0.000876987  0.000799086
- 0.000127631  0.00222324   0.000116294     4.58735e-5   0.000799086
- 0.00324521   0.00295695   0.00295695   …  0.00116641   0.0010628</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K12^2  # example</code><code class="nohighlight hljs ansi" style="display:block;">4096×4096 KroneckerPower{Float64,KroneckerPower{Float64,Array{Float64,2}}}:
- 1.15656e-7  1.09683e-7  1.09683e-7  1.04019e-7  …  6.45466e-8   6.12134e-8
- 1.60102e-7  2.55239e-7  1.51834e-7  2.42059e-7     8.93517e-8   1.42447e-7
- 1.60102e-7  1.51834e-7  2.55239e-7  2.42059e-7     1.50204e-7   1.42447e-7
- 2.21629e-7  3.53327e-7  3.53327e-7  5.63285e-7     2.07927e-7   3.31483e-7
- 1.60102e-7  1.51834e-7  1.51834e-7  1.43994e-7     1.50204e-7   1.42447e-7
- 2.21629e-7  3.53327e-7  2.10184e-7  3.35081e-7  …  2.07927e-7   3.31483e-7
- 2.21629e-7  2.10184e-7  3.53327e-7  3.35081e-7     3.49533e-7   3.31483e-7
- 3.068e-7    4.8911e-7   4.8911e-7   7.79755e-7     4.83858e-7   7.71381e-7
- 1.60102e-7  1.51834e-7  1.51834e-7  1.43994e-7     1.50204e-7   1.42447e-7
- 2.21629e-7  3.53327e-7  2.10184e-7  3.35081e-7     2.07927e-7   3.31483e-7
- ⋮                                               ⋱               ⋮
- 4.13704e-6  6.59541e-6  6.59541e-6  1.05146e-5     0.000416081  0.000663329
- 2.15889e-6  2.04741e-6  2.04741e-6  1.94168e-6     0.000129164  0.000122494
- 2.98855e-6  4.76444e-6  2.83422e-6  4.51841e-6     0.000178801  0.00028505
- 2.98855e-6  2.83422e-6  4.76444e-6  4.51841e-6  …  0.000300572  0.00028505
- 4.13704e-6  6.59541e-6  6.59541e-6  1.05146e-5     0.000416081  0.000663329
- 2.98855e-6  2.83422e-6  2.83422e-6  2.68786e-6     0.000300572  0.00028505
- 4.13704e-6  6.59541e-6  3.92341e-6  6.25482e-6     0.000416081  0.000663329
- 4.13704e-6  3.92341e-6  6.59541e-6  6.25482e-6     0.000699449  0.000663329
- 5.7269e-6   9.13e-6     9.13e-6     1.45553e-5  …  0.000968245  0.00154361</code></pre><article class="docstring"><header><a class="docstring-binding" id="Kronecker.kronecker-Tuple{AbstractArray{T,2} where T,Int64}" href="#Kronecker.kronecker-Tuple{AbstractArray{T,2} where T,Int64}"><code>Kronecker.kronecker</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">kronecker(A::AbstractMatrix, pow::Int)</code></pre><p>Kronecker power, computes <code>A ⊗ A ⊗ ... ⊗ A</code>. Returns a lazy <code>KroneckerPower</code> type.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/36e37c73965378924118ff731e9704518331692d/src/kroneckerpowers.jl#L25-L30">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.:⊗-Tuple{AbstractArray{T,2} where T,Int64}" href="#Kronecker.:⊗-Tuple{AbstractArray{T,2} where T,Int64}"><code>Kronecker.:⊗</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">⊗(A::AbstractMatrix, pow::Int)</code></pre><p>Kronecker power, computes <code>A ⊗ A ⊗ ... ⊗ A</code>. Returns a lazy <code>KroneckerPower</code> type.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/36e37c73965378924118ff731e9704518331692d/src/kroneckerpowers.jl#L33-L38">source</a></section></article><h2 id="Kronecker-graphs"><a class="docs-heading-anchor" href="#Kronecker-graphs">Kronecker graphs</a><a id="Kronecker-graphs-1"></a><a class="docs-heading-anchor-permalink" href="#Kronecker-graphs" title="Permalink"></a></h2><p>An exciting application of Kronecker powers (or Krocker products in general) is generating large, realistic graphs from an initial &#39;seed&#39; via a stochastic process. This is called a Kronecker graph and is described in detail in <a href="https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf">Leskovec et al. (2008)</a>.</p><p>If we use an initial matrix <span>$P$</span> with values in <span>$[0,1]$</span> as a seed, then <span>$P_n=P^{\otimes n}$</span> can be seen as a probability distribution for an adjacency matrix of a graph. The elements <span>$(P_n)_{i,j}$</span> give the probabilities that there is an edge from node <span>$i$</span> to node <span>$j$</span>. Leskovec and co-authors give two algorithms for sampling adjacency matrices from this distribution, both provided by <code>Kronecker.jl</code>:</p><ul><li><code>naivesample</code> gives exact samples, but has a computational time proportional to the number of elements and hence prohibitive for large graphs;</li><li><code>fastsample</code> a recursive heuristic, has a computational time proportional to the expected number of edges in the graph.</li></ul><p>The latter can easily scale to generate graphs of millions of nodes. Both return the adjacency matrix as a sparse array.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Kronecker</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; P = rand(2, 2)</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Array{Float64,2}:
- 0.689311  0.339063
- 0.487053  0.456685</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; P10 = P ⊗ 10</code><code class="nohighlight hljs ansi" style="display:block;">1024×1024 KroneckerPower{Float64,Array{Float64,2}}:
- 0.0242189    0.011913     0.011913     …  4.08261e-5   2.00818e-5
- 0.0171126    0.0160456    0.00841746      2.88469e-5   2.70482e-5
- 0.0171126    0.00841746   0.0160456       5.49888e-5   2.70482e-5
- 0.0120914    0.0113375    0.0113375       3.88539e-5   3.64313e-5
- 0.0171126    0.00841746   0.00841746      5.49888e-5   2.70482e-5
- 0.0120914    0.0113375    0.0059476    …  3.88539e-5   3.64313e-5
- 0.0120914    0.0059476    0.0113375       7.40645e-5   3.64313e-5
- 0.00854355   0.00801085   0.00801085      5.23325e-5   4.90695e-5
- 0.0171126    0.00841746   0.00841746      5.49888e-5   2.70482e-5
- 0.0120914    0.0113375    0.0059476       3.88539e-5   3.64313e-5
+ 0.858535  0.317476
+ 0.298127  0.0402255</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K2 = A ⊗ 2</code><code class="nohighlight hljs ansi" style="display:block;">4×4 KroneckerPower{Float64,Array{Float64,2}}:
+ 0.737083   0.272565   0.272565   0.100791
+ 0.255953   0.034535   0.0946483  0.0127707
+ 0.255953   0.0946483  0.034535   0.0127707
+ 0.0888798  0.0119923  0.0119923  0.00161809</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; inv(K2)</code><code class="nohighlight hljs ansi" style="display:block;">4×4 KroneckerPower{Float64,Array{Float64,2}}:
+  0.447778   -3.53405   -3.53405   27.8921
+ -3.31866     9.55694   26.1922   -75.4273
+ -3.31866    26.1922     9.55694  -75.4273
+ 24.5958    -70.8302   -70.8302   203.974</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K12 = K2 ⊗ 6  # works recursively</code><code class="nohighlight hljs ansi" style="display:block;">4096×4096 KroneckerPower{Float64,KroneckerPower{Float64,Array{Float64,2}}}:
+ 0.16036     0.0592994    0.0592994    …  2.83521e-6   1.04843e-6
+ 0.0556852   0.00751347   0.0205918       9.84528e-7   1.3284e-7
+ 0.0556852   0.0205918    0.00751347      3.59232e-7   1.3284e-7
+ 0.0193367   0.00260906   0.00260906      1.24744e-7   1.68313e-8
+ 0.0556852   0.0205918    0.0205918       3.59232e-7   1.3284e-7
+ 0.0193367   0.00260906   0.00715051   …  1.24744e-7   1.68313e-8
+ 0.0193367   0.00715051   0.00260906      4.55161e-8   1.68313e-8
+ 0.0067147   0.000905998  0.000905998     1.58055e-8   2.1326e-9
+ 0.0556852   0.0205918    0.0205918       3.59232e-7   1.3284e-7
+ 0.0193367   0.00260906   0.00715051      1.24744e-7   1.68313e-8
+ ⋮                                     ⋱               ⋮
+ 1.41963e-6  1.91546e-7   1.91546e-7      1.04986e-15  1.41655e-16
+ 1.1773e-5   4.35352e-6   4.35352e-6      2.38615e-14  8.8237e-15
+ 4.08818e-6  5.51608e-7   1.51176e-6      8.28591e-15  1.118e-15
+ 4.08818e-6  1.51176e-6   5.51608e-7   …  3.02334e-15  1.118e-15
+ 1.41963e-6  1.91546e-7   1.91546e-7      1.04986e-15  1.41655e-16
+ 4.08818e-6  1.51176e-6   1.51176e-6      3.02334e-15  1.118e-15
+ 1.41963e-6  1.91546e-7   5.24961e-7      1.04986e-15  1.41655e-16
+ 1.41963e-6  5.24961e-7   1.91546e-7      3.83069e-16  1.41655e-16
+ 4.92966e-7  6.65147e-8   6.65147e-8   …  1.33021e-16  1.79482e-17</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; K12^2  # example</code><code class="nohighlight hljs ansi" style="display:block;">4096×4096 KroneckerPower{Float64,KroneckerPower{Float64,Array{Float64,2}}}:
+ 0.109596    0.0375981   0.0375981   0.0128985    …  8.48973e-7   2.9125e-7
+ 0.0353066   0.0126849   0.0121124   0.00435169      2.73499e-7   9.82621e-8
+ 0.0353066   0.0121124   0.0126849   0.00435169      2.86426e-7   9.82621e-8
+ 0.0113742   0.00408647  0.00408647  0.00146817      9.22732e-8   3.31516e-8
+ 0.0353066   0.0121124   0.0121124   0.00415529      2.86426e-7   9.82621e-8
+ 0.0113742   0.00408647  0.00390204  0.00140191   …  9.22732e-8   3.31516e-8
+ 0.0113742   0.00390204  0.00408647  0.00140191      9.66345e-8   3.31516e-8
+ 0.00366422  0.00131647  0.00131647  0.000472977     3.11311e-8   1.11847e-8
+ 0.0353066   0.0121124   0.0121124   0.00415529      2.86426e-7   9.82621e-8
+ 0.0113742   0.00408647  0.00390204  0.00140191      9.22732e-8   3.31516e-8
+ ⋮                                                ⋱               ⋮
+ 4.25092e-7  1.52726e-7  1.52726e-7  5.48708e-8      5.22576e-12  1.87749e-12
+ 4.09598e-6  1.40517e-6  1.40517e-6  4.82062e-7      4.80803e-11  1.64945e-11
+ 1.31953e-6  4.74078e-7  4.52682e-7  1.62638e-7      1.54892e-11  5.56492e-12
+ 1.31953e-6  4.52682e-7  4.74078e-7  1.62638e-7   …  1.62213e-11  5.56492e-12
+ 4.25092e-7  1.52726e-7  1.52726e-7  5.48708e-8      5.22576e-12  1.87749e-12
+ 1.31953e-6  4.52682e-7  4.52682e-7  1.55298e-7      1.62213e-11  5.56492e-12
+ 4.25092e-7  1.52726e-7  1.45833e-7  5.23944e-8      5.22576e-12  1.87749e-12
+ 4.25092e-7  1.45833e-7  1.52726e-7  5.23944e-8      5.47275e-12  1.87749e-12
+ 1.36945e-7  4.92011e-8  4.92011e-8  1.76768e-8   …  1.76307e-12  6.33429e-13</code></pre><article class="docstring"><header><a class="docstring-binding" id="Kronecker.kronecker-Tuple{AbstractArray{T,2} where T,Int64}" href="#Kronecker.kronecker-Tuple{AbstractArray{T,2} where T,Int64}"><code>Kronecker.kronecker</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">kronecker(A::AbstractMatrix, pow::Int)</code></pre><p>Kronecker power, computes <code>A ⊗ A ⊗ ... ⊗ A</code>. Returns a lazy <code>KroneckerPower</code> type.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/6d45a66436866d7076ae13315ab9cec6d63b81fa/src/kroneckerpowers.jl#L25-L30">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.:⊗-Tuple{AbstractArray{T,2} where T,Int64}" href="#Kronecker.:⊗-Tuple{AbstractArray{T,2} where T,Int64}"><code>Kronecker.:⊗</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">⊗(A::AbstractMatrix, pow::Int)</code></pre><p>Kronecker power, computes <code>A ⊗ A ⊗ ... ⊗ A</code>. Returns a lazy <code>KroneckerPower</code> type.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/6d45a66436866d7076ae13315ab9cec6d63b81fa/src/kroneckerpowers.jl#L33-L38">source</a></section></article><h2 id="Kronecker-graphs"><a class="docs-heading-anchor" href="#Kronecker-graphs">Kronecker graphs</a><a id="Kronecker-graphs-1"></a><a class="docs-heading-anchor-permalink" href="#Kronecker-graphs" title="Permalink"></a></h2><p>An exciting application of Kronecker powers (or Krocker products in general) is generating large, realistic graphs from an initial &#39;seed&#39; via a stochastic process. This is called a Kronecker graph and is described in detail in <a href="https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf">Leskovec et al. (2008)</a>.</p><p>If we use an initial matrix <span>$P$</span> with values in <span>$[0,1]$</span> as a seed, then <span>$P_n=P^{\otimes n}$</span> can be seen as a probability distribution for an adjacency matrix of a graph. The elements <span>$(P_n)_{i,j}$</span> give the probabilities that there is an edge from node <span>$i$</span> to node <span>$j$</span>. Leskovec and co-authors give two algorithms for sampling adjacency matrices from this distribution, both provided by <code>Kronecker.jl</code>:</p><ul><li><code>naivesample</code> gives exact samples, but has a computational time proportional to the number of elements and hence prohibitive for large graphs;</li><li><code>fastsample</code> a recursive heuristic, has a computational time proportional to the expected number of edges in the graph.</li></ul><p>The latter can easily scale to generate graphs of millions of nodes. Both return the adjacency matrix as a sparse array.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Kronecker</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; P = rand(2, 2)</code><code class="nohighlight hljs ansi" style="display:block;">2×2 Array{Float64,2}:
+ 0.52989   0.482908
+ 0.277388  0.703947</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; P10 = P ⊗ 10</code><code class="nohighlight hljs ansi" style="display:block;">1024×1024 KroneckerPower{Float64,Array{Float64,2}}:
+ 0.00174526   0.00159051   0.00159051   …  0.000756772  0.000689674
+ 0.00091361   0.00231853   0.000832605     0.000396156  0.00100536
+ 0.00091361   0.000832605  0.00231853      0.00110317   0.00100536
+ 0.000478258  0.00121371   0.00121371      0.000577487  0.00146553
+ 0.00091361   0.000832605  0.000832605     0.00110317   0.00100536
+ 0.000478258  0.00121371   0.000435854  …  0.000577487  0.00146553
+ 0.000478258  0.000435854  0.00121371      0.00160811   0.00146553
+ 0.000250359  0.000635355  0.000635355     0.000841818  0.00213634
+ 0.00091361   0.000832605  0.000832605     0.00110317   0.00100536
+ 0.000478258  0.00121371   0.000435854     0.000577487  0.00146553
  ⋮                                      ⋱
- 0.00106318   0.000996886  0.000996886  …  0.000312457  0.000292975
- 0.00212953   0.00104748   0.00104748      0.000328316  0.000161494
- 0.00150468   0.00141086   0.000740132     0.000231982  0.000217517
- 0.00150468   0.000740132  0.00141086      0.00044221   0.000217517
- 0.00106318   0.000996886  0.000996886     0.000312457  0.000292975
- 0.00150468   0.000740132  0.000740132  …  0.00044221   0.000217517
- 0.00106318   0.000996886  0.000522962     0.000312457  0.000292975
- 0.00106318   0.000522962  0.000996886     0.000595615  0.000292975
- 0.000751219  0.000704379  0.000704379     0.000420849  0.000394609</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sum(P10)  # expected number of edges</code><code class="nohighlight hljs ansi" style="display:block;">889.8509629241505</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = fastsample(P10)</code><code class="nohighlight hljs ansi" style="display:block;">1024×1024 SparseArrays.SparseMatrixCSC{Bool,Int64} with 889 stored entries:
-  [217,    1]  =  1
-  [820,    1]  =  1
-  [883,    1]  =  1
-  [918,    1]  =  1
-  [116,    2]  =  1
-  [130,    2]  =  1
-  [161,    3]  =  1
-  [459,    3]  =  1
-  [921,    3]  =  1
+ 5.15197e-6   1.30745e-5   1.30745e-5   …  0.00807743   0.0204987
+ 1.88005e-5   1.71336e-5   1.71336e-5      0.0105851    0.00964661
+ 9.84173e-6   2.49761e-5   8.96912e-6      0.00554112   0.0140621
+ 9.84173e-6   8.96912e-6   2.49761e-5      0.0154302    0.0140621
+ 5.15197e-6   1.30745e-5   1.30745e-5      0.00807743   0.0204987
+ 9.84173e-6   8.96912e-6   8.96912e-6   …  0.0154302    0.0140621
+ 5.15197e-6   1.30745e-5   4.69517e-6      0.00807743   0.0204987
+ 5.15197e-6   4.69517e-6   1.30745e-5      0.022493     0.0204987
+ 2.69696e-6   6.84427e-6   6.84427e-6      0.0117747    0.0298815</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sum(P10)  # expected number of edges</code><code class="nohighlight hljs ansi" style="display:block;">994.3566598985201</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; A = fastsample(P10)</code><code class="nohighlight hljs ansi" style="display:block;">1024×1024 SparseArrays.SparseMatrixCSC{Bool,Int64} with 992 stored entries:
+  [611 ,    6]  =  1
+  [547 ,    7]  =  1
+  [253 ,    9]  =  1
+  [85  ,   14]  =  1
+  [5   ,   15]  =  1
+  [467 ,   23]  =  1
+  [831 ,   32]  =  1
+  [86  ,   36]  =  1
+  [74  ,   41]  =  1
   ⋮
-  [455,  999]  =  1
-  [907,  999]  =  1
-  [933, 1000]  =  1
-  [812, 1001]  =  1
-  [338, 1002]  =  1
-  [744, 1003]  =  1
-  [273, 1007]  =  1
-  [913, 1009]  =  1
-  [245, 1011]  =  1
-  [151, 1015]  =  1</code></pre><article class="docstring"><header><a class="docstring-binding" id="Kronecker.isprob" href="#Kronecker.isprob"><code>Kronecker.isprob</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">isprob(A::AbstractArray)</code></pre><p>Test if a matrix can be interpeted as a probability matrix, i.e., all elements are between 0 and 1.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/36e37c73965378924118ff731e9704518331692d/src/kroneckergraphs.jl#L19-L24">source</a></section><section><div><pre><code class="nohighlight hljs">isprob(K::AbstractKroneckerProduct)</code></pre><p>Test if a Kronecker product can be interpeted as a probability matrix, i.e., all elements are between 0 and 1.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/36e37c73965378924118ff731e9704518331692d/src/kroneckergraphs.jl#L27-L32">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.naivesample" href="#Kronecker.naivesample"><code>Kronecker.naivesample</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">naivesample(P::AbstractKroneckerProduct)</code></pre><p>Sample a Kronecker graph from a probabilistic Kronecker product P using the naive method. This method has a time complexity in the size of the Kronecker product (but is still light in memory use). Consider using <code>fastsample</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/36e37c73965378924118ff731e9704518331692d/src/kroneckergraphs.jl#L38-L44">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.fastsample" href="#Kronecker.fastsample"><code>Kronecker.fastsample</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">fastsample(P::AbstractKroneckerProduct)</code></pre><p>Uses the heuristic sampling from Leskovec et al. (2008) to sample a large Kronecker graph.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/36e37c73965378924118ff731e9704518331692d/src/kroneckergraphs.jl#L87-L92">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../kroneckersums/">« Kronecker sums</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Monday 29 May 2023 09:21">Monday 29 May 2023</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  [138 , 1023]  =  1
+  [441 , 1023]  =  1
+  [599 , 1023]  =  1
+  [746 , 1023]  =  1
+  [8   , 1024]  =  1
+  [243 , 1024]  =  1
+  [367 , 1024]  =  1
+  [853 , 1024]  =  1
+  [854 , 1024]  =  1
+  [1000, 1024]  =  1</code></pre><article class="docstring"><header><a class="docstring-binding" id="Kronecker.isprob" href="#Kronecker.isprob"><code>Kronecker.isprob</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">isprob(A::AbstractArray)</code></pre><p>Test if a matrix can be interpeted as a probability matrix, i.e., all elements are between 0 and 1.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/6d45a66436866d7076ae13315ab9cec6d63b81fa/src/kroneckergraphs.jl#L19-L24">source</a></section><section><div><pre><code class="nohighlight hljs">isprob(K::AbstractKroneckerProduct)</code></pre><p>Test if a Kronecker product can be interpeted as a probability matrix, i.e., all elements are between 0 and 1.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/6d45a66436866d7076ae13315ab9cec6d63b81fa/src/kroneckergraphs.jl#L27-L32">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.naivesample" href="#Kronecker.naivesample"><code>Kronecker.naivesample</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">naivesample(P::AbstractKroneckerProduct)</code></pre><p>Sample a Kronecker graph from a probabilistic Kronecker product P using the naive method. This method has a time complexity in the size of the Kronecker product (but is still light in memory use). Consider using <code>fastsample</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/6d45a66436866d7076ae13315ab9cec6d63b81fa/src/kroneckergraphs.jl#L38-L44">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Kronecker.fastsample" href="#Kronecker.fastsample"><code>Kronecker.fastsample</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">fastsample(P::AbstractKroneckerProduct)</code></pre><p>Uses the heuristic sampling from Leskovec et al. (2008) to sample a large Kronecker graph.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/MichielStock/Kronecker.jl/blob/6d45a66436866d7076ae13315ab9cec6d63b81fa/src/kroneckergraphs.jl#L87-L92">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../kroneckersums/">« Kronecker sums</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Tuesday 30 May 2023 13:52">Tuesday 30 May 2023</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

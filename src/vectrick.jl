@@ -227,12 +227,12 @@ end
 # It's usually better to convert these to Diagonal to use optimized multiplication methods
 # instead of using the vec trick
 Base.:*(K::KroneckerDiagonal, v::AbstractVector) = Diagonal(K) * v
-for T in [MulMatTypes; :AbstractMatrix; :AbstractKroneckerProduct]
+for T in MulMatTypes
     @eval Base.:*(K::KroneckerDiagonal, D::$T) = Diagonal(K) * D
     @eval Base.:*(D::$T, K::KroneckerDiagonal) = D * Diagonal(K)
 end
 # ambiguity fix
-Base.:*(K1::KroneckerDiagonal, K2::KroneckerDiagonal) = Diagonal(K1) * Diagonal(K2)
+#Base.:*(K1::KroneckerDiagonal, K2::KroneckerDiagonal) = Diagonal(K1) * Diagonal(K2)
 
 for T in [:Adjoint, :Transpose]
     @eval Base.:*(A::$T{<:Number,<:AbstractVector}, K::KroneckerDiagonal) = A * Diagonal(K)

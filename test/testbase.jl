@@ -127,8 +127,8 @@
         @test K * Kd ≈ X * DKd
         @test Kd * K ≈ DKd * X
         @test Kd * Kd ≈ DKd * DKd
-        @test Kd * Kd2 ≈ DKd * DKd2
-        @test Kd2 * Kd ≈ DKd2 * DKd
+        @test Diagonal(Kd) * Kd2 ≈ DKd * DKd2
+        @test Kd2 * Diagonal(Kd) ≈ DKd2 * DKd
     end
 
     @testset "Mismatch errors" begin

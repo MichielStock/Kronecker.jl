@@ -11,6 +11,9 @@ struct KroneckerSum{T<:Any,TA<:AbstractMatrix,TB<:AbstractMatrix} <: AbstractKro
     end
 end
 
+Base.copy(K::KroneckerSum) = kroneckersum(copy(K.A), copy(K.B))
+Base.deepcopy(K::KroneckerSum) = kroneckersum(deepcopy(K.A), deepcopy(K.B))
+
 order(M::AbstractKroneckerSum) = order(M.A) + order(M.B)
 issquare(M::AbstractKroneckerSum) = true
 

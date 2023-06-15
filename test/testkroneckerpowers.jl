@@ -40,6 +40,11 @@
 
         @test sum(K1) ≈ sum(K1dense)
 
+        @test copy(K2) isa KroneckerPower
+
+        Kcopy = deepcopy(K2)
+        @test Kcopy ≈ K2
+
     end
 
     @testset "Inplace scaling" begin

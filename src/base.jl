@@ -150,6 +150,9 @@ Returns a the size of an `GeneralizedKroneckerProduct` instance.
 """
 size(K::GeneralizedKroneckerProduct, dim::Integer) = size(K)[dim]
 
+Base.copy(K::AbstractKroneckerProduct) = kronecker(copy(K.A), copy(K.B))
+Base.deepcopy(K::AbstractKroneckerProduct) = kronecker(deepcopy(K.A), deepcopy(K.B))
+
 # CHECKS
 
 """
@@ -405,7 +408,6 @@ end
     Bs = map(x -> last(getmatrices(x)), Ks_all)
     return _kron!(C, As, Bs, f)
 end
-
 
 """
     Matrix(K::GeneralizedKroneckerProduct)

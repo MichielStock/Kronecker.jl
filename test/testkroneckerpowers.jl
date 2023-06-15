@@ -44,6 +44,9 @@
 
         Kcopy = deepcopy(K2)
         @test Kcopy ≈ K2
+        @test Kcopy isa KroneckerPower
+
+        @test similar(K2) isa KroneckerPower
 
     end
 

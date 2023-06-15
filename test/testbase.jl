@@ -47,6 +47,9 @@
 
         Kcopy = deepcopy(K)
         @test Kcopy ≈ K
+        @test Kcopy isa AbstractKroneckerProduct
+
+        @test similar(K) isa AbstractKroneckerProduct
     end
 
     @testset "Using vectors" begin

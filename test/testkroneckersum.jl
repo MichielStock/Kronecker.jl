@@ -24,6 +24,14 @@
 
         @test issquare(KS)
 
+        @test copy(KS) isa KroneckerSum 
+
+        KScopy = deepcopy(KS)
+        @test KScopy ≈ KS
+        @test KScopy isa KroneckerSum
+
+        @test similar(KS) isa KroneckerSum
+
         IC = oneunit(C)
         KS3 = A ⊕ B ⊕ C
         KS3AB = (A ⊕ B) ⊕ C

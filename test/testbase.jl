@@ -42,6 +42,14 @@
         @test K isa AbstractKroneckerProduct{Float64}
 
         @test K isa AbstractMatrix{Float64}
+
+        @test copy(K) isa AbstractKroneckerProduct
+
+        Kcopy = deepcopy(K)
+        @test Kcopy ≈ K
+        @test Kcopy isa AbstractKroneckerProduct
+
+        @test similar(K) isa AbstractKroneckerProduct
     end
 
     @testset "Using vectors" begin

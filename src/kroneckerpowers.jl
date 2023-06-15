@@ -44,6 +44,10 @@ getmatrices(K::KroneckerPower) = (K.pow == 2 ? K.A : KroneckerPower(K.A, K.pow -
 
 lastmatrix(K::KroneckerPower) = K.A
 
+Base.copy(K::KroneckerPower) = kronecker(copy(K.A), K.pow)
+Base.deepcopy(K::KroneckerPower) = kronecker(deepcopy(K.A), K.pow)
+Base.similar(K::KroneckerPower) = kronecker(similar(K.A), K.pow)
+
 order(K::KroneckerPower) = K.pow
 Base.size(K::KroneckerPower) = size(K.A) .^ K.pow
 issquare(K::KroneckerPower) = issquare(K.A)

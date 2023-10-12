@@ -50,6 +50,10 @@
         @test Kcopy isa AbstractKroneckerProduct
 
         @test similar(K) isa AbstractKroneckerProduct
+
+        Kcopy = similar(A) ⊗ similar(B)
+        @test_nowarn copy!(Kcopy, K)
+        @test Kcopy ≈ K
     end
 
     @testset "Using vectors" begin

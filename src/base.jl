@@ -152,6 +152,11 @@ size(K::GeneralizedKroneckerProduct, dim::Integer) = size(K)[dim]
 
 Base.copy(K::AbstractKroneckerProduct) = kronecker(copy(K.A), copy(K.B))
 Base.deepcopy(K::AbstractKroneckerProduct) = kronecker(deepcopy(K.A), deepcopy(K.B))
+Base.copy!(K1::AbstractKroneckerProduct, K2::AbstractKroneckerProduct) = begin
+	  Base.copy!(K1.A, K2.A)
+	  Base.copy!(K1.B, K2.B)
+    return K1
+end
 
 Base.similar(K::AbstractKroneckerProduct) = kronecker(similar(K.A), similar(K.B))
 

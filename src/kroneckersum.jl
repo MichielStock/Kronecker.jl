@@ -14,6 +14,11 @@ end
 Base.copy(K::KroneckerSum) = kroneckersum(copy(K.A), copy(K.B))
 Base.deepcopy(K::KroneckerSum) = kroneckersum(deepcopy(K.A), deepcopy(K.B))
 Base.similar(K::KroneckerSum) = kroneckersum(similar(K.A), similar(K.B))
+Base.copy!(K1::KroneckerSum, K2::KroneckerSum) = begin
+    Base.copy!(K1.A, K2.A)
+    Base.copy!(K1.B, K2.B)
+    return K1
+end
 
 order(M::AbstractKroneckerSum) = order(M.A) + order(M.B)
 issquare(M::AbstractKroneckerSum) = true

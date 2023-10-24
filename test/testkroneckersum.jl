@@ -32,9 +32,11 @@
 
         @test similar(KS) isa KroneckerSum
 
-        KScopy = similar(A) ⊕ similar(B)
-        @test_nowarn copy!(KScopy, KS)
-        @test KScopy ≈ KS
+        if VERSION ≥ v"1.1"
+            KScopy = similar(A) ⊕ similar(B)
+            @test_nowarn copy!(KScopy, KS)
+            @test KScopy ≈ KS
+        end
 
         IC = oneunit(C)
         KS3 = A ⊕ B ⊕ C

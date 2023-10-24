@@ -165,7 +165,7 @@ for TC in [:AbstractVector, :AbstractMatrix],
         #       factorization up to the user/Julia
         factors = ntuple(length(matrices)) do i
             m = matrices[i]
-            return (m isa Factorization) ? m : factorize(m)
+            return (m isa Factorization) ? m : unscalar(factorize(m))
         end
 
         if length(factors) == 2
@@ -189,6 +189,10 @@ for TC in [:AbstractVector, :AbstractMatrix],
         end
     end
 end
+
+# Utility function to handle factorize(one_by_one)::Number
+unscalar(n::Number) = [n;;]
+unscalar(x) = x
 
 function Base.:*(K::GeneralizedKroneckerProduct, v::AbstractVector)
     return mul!(Vector{promote_type(eltype(v), eltype(K))}(undef, first(size(K))), K, v)

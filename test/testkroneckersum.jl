@@ -76,7 +76,7 @@
         B = rand(10, 10)
         V = Diagonal(rand(10))
         @testset "Vec trick for sums" begin
-            @test (A ⊕ B) * vec(V) == vec(B * V + V * transpose(A))
+            @test (A ⊕ B) * vec(V) ≈ vec(B * V + V * transpose(A))
         end
 
         A = rand(3, 3)

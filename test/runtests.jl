@@ -18,4 +18,5 @@ end
     include("testkroneckersum.jl")
     include("testfactorization.jl")
     include("testkroneckergraphs.jl")
+    include("sums.jl")
 end

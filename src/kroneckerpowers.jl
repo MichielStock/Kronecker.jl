@@ -17,7 +17,7 @@ struct KroneckerPower{T,TA<:AbstractMatrix{T}} <: AbstractKroneckerProduct{T}
     A::TA
     pow::Int
     function KroneckerPower(A::AbstractMatrix, pow::Integer)
-        @assert pow ≥ 2 "KroneckerPower only makes sense for powers greater than 1"
+        @assert pow ≥ 1 "KroneckerPower only makes sense for powers ≥ 1"
         return new{eltype(A),typeof(A)}(A, Int(pow))
     end
 end
@@ -28,7 +28,11 @@ end
 Kronecker power, computes `A ⊗ A ⊗ ... ⊗ A`. Returns a lazy `KroneckerPower`
 type.
 """
-kronecker(A::AbstractMatrix, pow::Integer) = KroneckerPower(A, pow)
+function kronecker(A::AbstractMatrix, pow::Integer)
+    @assert pow ≥ 1
+    pow > 1 && return KroneckerPower(A, pow)
+    pow == 1 && return A
+end
 
 """
     ⊗(A::AbstractMatrix, pow::Int)

@@ -2,6 +2,9 @@
     A = [0.1 0.4; 0.6 2.1]
     B = [1 2 3 4; 5 6 7 8]
 
+    @test kronecker(A, 1) == A
+    @test kronecker(B, 1) == B
+
     K1 = kronecker(A, 3)
     K2 = kronecker(B, 3)
 

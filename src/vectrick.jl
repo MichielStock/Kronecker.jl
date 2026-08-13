@@ -46,25 +46,9 @@ function mul_vec_trick!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractV
     V = reshape(v, d, b)
     X = reshape(x, c, a)
     mul!(X, V, transpose(A))
-    _mul5!(X, B, V, true, true)
+    mul!(X, B, V, true, true)
     return x
 end
-
-if VERSION < v"1.3.0-alpha.115"
-    function _mul5!(X, B, V, α, β)
-        if β && α
-            X .= (B * V) .* α .+ X .* β
-        elseif α
-            X .= (B * V) .* α
-        elseif β
-            X .*= β
-        else
-            X .= zero(eltype(X))
-        end
-    end
-else # 5-arg mul! is available
-    _mul5! = mul!
-end # VERSION
 
 function mul_vec_trick!(X::AbstractMatrix, A::GeneralizedKroneckerProduct, V::AbstractMatrix)
     @inbounds for i in eachindex(axes(X, 2), axes(V, 2))
@@ -217,12 +201,18 @@ function Base.:*(v::AbstractMatrix, K::GeneralizedKroneckerProduct)
     return transpose(mul!(out, transpose(K), collect(transpose(v))))
 end
 
-function Base.:*(v::Adjoint{<:Number,<:AbstractVector}, K::GeneralizedKroneckerProduct)
+# fallback for two lazy Kronecker types without a specialized method (e.g. a
+# product times a sum): collect the right operand and use the vec-trick path
+function Base.:*(K1::GeneralizedKroneckerProduct, K2::GeneralizedKroneckerProduct)
+    return K1 * collect(K2)
+end
+
+function Base.:*(v::Adjoint{<:Any,<:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return mul!(out, K', v.parent)'
 end
 
-function Base.:*(v::Transpose{<:Number,<:AbstractVector}, K::GeneralizedKroneckerProduct)
+function Base.:*(v::Transpose{<:Any,<:AbstractVector}, K::GeneralizedKroneckerProduct)
     out = Vector{promote_type(eltype(v), eltype(K))}(undef, last(size(K)))
     return transpose(mul!(out, transpose(K), v.parent))
 end

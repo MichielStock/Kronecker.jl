@@ -14,5 +14,6 @@ All notable changes to Kronecker.jl are documented in this file.
 
 ### Fixed
 
+- `IndexedKroneckerProduct` multiplication (`genvectrick!`) could return garbage or `NaN`: its scratch array was accumulated into without zero-initialisation, so results depended on heap state. The second ("S = NV") branch additionally used wrong scratch dimensions and a wrong index, writing out of bounds under `@inbounds`. Both branches are fixed and covered by seeded regression tests.
 - Renamed `src/indexedkroncker.jl` to `src/indexedkronecker.jl` and `scrips/` to `scripts/` (typos).
 - README fixes: "comparision" → "comparison", updated benchmark script link, added a "Citing" section for the JuliaCon proceedings paper.

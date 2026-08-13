@@ -1,3 +1,14 @@
 manifest.toml
 docs/build/
 workflows/
+notebooks/
+
+# LaTeX build artifacts (paper sources stay tracked)
+paper/*.aux
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/paper.pdf

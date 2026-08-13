@@ -4,7 +4,11 @@ using SparseArrays: AbstractSparseMatrix, SparseMatrixCSC, sprand,
 
 using Aqua
 @testset "project quality" begin
-    Aqua.test_all(Kronecker, ambiguities=false)
+    # `+(::Eigen, ::UniformScaling)` (src/eigen.jl) is deliberate type piracy:
+    # it implements shifting a spectral decomposition, a documented feature of
+    # this package; removing it would be breaking. Both types are owned by
+    # LinearAlgebra, hence the explicit exclusion via `treat_as_own`.
+    Aqua.test_all(Kronecker; piracies = (treat_as_own = [LinearAlgebra.Eigen],))
 end
 
 @testset "Kronecker" begin
@@ -18,4 +22,5 @@ end
     include("testkroneckersum.jl")
     include("testfactorization.jl")
     include("testkroneckergraphs.jl")
+    include("testdisambiguation.jl")
 end

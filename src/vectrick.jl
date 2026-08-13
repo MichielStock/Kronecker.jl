@@ -122,6 +122,8 @@ end
 # disambiguation
 mul!(C::AbstractMatrix, A::AbstractKroneckerProduct, B::LinearAlgebra.AbstractTriangular) =
     invoke(mul!, Tuple{AbstractMatrix, AbstractKroneckerProduct, AbstractMatrix}, C, A, B)
+mul!(C::AbstractMatrix, A::AbstractKroneckerSum, B::LinearAlgebra.AbstractTriangular) =
+    invoke(mul!, Tuple{AbstractMatrix, AbstractKroneckerSum, AbstractMatrix}, C, A, B)
 
 for TC in [:AbstractVector, :AbstractMatrix],
     TB in [:($TC), :(Transpose{T,<:$TC{T}} where {T}), :(Adjoint{T,<:$TC{T}} where {T})]

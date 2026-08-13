@@ -15,6 +15,14 @@ using NamedDims
         @test collect(S * S) ≈ Sdense * Sdense
     end
 
+    @testset "mul! of KroneckerSum with triangular matrix" begin
+        S = A ⊕ B
+        T = UpperTriangular(randn(12, 12))
+        C = zeros(12, 12)
+        mul!(C, S, T)
+        @test C ≈ collect(S) * T
+    end
+
     @testset "adjoint and transpose row vectors" begin
         v = randn(ComplexF64, 12)
         @test v' * K ≈ v' * Kdense

@@ -10,7 +10,7 @@ Commonly-used mathematical functions are overloaded to provide the most efficien
 Pages = [
     "man/basic.md",
     "man/types.md",
-    "man/multiplication.md"
+    "man/multiplication.md",
     "man/factorization.md",
     "man/indexed.md",
     "man/kroneckersums.md",

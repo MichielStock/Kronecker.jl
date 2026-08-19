@@ -1,5 +1,11 @@
 abstract type GeneralizedKroneckerProduct{T} <: AbstractMatrix{T} end
 
+"""
+    eltype(K::GeneralizedKroneckerProduct)
+
+Return the type of the elements of a Kronecker product, i.e. the promoted type
+of the elements of its factors.
+"""
 Base.eltype(K::GeneralizedKroneckerProduct{T}) where {T} = T
 
 abstract type AbstractKroneckerProduct{T} <: GeneralizedKroneckerProduct{T} end
@@ -325,6 +331,12 @@ function Base.permutedims(K::AbstractKroneckerProduct)
     return kronecker(permutedims(A), permutedims(B))
 end
 
+"""
+    conj(K::AbstractKroneckerProduct)
+
+Compute the elementwise complex conjugate of a Kronecker product, lazily, as
+the Kronecker product of the conjugated factors.
+"""
 function Base.conj(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return kronecker(conj(A), conj(B))

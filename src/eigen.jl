@@ -42,6 +42,13 @@ function LinearAlgebra.eigvals(K::AbstractKroneckerProduct; kw...)
     end
 end
 
+"""
+    +(E::Eigen, B::UniformScaling)
+
+Shift a spectral decomposition, i.e. `eigen(K) + λI` yields the (lazy)
+eigenvalue decomposition of `K + λI`. This can be used to efficiently solve
+systems of the form `(A ⊗ B + λI) \\ v`.
+"""
 +(E::Eigen, B::UniformScaling) = Eigen(E.values .+ B.λ, E.vectors)
 +(A::UniformScaling, E::Eigen) = E + A
 

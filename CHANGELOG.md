@@ -2,11 +2,28 @@
 
 All notable changes to Kronecker.jl are documented in this file.
 
-## Unreleased
+## Version 0.6.0
+
+### Breaking
+
+- The minimum supported Julia version is now 1.10 (was 1.0).
+- NamedDims.jl support is now a package extension: NamedDims is a weak
+  dependency, so users must load NamedDims themselves (`using NamedDims`) to
+  activate the `NamedDimsArray` methods. Behaviour once loaded is unchanged.
+- StatsBase.jl is no longer a dependency; weighted sampling for Kronecker
+  graphs is implemented internally. The hard dependencies of the package are
+  now LinearAlgebra, Random and SparseArrays only.
+
+### Added
+
+- `naivesample`, `fastsample` and `sampleindices` accept an optional leading
+  `rng::AbstractRNG` argument (default `Random.default_rng()`), making
+  Kronecker graph sampling reproducible.
 
 ### Changed
 
-- The minimum supported Julia version is now 1.10 (was 1.0).
+- Documentation migrated to Documenter 1.x, building in strict mode with
+  doctests enabled; several missing docstrings added.
 - Removed the pre-Julia-1.3 compatibility branch for five-argument `mul!` in `src/vectrick.jl`.
 - Continuous integration modernised: current action versions (`actions/checkout@v4`, `julia-actions/setup-julia@v2`, `codecov/codecov-action@v5`), package caching via `julia-actions/cache@v2`, test matrix now covers Julia 1.10 (LTS), the latest stable release, and pre-releases. Coverage upload now requires the `CODECOV_TOKEN` repository secret.
 - Added Dependabot configuration to keep GitHub Actions up to date.

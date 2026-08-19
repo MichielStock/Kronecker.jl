@@ -53,4 +53,21 @@
          end
    end
 
+    @testset "seeded sampling is deterministic" begin
+          @test naivesample(MersenneTwister(42), P) == naivesample(MersenneTwister(42), P)
+          @test fastsample(MersenneTwister(42), P) == fastsample(MersenneTwister(42), P)
+          @test sampleindices(MersenneTwister(42), P, 50) == sampleindices(MersenneTwister(42), P, 50)
+          @test sampleindices(MersenneTwister(42), P1, 50) == sampleindices(MersenneTwister(42), P1, 50)
+    end
+
+    @testset "weighted sampling frequencies" begin
+          rng = MersenneTwister(0)
+          weights = [0.5, 0.3, 0.2]
+          n = 100_000
+          draws = Kronecker._sample_weighted(rng, 1:3, weights, n)
+          freqs = [count(==(i), draws) / n for i in 1:3]
+          @test all(abs.(freqs .- weights) .< 0.01)
+          @test_throws ArgumentError Kronecker._sample_weighted(rng, 1:3, zeros(3), 5)
+    end
+
 end

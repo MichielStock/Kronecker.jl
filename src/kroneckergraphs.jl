@@ -14,7 +14,7 @@ Retrieved from https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf
 =#
 
 using SparseArrays: spzeros
-using StatsBase: sample, Weights
+using Random: AbstractRNG, default_rng
 
 """
     isprob(A::AbstractArray)
@@ -36,46 +36,60 @@ function isprob(K::AbstractKroneckerProduct)
 end
 
 """
-    naivesample(P::AbstractKroneckerProduct)
+    _sample_weighted(rng::AbstractRNG, items, weights, s::Int)
+
+Draw `s` elements from `items` with replacement, with probabilities
+proportional to `weights` (assumed non-negative).
+"""
+function _sample_weighted(rng::AbstractRNG, items, weights, s::Int)
+    cw = cumsum(weights)
+    total = last(cw)
+    total > 0 || throw(ArgumentError("weights must have a positive sum"))
+    return [items[searchsortedfirst(cw, rand(rng) * total)] for _ in 1:s]
+end
+
+"""
+    naivesample([rng::AbstractRNG,] P::AbstractKroneckerProduct)
 
 Sample a Kronecker graph from a probabilistic Kronecker product P using the
 naive method. This method has a time complexity in the size of the Kronecker
 product (but is still light in memory use). Consider using `fastsample`.
 """
-function naivesample(P::AbstractKroneckerProduct)
+function naivesample(rng::AbstractRNG, P::AbstractKroneckerProduct)
     @assert isprob(P) throw(DomainError(
         "All values of K should be between 0 and 1"))
     G = spzeros(Bool, size(P)...)
     for I in CartesianIndices(P)
-        if P[I] > rand()  # QUESTION: is this the most efficient way?
+        if P[I] > rand(rng)  # QUESTION: is this the most efficient way?
             @inbounds G[I] = true
         end
     end
     return G
 end
 
+naivesample(P::AbstractKroneckerProduct) = naivesample(default_rng(), P)
+
 """
-    sampleindices(A::AbstractMatrix, s::Int)
+    sampleindices([rng::AbstractRNG,] A::AbstractMatrix, s::Int)
 
 Samples the indices from an `AbstractMatrix`. Probability of sampling indices is
 proportional to the size of the corresponding value. Does not do any checks on A.
 """
-sampleindices(A::AbstractMatrix, s::Int) = Tuple.(sample(CartesianIndices(A),
-    Weights(vec(A), sum(A)), s,
-    replace = true))
+sampleindices(rng::AbstractRNG, A::AbstractMatrix, s::Int) =
+    Tuple.(_sample_weighted(rng, CartesianIndices(A), vec(A), s))
 
 """
-sampleindices(K::AbstractKroneckerProduct, s::Int)
+    sampleindices([rng::AbstractRNG,] K::AbstractKroneckerProduct, s::Int)
 
 Samples the indices from an `AbstractKroneckerProduct`. Probability of
 sampling indices is proportional to the size of the corresponding value.
 Does not do any checks on A.
 """
-function sampleindices(K::AbstractKroneckerProduct, s::Int)
+function sampleindices(rng::AbstractRNG, K::AbstractKroneckerProduct, s::Int)
     A, B = getmatrices(K)
     p, q = size(B)
-    indicesA = sampleindices(A, s)
-    indicesB = sampleindices(B, s)
+    indicesA = sampleindices(rng, A, s)
+    indicesB = sampleindices(rng, B, s)
     indices = similar(indicesA)
     for (o, (Ia, Ib)) in enumerate(zip(indicesA, indicesB))
         (i, j), (k, l) = Ia, Ib
@@ -84,19 +98,23 @@ function sampleindices(K::AbstractKroneckerProduct, s::Int)
     return indices
 end
 
+sampleindices(A::AbstractMatrix, s::Int) = sampleindices(default_rng(), A, s)
+
 """
-    fastsample(P::AbstractKroneckerProduct)
+    fastsample([rng::AbstractRNG,] P::AbstractKroneckerProduct)
 
 Uses the heuristic sampling from Leskovec et al. (2008) to sample a large
 Kronecker graph.
 """
-function fastsample(P::AbstractKroneckerProduct)
+function fastsample(rng::AbstractRNG, P::AbstractKroneckerProduct)
     @assert isprob(P) throw(DomainError(
         "All values of K should be between 0 and 1"))
     G = spzeros(Bool, size(P)...)
     n = Int(round(sum(P)))  # expected number of edges
-    for (i, j) in sampleindices(P, n)
+    for (i, j) in sampleindices(rng, P, n)
         @inbounds G[i, j] = true
     end
     return G
 end
+
+fastsample(P::AbstractKroneckerProduct) = fastsample(default_rng(), P)

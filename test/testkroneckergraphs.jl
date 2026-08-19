@@ -60,6 +60,21 @@
           @test sampleindices(MersenneTwister(42), P1, 50) == sampleindices(MersenneTwister(42), P1, 50)
     end
 
+    @testset "sampleindices matches the kron distribution" begin
+          rng = MersenneTwister(1)
+          n = 200_000
+          A = [0.5 0.1; 0.2 0.7]
+          B = [0.3 0.6 0.1; 0.2 0.05 0.4]  # rectangular factor
+
+          for (K, W) in ((A ⊗ B, kron(A, B)), (kronecker(A, 3), kron(A, A, A)))
+                counts = zeros(size(K))
+                for (i, j) in sampleindices(rng, K, n)
+                      counts[i, j] += 1
+                end
+                @test all(abs.(counts ./ n .- W ./ sum(W)) .< 0.01)
+          end
+    end
+
     @testset "weighted sampling frequencies" begin
           rng = MersenneTwister(0)
           weights = [0.5, 0.3, 0.2]

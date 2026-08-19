@@ -14,7 +14,7 @@ Retrieved from https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf
 =#
 
 using SparseArrays: spzeros
-using Random: AbstractRNG, default_rng
+using Random: AbstractRNG, default_rng, rand!
 
 """
     isprob(A::AbstractArray)
@@ -45,7 +45,39 @@ function _sample_weighted(rng::AbstractRNG, items, weights, s::Int)
     cw = cumsum(weights)
     total = last(cw)
     total > 0 || throw(ArgumentError("weights must have a positive sum"))
-    return [items[searchsortedfirst(cw, rand(rng) * total)] for _ in 1:s]
+    return [items[searchsortedfirst(cw, u * total)] for u in rand(rng, s)]
+end
+
+"""
+    _accumulate_indices!(rows, cols, cw, is, js, u, m, n)
+
+Fold one Kronecker factor into the running global indices: draw an entry of
+the `m × n` factor for each uniform variate in `u` (via its cumulative weights
+`cw` over the vectorised factor, with `is`/`js` mapping linear factor indices
+back to subscripts) and update `rows`/`cols` Horner-style, i.e.
+`i ← (i - 1)m + i_factor`.
+"""
+function _accumulate_indices!(rows::Vector{Int}, cols::Vector{Int},
+        cw::AbstractVector, is::Vector{Int}, js::Vector{Int},
+        u::Vector{Float64}, m::Int, n::Int)
+    total = last(cw)
+    @inbounds for o in eachindex(rows, cols, u)
+        idx = _findfirstweight(cw, u[o] * total)
+        rows[o] = (rows[o] - 1) * m + is[idx]
+        cols[o] = (cols[o] - 1) * n + js[idx]
+    end
+    return nothing
+end
+
+# For the small factors typical of Kronecker graph seeds, a linear scan beats
+# the branchy generic binary search; fall back to the latter for large factors.
+@inline function _findfirstweight(cw::AbstractVector, t)
+    length(cw) > 16 && return searchsortedfirst(cw, t)
+    idx = 1
+    @inbounds while cw[idx] < t
+        idx += 1
+    end
+    return idx
 end
 
 """
@@ -86,16 +118,23 @@ sampling indices is proportional to the size of the corresponding value.
 Does not do any checks on A.
 """
 function sampleindices(rng::AbstractRNG, K::AbstractKroneckerProduct, s::Int)
-    A, B = getmatrices(K)
-    p, q = size(B)
-    indicesA = sampleindices(rng, A, s)
-    indicesB = sampleindices(rng, B, s)
-    indices = similar(indicesA)
-    for (o, (Ia, Ib)) in enumerate(zip(indicesA, indicesB))
-        (i, j), (k, l) = Ia, Ib
-        @inbounds indices[o] = ((i - 1) * p + k, (j - 1) * q + l)
+    rows = ones(Int, s)
+    cols = ones(Int, s)
+    u = Vector{Float64}(undef, s)
+    prev, cw, is, js = nothing, nothing, nothing, nothing
+    for A in getallfactors(K)
+        m = size(A, 1)
+        if A !== prev  # a KroneckerPower repeats one factor: reuse its weights
+            cw = cumsum(vec(A))
+            last(cw) > 0 || throw(ArgumentError("factors must have a positive sum"))
+            is = [mod1(idx, m) for idx in eachindex(cw)]
+            js = [fld1(idx, m) for idx in eachindex(cw)]
+            prev = A
+        end
+        rand!(rng, u)
+        _accumulate_indices!(rows, cols, cw, is, js, u, size(A)...)
     end
-    return indices
+    return collect(zip(rows, cols))
 end
 
 sampleindices(A::AbstractMatrix, s::Int) = sampleindices(default_rng(), A, s)

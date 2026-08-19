@@ -24,7 +24,7 @@ Read the [documentation](https://michielstock.github.io/Kronecker.jl/stable/) to
 
 ## Benchmarks
 
-Below is a [comparision](scrips/benchmarks.jl) between the native `kron` function and `Kronecker.jl` for several operations.
+Below is a [comparison](scripts/benchmarks.jl) between the native `kron` function and `Kronecker.jl` for several operations.
 
 ![](benchmark.svg)
 
@@ -58,6 +58,23 @@ Directly available via the Julia package manager:
 
 ```julialang
 ] add Kronecker
+```
+
+## Citing
+
+If you use Kronecker.jl in your research, please cite the [JuliaCon proceedings paper](https://doi.org/10.21105/jcon.00015):
+
+```bibtex
+@article{Stock2020Kronecker,
+  title   = {A general-purpose toolbox for efficient Kronecker-based learning},
+  author  = {Michiel Stock and Tapio Pahikkala and Antti Airola and Bernard De Baets},
+  journal = {Proceedings of the JuliaCon Conferences},
+  year    = {2020},
+  volume  = {1},
+  number  = {1},
+  pages   = {15},
+  doi     = {10.21105/jcon.00015}
+}
 ```
 
 ## Issues

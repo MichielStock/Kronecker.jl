@@ -37,5 +37,29 @@
     unaive = kron(N, M)[a * (q .- 1) .+ p, b * (t .- 1) .+ r] * v
     @test all(u .≈ unaive)
 
+    # regression tests for genvectrick!: the scratch array was not
+    # zero-initialised (garbage/NaN results depending on heap state) and the
+    # second branch used wrong dimensions and indices; run both branches on
+    # many seeded datasets and compare against the naive computation
+    let rng = MersenneTwister(42)
+        for trial in 1:100
+            # sizes with a*e + d*f < c*e + b*f: first branch (T = VM')
+            M2 = randn(rng, 4, 8); N2 = randn(rng, 5, 9)
+            p2, q2 = rand(rng, 1:4, 6), rand(rng, 1:5, 6)
+            r2, t2 = rand(rng, 1:8, 10), rand(rng, 1:9, 10)
+            v2 = randn(rng, 10)
+            ikp2 = (N2 ⊗ M2)[p2, q2, r2, t2]
+            @test ikp2 * v2 ≈ collect(ikp2) * v2
+
+            # sizes with a*e + d*f >= c*e + b*f: second branch (S = NV)
+            M3 = randn(rng, 10, 2); N3 = randn(rng, 2, 3)
+            p3, q3 = rand(rng, 1:10, 4), rand(rng, 1:2, 4)
+            r3, t3 = rand(rng, 1:2, 5), rand(rng, 1:3, 5)
+            v3 = randn(rng, 5)
+            ikp3 = (N3 ⊗ M3)[p3, q3, r3, t3]
+            @test ikp3 * v3 ≈ collect(ikp3) * v3
+        end
+    end
+
     @test_throws DimensionMismatch ikp * rand(8)
 end

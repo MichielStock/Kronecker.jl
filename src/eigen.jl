@@ -61,6 +61,13 @@ function \(E::Eigen{<:Number,<:Number,<:AbstractKroneckerProduct}, v::AbstractVe
     return Γ * (Diagonal(λ) \ (Γ' * v))
 end
 
+# disambiguate against \(::Factorization{T}, ::Vector{Complex{T}}) from LinearAlgebra
+function \(E::Eigen{T,<:Number,<:AbstractKroneckerProduct},
+    v::Vector{Complex{T}}) where {T<:Union{Float32,Float64}}
+    λ, Γ = E
+    return Γ * (Diagonal(λ) \ (Γ' * v))
+end
+
 """
     logdet(K::Eigen)
 

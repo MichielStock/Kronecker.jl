@@ -7,14 +7,19 @@ on:
     tags: '*'
   pull_request:
 
+permissions:
+  contents: write
+  statuses: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@latest
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
         with:
-          version: '1.5'
+          version: '1'
+      - uses: julia-actions/cache@v2
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
       - name: Build and deploy

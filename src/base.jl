@@ -610,6 +610,9 @@ end
 # Broadcasting machinery
 
 Base.copyto!(dest::AbstractMatrix, K::AbstractKroneckerProduct) = collect!(dest, K)
+# disambiguate against Base's copyto! methods for PermutedDimsArray
+Base.copyto!(dest::PermutedDimsArray{T,2}, K::AbstractKroneckerProduct{T}) where {T} = collect!(dest, K)
+Base.copyto!(dest::PermutedDimsArray{<:Any,2}, K::AbstractKroneckerProduct) = collect!(dest, K)
 
 struct AbsKronProdStyle <: Broadcast.AbstractArrayStyle{2} end
 AbsKronProdStyle(::Val{N}) where {N} = Broadcast.DefaultArrayStyle{N}()

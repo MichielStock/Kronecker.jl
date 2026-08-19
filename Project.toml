@@ -10,10 +10,15 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-Aqua = "0.5"
+Aqua = "0.8"
+LinearAlgebra = "1.10"
 NamedDims = "0.2, 0.3, 1"
+PkgBenchmark = "0.2"
+Random = "1.10"
+SparseArrays = "1.10"
 StatsBase = "0.32, 0.33, 0.34"
-julia = "1"
+Test = "1.10"
+julia = "1.10"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"

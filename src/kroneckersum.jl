@@ -181,6 +181,10 @@ function Base.kron(K1::AbstractKroneckerSum, K2::AbstractKroneckerSum)
     return kron(collect(K1), collect(K2))
 end
 
+# disambiguate between the AbstractMatrix methods above and those in base.jl
+Base.kron(K::AbstractKroneckerSum, P::AbstractKroneckerProduct) = kron(collect(K), P)
+Base.kron(P::AbstractKroneckerProduct, K::AbstractKroneckerSum) = kron(P, collect(K))
+
 function Base.adjoint(K::AbstractKroneckerSum)
     A, B = getmatrices(K)
     return kroneckersum(A', B')

@@ -51,7 +51,7 @@ The vec trick works with higher-order Kronecker products. **However, at the mome
 ## Docstrings
 
 ```@docs
-mul!
+Kronecker.mul_vec_trick!
 lmul!
 rmul!
 ```

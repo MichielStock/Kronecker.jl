@@ -242,6 +242,13 @@ function LinearAlgebra.:\(K::AbstractKroneckerProduct, v::AbstractMatrix)
     return ldiv!(Matrix{promote_type(eltype(v), eltype(K))}(undef, last(size(K)), last(size(v))), K, v)
 end
 
+"""
+    sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int} = nothing)
+
+Compute the sum of the elements of a Kronecker product. If `dims` is given,
+sum over that dimension, returning a lazy Kronecker product of the summed
+factors.
+"""
 function Base.sum(K::AbstractKroneckerProduct; dims::Union{Nothing,Int} = nothing)
     A, B = getmatrices(K)
     if dims === nothing

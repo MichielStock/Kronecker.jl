@@ -26,6 +26,9 @@
           # exact sample does not always generate this, so don't test
           #@test G[9, 1]  # probability of 1
           @test !G[2, 5]  # probability of 0
+          # collisions are re-sampled, so the number of edges is exactly the
+          # expected edge count of the probability matrix
+          @test sum(G) == round(Int, sum(P))
     end
 
     @testset "helpers" begin
@@ -83,6 +86,8 @@
           freqs = [count(==(i), draws) / n for i in 1:3]
           @test all(abs.(freqs .- weights) .< 0.01)
           @test_throws ArgumentError Kronecker._sample_weighted(rng, 1:3, zeros(3), 5)
+          @test_throws ArgumentError Kronecker._sample_weighted(rng, 1:3, [0.5, -0.1, 0.6], 5)
+          @test_throws ArgumentError sampleindices(rng, [0.5 -0.1; 0.2 0.4] ⊗ [0.3 0.2; 0.1 0.4], 5)
     end
 
 end

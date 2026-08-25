@@ -42,6 +42,7 @@ Draw `s` elements from `items` with replacement, with probabilities
 proportional to `weights` (assumed non-negative).
 """
 function _sample_weighted(rng::AbstractRNG, items, weights, s::Int)
+    any(w -> w < 0, weights) && throw(ArgumentError("weights must be non-negative"))
     cw = cumsum(weights)
     total = last(cw)
     total > 0 || throw(ArgumentError("weights must have a positive sum"))
@@ -88,8 +89,8 @@ naive method. This method has a time complexity in the size of the Kronecker
 product (but is still light in memory use). Consider using `fastsample`.
 """
 function naivesample(rng::AbstractRNG, P::AbstractKroneckerProduct)
-    @assert isprob(P) throw(DomainError(
-        "All values of K should be between 0 and 1"))
+    isprob(P) || throw(DomainError(P,
+        "All values of P should be between 0 and 1"))
     G = spzeros(Bool, size(P)...)
     for I in CartesianIndices(P)
         if P[I] > rand(rng)  # QUESTION: is this the most efficient way?
@@ -125,6 +126,7 @@ function sampleindices(rng::AbstractRNG, K::AbstractKroneckerProduct, s::Int)
     for A in getallfactors(K)
         m = size(A, 1)
         if A !== prev  # a KroneckerPower repeats one factor: reuse its weights
+            any(w -> w < 0, A) && throw(ArgumentError("factors must be non-negative"))
             cw = cumsum(vec(A))
             last(cw) > 0 || throw(ArgumentError("factors must have a positive sum"))
             is = [mod1(idx, m) for idx in eachindex(cw)]
@@ -143,15 +145,23 @@ sampleindices(A::AbstractMatrix, s::Int) = sampleindices(default_rng(), A, s)
     fastsample([rng::AbstractRNG,] P::AbstractKroneckerProduct)
 
 Uses the heuristic sampling from Leskovec et al. (2008) to sample a large
-Kronecker graph.
+Kronecker graph: edges are drawn proportionally to their probability until the
+expected number of edges `round(Int, sum(P))` is reached, re-sampling any
+duplicates (collisions) along the way.
 """
 function fastsample(rng::AbstractRNG, P::AbstractKroneckerProduct)
-    @assert isprob(P) throw(DomainError(
-        "All values of K should be between 0 and 1"))
+    isprob(P) || throw(DomainError(P,
+        "All values of P should be between 0 and 1"))
     G = spzeros(Bool, size(P)...)
-    n = Int(round(sum(P)))  # expected number of edges
-    for (i, j) in sampleindices(rng, P, n)
-        @inbounds G[i, j] = true
+    n = round(Int, sum(P))  # expected number of edges
+    added = 0
+    while added < n
+        for (i, j) in sampleindices(rng, P, n - added)
+            if !G[i, j]
+                G[i, j] = true
+                added += 1
+            end
+        end
     end
     return G
 end

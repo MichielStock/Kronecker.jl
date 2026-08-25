@@ -22,7 +22,7 @@ using Random: AbstractRNG, default_rng, rand!
 Test if a matrix can be interpeted as a probability matrix, i.e., all elements
 are between 0 and 1.
 """
-isprob(A::AbstractArray) = all(0 .<= A .<= 1)
+isprob(A::AbstractArray) = all(a->0 ≤ a ≤ 1, A)
 
 """
     isprob(K::AbstractKroneckerProduct)
@@ -30,7 +30,7 @@ isprob(A::AbstractArray) = all(0 .<= A .<= 1)
 Test if a Kronecker product can be interpeted as a probability matrix,
 i.e., all elements are between 0 and 1.
 """
-function isprob(K::AbstractKroneckerProduct)
+@inline function isprob(K::AbstractKroneckerProduct)
     A, B = getmatrices(K)
     return isprob(A) && isprob(B)
 end
@@ -59,8 +59,8 @@ back to subscripts) and update `rows`/`cols` Horner-style, i.e.
 `i ← (i - 1)m + i_factor`.
 """
 function _accumulate_indices!(rows::Vector{Int}, cols::Vector{Int},
-        cw::AbstractVector, is::Vector{Int}, js::Vector{Int},
-        u::Vector{Float64}, m::Int, n::Int)
+    cw::AbstractVector, is::Vector{Int}, js::Vector{Int},
+    u::Vector{Float64}, m::Int, n::Int)
     total = last(cw)
     @inbounds for o in eachindex(rows, cols, u)
         idx = _findfirstweight(cw, u[o] * total)

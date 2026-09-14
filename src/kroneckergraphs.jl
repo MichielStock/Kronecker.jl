@@ -13,7 +13,7 @@ Journal of Machine Learning Research, 11, 985–1042.
 Retrieved from https://cs.stanford.edu/~jure/pubs/kronecker-jmlr10.pdf
 =#
 
-using SparseArrays: spzeros
+using SparseArrays: spzeros, sparse
 using Random: AbstractRNG, default_rng, rand!
 
 """
@@ -152,18 +152,22 @@ duplicates (collisions) along the way.
 function fastsample(rng::AbstractRNG, P::AbstractKroneckerProduct)
     isprob(P) || throw(DomainError(P,
         "All values of P should be between 0 and 1"))
-    G = spzeros(Bool, size(P)...)
+    m = size(P, 1)
     n = round(Int, sum(P))  # expected number of edges
-    added = 0
-    while added < n
-        for (i, j) in sampleindices(rng, P, n - added)
-            if !G[i, j]
-                G[i, j] = true
-                added += 1
-            end
+    seen = Set{Int}()
+    sizehint!(seen, n)
+    while length(seen) < n
+        for (i, j) in sampleindices(rng, P, n - length(seen))
+            push!(seen, (j-1)*m+i)
         end
     end
-    return G
+    rows, cols = Vector{Int}(undef, n), Vector{Int}(undef, n)
+    for (k, lin) in enumerate(seen)
+        q, r = divrem(lin - 1, m)
+        rows[k] = r + 1
+        cols[k] = q + 1
+    end
+    return sparse(rows, cols, true, size(P)...)
 end
 
 fastsample(P::AbstractKroneckerProduct) = fastsample(default_rng(), P)

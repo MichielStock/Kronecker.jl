@@ -29,6 +29,7 @@
           # collisions are re-sampled, so the number of edges is exactly the
           # expected edge count of the probability matrix
           @test sum(G) == round(Int, sum(P))
+          @test eltype(G) == Bool
     end
 
     @testset "helpers" begin

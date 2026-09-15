@@ -25,5 +25,4 @@ kroneckersum
 ⊕
 collect(K::AbstractKroneckerSum)
 exp
-mul!(x::AbstractVector, K::AbstractKroneckerSum, v::AbstractVector)
 ```

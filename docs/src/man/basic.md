@@ -61,4 +61,5 @@ inv(K::AbstractKroneckerProduct)
 adjoint(K::AbstractKroneckerProduct)
 transpose(K::AbstractKroneckerProduct)
 conj(K::AbstractKroneckerProduct)
+isposdef(K::AbstractKroneckerProduct)
 ```

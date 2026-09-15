@@ -1,15 +1,3 @@
-#=
-using Pkg
-
-tmp_packages = ["Kronecker", "Documenter"]
-
-push!(LOAD_PATH,"../src/")
-
-Pkg.activate(".")
-
-Pkg.add.(tmp_packages) # IMPORTANT
-=#
-
 using Documenter, Kronecker, LinearAlgebra
 
 makedocs(
@@ -17,6 +5,8 @@ makedocs(
     authors = "Michiel Stock",
     format = Documenter.HTML(),
     modules = [Kronecker],
+    checkdocs = :exports,
+    doctest = true,
     pages = Any[
         "Basic use" => "man/basic.md",
         "Types" => "man/types.md",
@@ -30,4 +20,5 @@ makedocs(
 
 deploydocs(
     repo = "github.com/MichielStock/Kronecker.jl.git",
+    push_preview = false,
 )

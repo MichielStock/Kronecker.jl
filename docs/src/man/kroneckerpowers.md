@@ -20,6 +20,7 @@ K12^2  # example
 ```
 
 ```@docs
+KroneckerPower
 kronecker(A::AbstractMatrix, pow::Int)
 ⊗(A::AbstractMatrix, pow::Int)
 ```
@@ -47,4 +48,5 @@ A = fastsample(P10)
 isprob
 naivesample
 fastsample
+sampleindices
 ```

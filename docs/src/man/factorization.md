@@ -30,8 +30,6 @@ b = randn(40);
 ```@docs
 eigen
 +(E::Eigen, B::UniformScaling)
-+(::Eigen, ::UniformScaling)
-
 det(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
 logdet(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
 inv(E::Eigen{<:Number, <:Number, <:AbstractKroneckerProduct})
